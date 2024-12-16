@@ -1,0 +1,18 @@
+#logo-label {
+    text-align: center;
+    font-weight: bold;
+}
+
+#login-label {
+    font-weight: bold;
+}
+
+#input-id::-webkit-outer-spin-button,
+#input-id::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+#input-id[type="number"] {
+    appearance: textfield;
+}
