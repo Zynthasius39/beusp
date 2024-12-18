@@ -1,14 +1,15 @@
 import {
-  Announcement,
-  Article,
-  CalendarMonth,
-  Dashboard,
-  DoorSliding,
-  Folder,
-  Grade,
-  Grading,
-  Logout,
-  Settings,
+  AnnouncementTwoTone,
+  ArticleTwoTone,
+  CalendarMonthTwoTone,
+  DashboardTwoTone,
+  DoorSlidingTwoTone,
+  FolderTwoTone,
+  GradeTwoTone,
+  GradingTwoTone,
+  LogoutTwoTone,
+  SettingsTwoTone,
+  SummarizeTwoTone,
 } from "@mui/icons-material";
 import {
   Stack,
@@ -22,28 +23,28 @@ import {
   Avatar,
 } from "@mui/material";
 import logo_dark from "../assets/beu_dark.svg";
-import logo_light from "../assets/beu_light.svg";
 import { NavLink, useLocation } from "react-router-dom";
-import { useTheme } from "../Theme";
+import { useTheme } from "../utils/Theme";
 
 const spMenu = [
-  { name: "Dashboard", icon: <Dashboard color="primary" />, href: "/" },
+  { name: "Dashboard", icon: <DashboardTwoTone color="primary" />, href: "/" },
   {
     name: "Announces",
-    icon: <Announcement color="primary" />,
+    icon: <AnnouncementTwoTone color="primary" />,
     href: "/announces",
   },
-  { name: "Departments", icon: <Folder color="primary" />, href: "" },
-  { name: "Course", icon: <CalendarMonth color="primary" />, href: "" },
-  { name: "Grades", icon: <Grade color="primary" />, href: "" },
-  { name: "Transcript", icon: <Article color="primary" />, href: "" },
-  { name: "Attendance", icon: <Grading color="primary" />, href: "" },
-  { name: "Gate", icon: <DoorSliding color="primary" />, href: "" },
-  { name: "Settings", icon: <Settings color="primary" />, href: "" },
+  { name: "Departments", icon: <FolderTwoTone color="primary" />, href: "" },
+  { name: "Course", icon: <CalendarMonthTwoTone color="primary" />, href: "" },
+  { name: "Grades", icon: <GradeTwoTone color="primary" />, href: "/grades" },
+  { name: "Transcript", icon: <SummarizeTwoTone color="primary" />, href: "" },
+  { name: "Attendance", icon: <GradingTwoTone color="primary" />, href: "" },
+  { name: "Gate", icon: <DoorSlidingTwoTone color="primary" />, href: "" },
+  { name: "Documents", icon: <ArticleTwoTone color="primary" />, href: "" },
+  { name: "Settings", icon: <SettingsTwoTone color="primary" />, href: "" },
 ];
 
 const DrawerList = () => {
-  const { theme, isDark } = useTheme();
+  const { theme } = useTheme();
   const path = useLocation().pathname;
 
   return (
@@ -83,7 +84,10 @@ const DrawerList = () => {
           flexDirection: "column",
         }}
       >
-        <Box flexGrow={1}>
+        <Box sx={{
+          flexGrow: "1",
+          overflowY: "auto",
+        }}>
           {spMenu.map(({ name, icon, href }) => (
             <NavLink
               to={href}
@@ -102,9 +106,9 @@ const DrawerList = () => {
                 }}
               >
                 <ListItemIcon>
-                  <Avatar sx={{ backgroundColor: theme.palette.primary.dark }}>
-                    {icon}
-                  </Avatar>
+                  {/* <Avatar sx={{ backgroundColor: theme.palette.primary.dark }}> */}
+                  {icon}
+                  {/* </Avatar> */}
                 </ListItemIcon>
                 <Typography>{name}</Typography>
               </ListItemButton>
@@ -114,9 +118,9 @@ const DrawerList = () => {
         <Link href="" color="inherit" underline="none" width={"100%"}>
           <ListItemButton key="logout" sx={{ p: "5%", pl: "10%" }}>
             <ListItemIcon>
-              <Avatar sx={{ backgroundColor: theme.palette.primary.dark }}>
-                <Logout color="primary" />
-              </Avatar>
+              {/* <Avatar sx={{ backgroundColor: theme.palette.primary.dark }}> */}
+              <LogoutTwoTone color="primary" />
+              {/* </Avatar> */}
             </ListItemIcon>
             <Typography fontSize={14}>LogOut</Typography>
           </ListItemButton>

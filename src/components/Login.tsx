@@ -18,21 +18,21 @@ import {
   Typography,
 } from "@mui/material";
 import "../style/Login.css";
-import { useTheme } from "../Theme";
+import { useTheme } from "../utils/Theme";
 import logo_dark from "../assets/beu_dark.svg";
 import logo_light from "../assets/beu_light.svg";
 import { MaterialUISwitch, PrimaryButton } from "../Components";
-import { getHome, getPhoto } from "../Utils";
+import { getStudRes, getPhoto } from "../utils/StudentLogic";
 import { KeyboardEvent, MouseEvent, useCallback, useEffect, useRef, useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
-import { isAuthed, useAuth } from "../Auth";
+import { useAuth } from "../utils/Auth";
+import { verify } from "../utils/Api";
 
 
 export default function Login() {
   const { theme, isDark, setDark } = useTheme();
-  const { authed, login, logout, imageURL, setImage } = useAuth();
+  const { authed, login, logout, imageURL, name, verifiedAuth, setImage, setName } = useAuth();
   const navigate = useNavigate();
-  const [name, setName] = useState("Undefined");
   const [alignment, setAlignment] = useState("student");
   const [studentId, setStudentID] = useState(0);
   // const [pmsUsername, setPmsUsername] = useState(""); // Future use :P
@@ -82,7 +82,7 @@ export default function Login() {
     }
     try {
       await login(studentId, password);
-      await getHome();
+      await getStudRes("home");
       getStudPhoto();
       setName((localStorage.getItem("studfullname") || "Unauthorized").split(" ")[0]);
       navigate("/");
@@ -113,15 +113,31 @@ export default function Login() {
     }
   }
 
-  useEffect(() => {
-    if (!isAuthed()) {
+  const getComponent = async () => {
+    if (!await verify()) {
       logout();
     } else {
+      verifiedAuth();
+    }
+    const homeJson = JSON.parse(localStorage.getItem("home") || "{}").home;
+    if (homeJson != undefined) {
+      setName(homeJson.student_info["Name surname patronymic"].split(" ")[0]);
+    }
+  }
+
+
+  useEffect(() => {
+    if (!authed)
+      getComponent();
+    else {
       getStudPhoto();
-      setName((localStorage.getItem("studfullname") || "Unauthorized").split(" ")[0]);
+      const homeJson = JSON.parse(localStorage.getItem("home") || "{}").home;
+      if (homeJson != undefined) {
+        setName(homeJson.student_info["Name surname patronymic"].split(" ")[0]);
+      }
     }
     clearTimeout(timer.current);
-  }, []);
+  }, [name, imageURL]);
 
   return (
     <Stack
@@ -164,8 +180,12 @@ export default function Login() {
                 Baku Engineering University
               </Typography>
             </Stack>
-            <MaterialUISwitch onChange={(_, checked) => {
-              setDark(checked)
+            <MaterialUISwitch checked={isDark()} onChange={(_, checked) => {
+              setDark(checked);
+              if (checked)
+                localStorage.setItem("theme", "dark");
+              else 
+                localStorage.removeItem("theme");
             }} sx={{ mb: "10px" }} />
           </Stack>
           <Typography variant="h4" id="login-label" pt="5px" pb="5px">

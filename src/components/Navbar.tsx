@@ -1,4 +1,3 @@
-import { AccountCircle } from "@mui/icons-material";
 import {
   Avatar,
   Box,
@@ -14,34 +13,45 @@ import {
 } from "@mui/material";
 import Drawer from "./Drawer";
 import { MaterialUISwitch } from "../Components";
-import { ChangeEvent, MouseEvent, useEffect, useState } from "react";
-import { useTheme } from "../Theme";
-import { isAuthed, useAuth } from "../Auth";
-import { getPhoto } from "../Utils";
+import { ChangeEvent, MouseEvent, useCallback, useEffect, useState } from "react";
+import { useTheme } from "../utils/Theme";
+import { useAuth } from "../utils/Auth";
+import { NavLink, useNavigate } from "react-router-dom";
+import { getPhoto } from "../utils/StudentLogic";
 
-const Navbar = (props: { username: string; page: string; auth: boolean }) => {
-  const [name, setName] = useState("Undefined");
+const Navbar = (props: { name: string; page: string }) => {
   const { isDark, setDark } = useTheme();
-  const { logout, setImage, imageURL } = useAuth();
+  const { authed, logout, setName, setImage, imageURL } = useAuth();
+  const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
 
+  const handleProfileClick = useCallback(async () => {
+    // Debuggin purposes
+    console.log(JSON.parse(localStorage.getItem("transcript") || "{}"));
+  }, []);
+
+  const handleLogout = useCallback(async () => {
+    try {
+      setImage("");
+      await logout();
+      navigate("/login");
+    } catch (e) {
+      console.error("Error occured while authorizing:", e);
+    }
+  }, []);
+
   const handleThemeSwitch = (event: ChangeEvent<HTMLInputElement>) => {
     setDark(event.target.checked);
+    if (event.target.checked)
+      localStorage.setItem("theme", "dark");
+    else
+      localStorage.removeItem("theme");
   };
 
   const handleAccClick = (event: MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
   };
-
-  const handleLogout = async () => {
-    try {
-      setImage("");
-      await logout();
-    } catch (e) {
-      console.error("Error occured while authorizing:", e);
-    }
-  }
 
   const handleMenuClose = () => {
     setAnchorEl(null);
@@ -56,16 +66,17 @@ const Navbar = (props: { username: string; page: string; auth: boolean }) => {
   }
 
   useEffect(() => {
-    if (!isAuthed()) {
-      logout();
-    } else {
+    if (authed) {
       getStudPhoto();
-      setName((localStorage.getItem("studfullname") || "Unauthorized").split(" ")[0]);
+      const homeJson = JSON.parse(localStorage.getItem("home") || "{}").home;
+      if (homeJson != undefined) {
+        setName(homeJson.student_info["Name surname patronymic"].split(" ")[0]);
+      }
     }
-  }, []);
+  }, [authed]);
 
   return (
-    <Box p={1} m={1}>
+    <Box p={1}>
       <Toolbar>
         <Drawer />
         <Typography
@@ -81,33 +92,34 @@ const Navbar = (props: { username: string; page: string; auth: boolean }) => {
           checked={isDark()}
           onChange={handleThemeSwitch}
         />
-        {props.auth ? (
-          <IconButton
-            id="account-button"
-            aria-controls={open ? "basic-menu" : undefined}
-            aria-haspopup="true"
-            aria-expanded={open ? "true" : undefined}
-            onClick={handleAccClick}
-            // size="large"
-            color="inherit"
-          >
-            {imageURL === "" ?
-              <Skeleton variant="circular" width="50px" height="50px" />
-              :
-              <Avatar alt="studphoto" src={imageURL} sx={{ width: "50px", height: "50px" }} />
-            }
-          </IconButton>
-        ) : (
-          <Button
-            variant="contained"
-            sx={{
-              backgroundColor: "primary.main",
-              color: "secondary.contrastText",
-            }}
-          >
-            Login
-          </Button>
-        )}
+        {/* {authed ? ( */}
+        <IconButton
+          id="account-button"
+          aria-controls={open ? "basic-menu" : undefined}
+          aria-haspopup="true"
+          aria-expanded={open ? "true" : undefined}
+          onClick={handleAccClick}
+          color="inherit"
+        >
+          {imageURL === "" ?
+            <Skeleton variant="circular" width="50px" height="50px" />
+            :
+            <Avatar alt="studphoto" src={imageURL} sx={{ width: "50px", height: "50px" }} />
+          }
+        </IconButton>
+        {/* ) : (
+          <NavLink to="/login">
+            <Button
+              variant="contained"
+              sx={{
+                backgroundColor: "primary.main",
+                color: "secondary.contrastText",
+              }}
+            >
+              Login
+            </Button>
+          </NavLink>
+        )} */}
         <Menu
           id="account"
           anchorEl={anchorEl}
@@ -129,10 +141,10 @@ const Navbar = (props: { username: string; page: string; auth: boolean }) => {
               :
               <Avatar alt="studphoto" src={imageURL} sx={{ width: "40px", height: "40px" }} />
             }
-            <Typography>{name}</Typography>
+            <Typography>{props.name}</Typography>
           </Stack>
           <Divider />
-          <MenuItem>Profile</MenuItem>
+          <MenuItem onClick={handleProfileClick}>Profile</MenuItem>
           <MenuItem onClick={handleLogout}>Logout</MenuItem>
         </Menu>
       </Toolbar>

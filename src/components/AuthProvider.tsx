@@ -1,12 +1,17 @@
 import { ReactNode, useCallback, useState } from "react";
-import { AuthContext } from "../Auth";
-import { auth } from "../Api";
+import { AuthContext } from "../utils/Auth";
+import { auth } from "../utils/Api";
 import Cookies from "universal-cookie";
 
 export default function AuthProvider({ children }: { children: ReactNode}) {
-  const [authed, setAuthed] = useState(true);
+  const [name, setname] = useState("Undefined");
+  const [authed, setAuthed] = useState(false);
   const [imageURL, setImageURL] = useState("");
   const cookies = new Cookies(null, { path: "/" });
+
+  const verifiedAuth = useCallback(() => setAuthed(true), [authed]);
+
+  const setName = useCallback((name: string) => setname(name), [name]);
 
   const login = useCallback(async (student_id : number, password : string) => {
     try {
@@ -21,8 +26,9 @@ export default function AuthProvider({ children }: { children: ReactNode}) {
     cookies.remove("StudentID");
     cookies.remove("SessionID");
     cookies.remove("ImgID");
+    localStorage.removeItem("home");
+    localStorage.removeItem("transcript");
     localStorage.removeItem("studphoto");
-    localStorage.removeItem("studfullname");
     setAuthed(false);
   }, [authed]);
 
@@ -30,5 +36,5 @@ export default function AuthProvider({ children }: { children: ReactNode}) {
     setImageURL(url);
   }, [imageURL]);
 
-  return <AuthContext.Provider value={{authed, login, logout, imageURL, setImage }}>{children}</AuthContext.Provider>;
+  return <AuthContext.Provider value={{authed, login, logout, imageURL, name, verifiedAuth, setImage, setName }}>{children}</AuthContext.Provider>;
 }

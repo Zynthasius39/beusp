@@ -1,15 +1,32 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Box, Stack } from "@mui/material";
 import Navbar from "./Navbar";
-import { Outlet } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
 import DrawerList from "./DrawerList";
-import { useTheme } from "../Theme";
+import { useTheme } from "../utils/Theme";
+import { isAuthed, useAuth } from "../utils/Auth";
+import { getPhoto } from "../utils/StudentLogic";
+import { verify } from "../utils/Api";
 
 export default function App() {
+  const { name, authed, imageURL, setImage, logout, verifiedAuth } = useAuth();
+  const navigate = useNavigate();
   const { theme } = useTheme();
-  const [auth] = useState(true);
   const [page] = useState("Dashboard");
-  const username = "Unknown";
+
+  const getComponent = async () => {
+    if (!await verify()) {
+      logout();
+      navigate("/login");
+    } else {
+      verifiedAuth();
+    }
+  }
+
+  useEffect(() => {
+    if (!authed)
+      getComponent();
+  }, [name, imageURL]);
 
   return (
     <Stack
@@ -29,8 +46,8 @@ export default function App() {
         </Box>
         {/* <Divider /> */}
         <Stack flex={4} bgcolor="background.default" color="text.primary">
-          <Navbar username={username} page={page} auth={auth} />
-          <Box p={2} flex={8}>
+          <Navbar name={name} page={page} />
+          <Box p={1} flex={8} overflow="auto">
             <Outlet />
           </Box>
         </Stack>

@@ -1,4 +1,6 @@
-const url = "http://127.0.0.1:5000/api";
+const ip = "127.0.0.1";
+const port = "5000";
+const url = `http://${ip}:${port}/api`;
 
 export async function auth(student_id: string, password: string) {
   const response = await fetch(url + "/auth", {
@@ -30,15 +32,18 @@ export async function unauth() {
   }
 }
 
-export async function fetchHome() {
-  const response = await fetch(url + "/resource/home", {
-    method: "GET",
+export async function verify() {
+  const response = await fetch(url + "/verify", {
+    method: "POST",
     credentials: "include",
+    headers: {
+      "Content-Type": "application/json",
+    },
   });
   if (!response.ok) {
-    throw new Error(String(response.status));
+    return false;
   }
-  return await response.json();
+  return true;
 }
 
 export async function fetchPhoto() {
@@ -53,4 +58,15 @@ export async function fetchPhoto() {
     throw new Error(String(response.status));
   }
   return await response.blob();
+}
+
+export async function fetchStudRes(res: string) {
+  const response = await fetch(`${url}/resource/${res}`, {
+    method: "GET",
+    credentials: "include",
+  });
+  if (!response.ok) {
+    throw new Error(String(response.status));
+  }
+  return await response.json();
 }
