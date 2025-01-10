@@ -87,7 +87,7 @@ const Navbar = (props: { name: string; page: string }) => {
           {props.page}
         </Typography>
         <MaterialUISwitch
-          sx={{ m: "2dvw", display: {
+          sx={{ m: 1, display: {
             xs: "none",
             sm: "inherit",
           } }}

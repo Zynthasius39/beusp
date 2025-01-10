@@ -1,17 +1,4 @@
 import {
-  AnnouncementTwoTone,
-  ArticleTwoTone,
-  CalendarMonthTwoTone,
-  DashboardTwoTone,
-  DoorSlidingTwoTone,
-  FolderTwoTone,
-  GradeTwoTone,
-  GradingTwoTone,
-  LogoutTwoTone,
-  SettingsTwoTone,
-  SummarizeTwoTone,
-} from "@mui/icons-material";
-import {
   Stack,
   List,
   Typography,
@@ -20,30 +7,14 @@ import {
   Divider,
   ListItemIcon,
   Box,
-  Avatar,
 } from "@mui/material";
 import logo_dark from "../assets/beu_dark.svg";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { useTheme } from "../utils/Theme";
 import { useCallback } from "react";
 import { useAuth } from "../utils/Auth";
-
-const spMenu = [
-  { name: "Dashboard", icon: <DashboardTwoTone color="primary" />, href: "/" },
-  {
-    name: "Announces",
-    icon: <AnnouncementTwoTone color="primary" />,
-    href: "/announces",
-  },
-  { name: "Departments", icon: <FolderTwoTone color="primary" />, href: "" },
-  { name: "Course", icon: <CalendarMonthTwoTone color="primary" />, href: "" },
-  { name: "Grades", icon: <GradeTwoTone color="primary" />, href: "/grades" },
-  { name: "Transcript", icon: <SummarizeTwoTone color="primary" />, href: "" },
-  { name: "Attendance", icon: <GradingTwoTone color="primary" />, href: "" },
-  { name: "Gate", icon: <DoorSlidingTwoTone color="primary" />, href: "" },
-  { name: "Documents", icon: <ArticleTwoTone color="primary" />, href: "" },
-  { name: "Settings", icon: <SettingsTwoTone color="primary" />, href: "" },
-];
+import { spMenu } from "../Components";
+import { LogoutTwoTone } from "@mui/icons-material";
 
 const DrawerList = () => {
   const { logout, setImage } = useAuth();
@@ -120,9 +91,7 @@ const DrawerList = () => {
                 }}
               >
                 <ListItemIcon>
-                  {/* <Avatar sx={{ backgroundColor: theme.palette.primary.dark }}> */}
                   {icon}
-                  {/* </Avatar> */}
                 </ListItemIcon>
                 <Typography>{name}</Typography>
               </ListItemButton>
@@ -132,9 +101,7 @@ const DrawerList = () => {
         <Link href="" color="inherit" underline="none" width={"100%"}>
           <ListItemButton key="logout" sx={{ p: "5%", pl: "10%" }} onClick={handleLogout}>
             <ListItemIcon>
-              {/* <Avatar sx={{ backgroundColor: theme.palette.primary.dark }}> */}
               <LogoutTwoTone color="primary" />
-              {/* </Avatar> */}
             </ListItemIcon>
             <Typography fontSize={14}>LogOut</Typography>
           </ListItemButton>

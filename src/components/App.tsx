@@ -1,17 +1,19 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Box, Stack } from "@mui/material";
 import Navbar from "./Navbar";
-import { Outlet, useNavigate } from "react-router-dom";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import DrawerList from "./DrawerList";
 import { useTheme } from "../utils/Theme";
 import { useAuth } from "../utils/Auth";
 import { verify } from "../utils/Api";
+import { spMenu } from "../Components";
 
 export default function App() {
   const { authed, imageURL, name, logout, verifiedAuth } = useAuth();
   const { theme } = useTheme();
   const navigate = useNavigate();
-  const [page] = useState("Dashboard");
+  const [page, setPage] = useState("Dashboard");
+  const path = useLocation();
 
   const getComponent = async () => {
     if (!await verify()) {
@@ -22,11 +24,16 @@ export default function App() {
     }
   }
 
+  const updatePage = () => {
+    setPage(spMenu.find(m => m.href === path.pathname)?.name || "");
+  }
+
   useEffect(() => {
+      updatePage();
     if (!authed) {
       getComponent();
     }
-  }, [name, imageURL]);
+  }, [name, imageURL, path]);
 
   return (
     <Stack
@@ -45,7 +52,7 @@ export default function App() {
           <DrawerList />
         </Box>
         <Stack flex={4} bgcolor="background.default" color="text.primary">
-          <Navbar name={name} page={page} />
+          <Navbar name={name} page={page}/>
           <Box p={1} flex={8} overflow="auto">
             <Outlet />
           </Box>

@@ -1,4 +1,16 @@
-import { Button, styled, Switch, SwitchProps } from "@mui/material";
+import { Button, styled, Switch } from "@mui/material";
+import {
+  AnnouncementTwoTone,
+  ArticleTwoTone,
+  CalendarMonthTwoTone,
+  DashboardTwoTone,
+  DoorSlidingTwoTone,
+  FolderTwoTone,
+  GradeTwoTone,
+  GradingTwoTone,
+  SettingsTwoTone,
+  SummarizeTwoTone,
+} from "@mui/icons-material";
 
 export const MaterialUISwitch = styled(Switch)(({ theme }) => ({
   width: 62,
@@ -126,3 +138,20 @@ export const PrimaryButton = styled(Button, {
     backgroundColor: theme.palette.primaryButton.dark,
   }
 }));
+
+export const spMenu = [
+  { name: "Dashboard", icon: <DashboardTwoTone color="primary" />, href: "/" },
+  {
+    name: "Announces",
+    icon: <AnnouncementTwoTone color="primary" />,
+    href: "/announces",
+  },
+  { name: "Departments", icon: <FolderTwoTone color="primary" />, href: "" },
+  { name: "Course", icon: <CalendarMonthTwoTone color="primary" />, href: "" },
+  { name: "Grades", icon: <GradeTwoTone color="primary" />, href: "/grades" },
+  { name: "Transcript", icon: <SummarizeTwoTone color="primary" />, href: "" },
+  { name: "Attendance", icon: <GradingTwoTone color="primary" />, href: "" },
+  { name: "Gate", icon: <DoorSlidingTwoTone color="primary" />, href: "" },
+  { name: "Documents", icon: <ArticleTwoTone color="primary" />, href: "" },
+  { name: "Settings", icon: <SettingsTwoTone color="primary" />, href: "" },
+];
