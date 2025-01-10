@@ -1,4 +1,4 @@
-import { fetchPhoto, fetchStudGrades, fetchStudRes } from "./Api";
+import { fetchPhoto, fetchStudGrades, fetchStudRes, fetchStudStatus } from "./Api";
 
 export const convertBlobToBase64 = (blob: Blob) => {
     return new Promise((resolve, reject) => {
@@ -46,6 +46,10 @@ export const getStudRes = async (res: string, cache: boolean) => {
         json = await fetchStudRes(res);
     }
     return json;
+}
+
+export const getStudStatus = async () => {
+    return await fetchStudStatus();
 }
 
 export const gradeToMark = (grade: number) => {

@@ -79,6 +79,16 @@ export async function fetchStudGrades(year: string, semester: string) {
   if (!response.ok) {
     throw new Error(String(response.status));
   }
-  const json = response.json();
-  return json;
+  return await response.json();
+}
+
+export async function fetchStudStatus() {
+  const response = await fetch(`${url}/resource/status`, {
+    method: "GET",
+    credentials: "include",
+  });
+  if (!response.ok) {
+    throw new Error(String(response.status));
+  }
+  return await response.json();
 }

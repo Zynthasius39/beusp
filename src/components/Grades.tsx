@@ -1,9 +1,10 @@
 import { Autocomplete, Avatar, FormControlLabel, FormGroup, Skeleton, Stack, Switch, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, ToggleButton, ToggleButtonGroup } from "@mui/material";
 import { useAuth } from "../utils/Auth";
-import { colorOfMark, getStudGrades, getStudRes, gradeToMark } from "../utils/StudentLogic";
+import { colorOfMark, getStudGrades, getStudRes, getStudStatus, gradeToMark } from "../utils/StudentLogic";
 import { useEffect, useState } from "react";
 import { useTheme } from "../utils/Theme";
 import { useNavigate } from "react-router-dom";
+import { validateSections } from "@mui/x-date-pickers/internals/hooks/useField/useField.utils";
 
 export default function Grades() {
   const { authed, logout } = useAuth();
@@ -16,6 +17,7 @@ export default function Grades() {
   const [isAll, setIsAll] = useState(false);
   const [gradesLoading, setGradesLoading] = useState(true);
   const [gradeTLoading, setGradeTLoading] = useState(true);
+  const [botEnabled, setBotEnabled] = useState(false);
   const navigate = useNavigate();
 
   const tableCellStyle = {
@@ -57,21 +59,37 @@ export default function Grades() {
     }
   }
 
-  const handleSemesterBox = (_: React.MouseEvent<HTMLElement>, val: string) => {
-    if (val !== null) {
-      setSemester(val);
+  const getBotStatus = async () => {
+    const json = await getStudStatus();
+    if (json?.status.bot_enabled) {
+      setBotEnabled(true);
+    }
+  }
+
+  const handleSemesterBox = (_: React.MouseEvent<HTMLElement>, v: string) => {
+    if (v !== null) {
+      setSemester(v);
       setGradeTLoading(true);
     }
   }
 
-  const handleYearBox = (_: React.SyntheticEvent, nY: string) => {
-    setYear(nY);
+  const handleYearBox = (_: React.SyntheticEvent, v: string) => {
+    setYear(v);
     setGradeTLoading(true);
   };
+
+  const handleBotSwitch = (_: React.MouseEvent<HTMLElement>, v: boolean) {
+    //
+    // SUBSCRIBE MENU
+    //    Pop-up menu to re-enter credentials
+    //
+    setBotEnabled(v);
+  }
 
   useEffect(() => {
     if (authed && Object.keys(options).length === 0) {
       getGrades();
+      getBotStatus();
     }
     if (year !== null && semester !== null) {
       if (year === "ALL") {
@@ -132,7 +150,7 @@ export default function Grades() {
           </ToggleButtonGroup>
         }
         <FormGroup>
-          <FormControlLabel control={<Switch />} label="BeuTMSBot v3" />
+          <FormControlLabel control={<Switch />} checked={botEnabled} onChange={handleBotSwitch} label="BeuTMSBot v3" />
         </FormGroup>
     </Stack>
     {
