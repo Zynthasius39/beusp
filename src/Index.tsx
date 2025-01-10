@@ -28,7 +28,9 @@ export default function Index() {
                 <Route path="grades" element={<Grades />} />
                 <Route path="*" element={<NoPage />} />
               </Route>
-              <Route path="/login" element={<Login />} />
+              <Route path="/login" element={
+                <Login />
+              } />
             </Routes>
           </BrowserRouter>
         </LocalizationProvider>

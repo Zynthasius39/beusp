@@ -1,4 +1,4 @@
-const ip = "127.0.0.1";
+const ip = "10.0.10.75";
 const port = "5000";
 const url = `http://${ip}:${port}/api`;
 
@@ -69,4 +69,16 @@ export async function fetchStudRes(res: string) {
     throw new Error(String(response.status));
   }
   return await response.json();
+}
+
+export async function fetchStudGrades(year: string, semester: string) {
+  const response = await fetch(year === "ALL" ? `${url}/resource/grades/all` : `${url}/resource/grades/${year}/${semester}`, {
+    method: "GET",
+    credentials: "include",
+  });
+  if (!response.ok) {
+    throw new Error(String(response.status));
+  }
+  const json = response.json();
+  return json;
 }

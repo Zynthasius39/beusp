@@ -16,7 +16,7 @@ import { MaterialUISwitch } from "../Components";
 import { ChangeEvent, MouseEvent, useCallback, useEffect, useState } from "react";
 import { useTheme } from "../utils/Theme";
 import { useAuth } from "../utils/Auth";
-import { NavLink, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { getPhoto } from "../utils/StudentLogic";
 
 const Navbar = (props: { name: string; page: string }) => {
@@ -87,12 +87,14 @@ const Navbar = (props: { name: string; page: string }) => {
           {props.page}
         </Typography>
         <MaterialUISwitch
-          sx={{ m: 2 }}
+          sx={{ m: "2dvw", display: {
+            xs: "none",
+            sm: "inherit",
+          } }}
           defaultChecked
           checked={isDark()}
           onChange={handleThemeSwitch}
         />
-        {/* {authed ? ( */}
         <IconButton
           id="account-button"
           aria-controls={open ? "basic-menu" : undefined}
@@ -107,19 +109,6 @@ const Navbar = (props: { name: string; page: string }) => {
             <Avatar alt="studphoto" src={imageURL} sx={{ width: "50px", height: "50px" }} />
           }
         </IconButton>
-        {/* ) : (
-          <NavLink to="/login">
-            <Button
-              variant="contained"
-              sx={{
-                backgroundColor: "primary.main",
-                color: "secondary.contrastText",
-              }}
-            >
-              Login
-            </Button>
-          </NavLink>
-        )} */}
         <Menu
           id="account"
           anchorEl={anchorEl}

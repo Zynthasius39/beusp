@@ -4,14 +4,13 @@ import Navbar from "./Navbar";
 import { Outlet, useNavigate } from "react-router-dom";
 import DrawerList from "./DrawerList";
 import { useTheme } from "../utils/Theme";
-import { isAuthed, useAuth } from "../utils/Auth";
-import { getPhoto } from "../utils/StudentLogic";
+import { useAuth } from "../utils/Auth";
 import { verify } from "../utils/Api";
 
 export default function App() {
-  const { name, authed, imageURL, setImage, logout, verifiedAuth } = useAuth();
-  const navigate = useNavigate();
+  const { authed, imageURL, name, logout, verifiedAuth } = useAuth();
   const { theme } = useTheme();
+  const navigate = useNavigate();
   const [page] = useState("Dashboard");
 
   const getComponent = async () => {
@@ -24,8 +23,9 @@ export default function App() {
   }
 
   useEffect(() => {
-    if (!authed)
+    if (!authed) {
       getComponent();
+    }
   }, [name, imageURL]);
 
   return (
@@ -44,7 +44,6 @@ export default function App() {
         >
           <DrawerList />
         </Box>
-        {/* <Divider /> */}
         <Stack flex={4} bgcolor="background.default" color="text.primary">
           <Navbar name={name} page={page} />
           <Box p={1} flex={8} overflow="auto">
@@ -52,7 +51,6 @@ export default function App() {
           </Box>
         </Stack>
       </Stack>
-      {/* <BottomNav /> */}
     </Stack>
   );
 }

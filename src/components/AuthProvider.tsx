@@ -1,4 +1,4 @@
-import { ReactNode, useCallback, useState } from "react";
+import { ReactNode, useCallback, useEffect, useState } from "react";
 import { AuthContext } from "../utils/Auth";
 import { auth } from "../utils/Api";
 import Cookies from "universal-cookie";
@@ -29,6 +29,8 @@ export default function AuthProvider({ children }: { children: ReactNode}) {
     localStorage.removeItem("home");
     localStorage.removeItem("transcript");
     localStorage.removeItem("studphoto");
+    localStorage.removeItem("studfullname");
+    localStorage.removeItem("announces");
     setAuthed(false);
   }, [authed]);
 

@@ -82,7 +82,7 @@ export default function Login() {
     }
     try {
       await login(studentId, password);
-      await getStudRes("home");
+      await getStudRes("home", true);
       getStudPhoto();
       setName((localStorage.getItem("studfullname") || "Unauthorized").split(" ")[0]);
       navigate("/");
@@ -293,7 +293,7 @@ export default function Login() {
                 value={alignment}
                 onChange={handleButtonGroup}
                 exclusive
-                aria-label="AccountType"
+                aria-label="account type"
               >
                 <ToggleButton value="student">Student</ToggleButton>
                 <ToggleButton value="educater">Educater</ToggleButton>

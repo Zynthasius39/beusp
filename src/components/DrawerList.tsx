@@ -23,8 +23,10 @@ import {
   Avatar,
 } from "@mui/material";
 import logo_dark from "../assets/beu_dark.svg";
-import { NavLink, useLocation } from "react-router-dom";
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { useTheme } from "../utils/Theme";
+import { useCallback } from "react";
+import { useAuth } from "../utils/Auth";
 
 const spMenu = [
   { name: "Dashboard", icon: <DashboardTwoTone color="primary" />, href: "/" },
@@ -44,8 +46,20 @@ const spMenu = [
 ];
 
 const DrawerList = () => {
+  const { logout, setImage } = useAuth();
   const { theme } = useTheme();
+  const navigate = useNavigate();
   const path = useLocation().pathname;
+
+  const handleLogout = useCallback(async () => {
+    try {
+      setImage("");
+      await logout();
+      navigate("/login");
+    } catch (e) {
+      console.error("Error occured while authorizing:", e);
+    }
+  }, []);
 
   return (
     <Stack
@@ -116,7 +130,7 @@ const DrawerList = () => {
           ))}
         </Box>
         <Link href="" color="inherit" underline="none" width={"100%"}>
-          <ListItemButton key="logout" sx={{ p: "5%", pl: "10%" }}>
+          <ListItemButton key="logout" sx={{ p: "5%", pl: "10%" }} onClick={handleLogout}>
             <ListItemIcon>
               {/* <Avatar sx={{ backgroundColor: theme.palette.primary.dark }}> */}
               <LogoutTwoTone color="primary" />

@@ -3,6 +3,7 @@ import { ClassTwoTone, ImportContactsTwoTone, SchoolTwoTone, TollTwoTone } from 
 import {
   Avatar,
   Card,
+  Skeleton,
   Stack,
   Table,
   TableBody,
@@ -16,14 +17,17 @@ import "../style/Dashboard.css";
 import { cloneElement, useEffect, useState } from "react";
 import { getStudRes } from "../utils/StudentLogic";
 import { useAuth } from "../utils/Auth";
+import { useNavigate } from "react-router-dom";
 
 const Dashboard = () => {
   const { theme } = useTheme();
-  const { authed } = useAuth();
+  const { authed, logout } = useAuth();
+  const [dashLoading, setDashLoading] = useState(true);
   const [classCount, setClassCount] = useState(0);
   const [totalCredits, setTotalCredits] = useState(0);
   const [gpa, setGpa] = useState(0);
   const [eduDebt, setEduDebt] = useState("0 AZN");
+  const navigate = useNavigate();
 
   const infoCards = [
     { name: "Enrolled Classes", value: classCount, icon: <ImportContactsTwoTone /> },
@@ -31,13 +35,6 @@ const Dashboard = () => {
     { name: "Education Debt", value: eduDebt, icon: <ClassTwoTone /> },
     { name: "GPA", value: gpa, icon: <SchoolTwoTone /> },
   ]
-
-  // const infoCards = [
-  //   { name: "Enrolled Classes", value: classCount, icon: <ImportContactsTwoTone />, colorl: "#fca6fc", colord: "#ad3bd0" },
-  //   { name: "Completed Credits", value: totalCredits, icon: <TollTwoTone />, colorl: "#f4aed2", colord: "#ab0057" },
-  //   { name: "Education Debt", value: eduDebt, icon: <ClassTwoTone />, colorl: "#fed4ac", colord: "#e7540f" },
-  //   { name: "GPA", value: gpa, icon: <SchoolTwoTone />, colorl: "#c9ffc9", colord: "#57ba6b" },
-  // ]
 
   const cardRootStyle = {
     p: "15px",
@@ -82,7 +79,7 @@ const Dashboard = () => {
   }
 
   const getTranscript = async () => {
-    await getStudRes("transcript");
+    await getStudRes("transcript", true);
     try {
       const homeJson = JSON.parse(localStorage.getItem("home") || "{}").home;
       if (homeJson != undefined) {
@@ -96,10 +93,12 @@ const Dashboard = () => {
       if (json != undefined) {
         setClassCount(Object.entries(json.semesters || {}).length);
         setTotalCredits(Number(json.total_earned_credits));
-        setGpa(Number((Number(json.total_gpa || 0) / 100 * 5).toFixed(2)));
+        setGpa(Number((Number(json.total_gpa || 0) / 100 * 4).toFixed(2)));
+        setDashLoading(false);
       }
     } catch (e) {
-      console.error(e);
+      logout();
+      navigate("/logout");
     }
   }
 
@@ -132,31 +131,38 @@ const Dashboard = () => {
         p: "10px",
       }}>
         {infoCards.map(infoCard => (
-          <Card sx={cardRootStyle}>
-            <Stack sx={infoCardStyle}>
-              <Avatar className="card-logo" sx={{
-                backgroundColor: theme.palette.primary.dark, float: "left", width: {
-                  xs: "32px",
-                  sm: "64px",
-                },
-                height: {
-                  xs: "32px",
-                  sm: "64px",
-                }
-              }}>
-                {cloneElement(infoCard.icon, {
-                  sx: {
-                    color: theme.palette.primary.main, fontSize: {
-                      xs: "18px",
-                      sm: "36px",
-                    }
+          <>
+          {
+            dashLoading ?
+            <Skeleton variant="rounded" sx={cardRootStyle} />
+            :
+            <Card sx={cardRootStyle}>
+              <Stack sx={infoCardStyle}>
+                <Avatar className="card-logo" sx={{
+                  backgroundColor: theme.palette.primary.dark, float: "left", width: {
+                    xs: "32px",
+                    sm: "64px",
+                  },
+                  height: {
+                    xs: "32px",
+                    sm: "64px",
                   }
-                })}
-              </Avatar>
-              <Typography fontSize="inherit" textAlign="center">{infoCard.name}</Typography>
-            </Stack>
-            <Typography fontSize="inherit" fontWeight="bold">{infoCard.value}</Typography>
-          </Card>
+                }}>
+                  {cloneElement(infoCard.icon, {
+                    sx: {
+                      color: theme.palette.primary.main, fontSize: {
+                        xs: "18px",
+                        sm: "36px",
+                      }
+                    }
+                  })}
+                </Avatar>
+                <Typography fontSize="inherit" textAlign="center">{infoCard.name}</Typography>
+              </Stack>
+              <Typography fontSize="inherit" fontWeight="bold">{infoCard.value}</Typography>
+            </Card>
+          }
+          </>
         ))}
       </Stack>
       <DateCalendar readOnly />
