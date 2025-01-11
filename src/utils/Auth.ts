@@ -1,16 +1,6 @@
 import { createContext, useContext } from "react";
 import Cookies from "universal-cookie";
-
-export interface AuthContextType {
-  name: string;
-  authed: boolean;
-  login: (student_id: number, password: string) => Promise<void>;
-  logout: () => Promise<void>;
-  imageURL: string;
-  verifiedAuth: () => void;
-  setImage: (url: string) => void;
-  setName: (name: string) => void;
-}
+import { AuthContextType } from "./Interfaces";
 
 const cookies = new Cookies(null, { path: "/" });
 

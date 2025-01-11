@@ -1,7 +1,8 @@
-import { createTheme, Theme } from "@mui/material";
+import { createTheme } from "@mui/material";
 import { grey } from "@mui/material/colors";
 
 import { createContext, useContext } from "react";
+import { ThemeContextType } from "./Interfaces";
 
 declare module '@mui/material/styles' {
   interface Palette {
@@ -80,13 +81,6 @@ export const highlightedTheme = createTheme({
     },
   },
 });
-
-export interface ThemeContextType {
-  theme: Theme;
-  isDark: () => boolean;
-  toggleTheme: () => void;
-  setDark: (dark: boolean) => void;
-}
 
 export const ThemeContext = createContext<ThemeContextType | undefined>(
   undefined,
