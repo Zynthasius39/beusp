@@ -1,4 +1,5 @@
 import { fetchPhoto, fetchStudGrades, fetchStudRes, fetchStudStatus } from "./Api";
+import { CourseJson, GradesJson } from "./Interfaces";
 
 export const convertBlobToBase64 = (blob: Blob) => {
     return new Promise((resolve, reject) => {
@@ -54,7 +55,7 @@ export const getStudStatus = async () => {
 
 export const gradeToMark = (grade: number) => {
     let mark;
-    if (grade == 0) mark = " "
+    if (grade == -1) mark = " "
     else if (grade == 100) mark = "A+"
     else if (grade > 90) mark = "A"
     else if (grade > 80) mark = "B"
@@ -68,7 +69,7 @@ export const gradeToMark = (grade: number) => {
 export const colorOfMark = (grade: number, isDark: boolean) => {
     let color;
     if (isDark) {
-        if (grade == 0) color = "#202020"
+        if (grade == -1) color = "#202020"
         else if (grade == 100) color = "#149361"
         else if (grade > 90) color = "#4f9314"
         else if (grade > 80) color = "#789314"
@@ -77,7 +78,7 @@ export const colorOfMark = (grade: number, isDark: boolean) => {
         else if (grade > 50) color = "#935414"
         else if (grade > 40) color = "#931414"
     } else {
-        if (grade == 0) color = "#dddddd"
+        if (grade == -1) color = "#dddddd"
         else if (grade == 100) color = "#80ea9e"
         else if (grade > 90) color = "#abea80"
         else if (grade > 80) color = "#c1ea80"
@@ -87,4 +88,45 @@ export const colorOfMark = (grade: number, isDark: boolean) => {
         else if (grade > 40) color = "#ea8080"
     }
     return color;
+}
+
+export const gradeScale = (grade: number, column: string, oldScale: boolean, round: boolean): string => {
+    if (grade == -1)
+        return ""
+    let gradeS: number = grade;
+    if (oldScale)
+        switch (column) {
+            case "act1": gradeS = grade / 15 * 100; break
+            case "act2": gradeS = grade / 15 * 100; break
+            case "att": gradeS = grade * 10; break
+            case "iw": gradeS = grade * 10; break
+            case "final": gradeS = grade * 2; break
+            default: break
+    }
+    gradeS = parseFloat(gradeS.toFixed(2));
+    return String(round ? gradeRound(gradeS) : gradeS);
+}
+
+export const calculateSum = (json: CourseJson, round: boolean) => {
+    if (round)
+        return gradeRound(json.act1) + 
+        gradeRound(json.act2) +
+        gradeRound(json.att) +
+        gradeRound(json.iw) +
+        gradeRound(json.final);
+    else {
+        return parseFloat((json.act1 +
+        json.act2 +
+        json.att +
+        json.iw +
+        json.final).toFixed(2));
+    }
+}
+
+export const gradeRound = (grade: number) => {
+    const fGrade = Math.floor(grade);
+    if (grade - fGrade > 0.5)
+        return Math.ceil(grade);
+    else
+        return fGrade;
 }
