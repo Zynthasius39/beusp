@@ -1,4 +1,4 @@
-import { Autocomplete, Avatar, Checkbox, FormControlLabel, FormGroup, Skeleton, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, ToggleButton, ToggleButtonGroup, Tooltip } from "@mui/material";
+import { Autocomplete, Avatar, Checkbox, FormControlLabel, FormGroup, Paper, Skeleton, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, ToggleButton, ToggleButtonGroup, Tooltip } from "@mui/material";
 import { useAuth } from "../utils/Auth";
 import { calculateSum, colorOfMark, getStudGrades, getStudRes, getStudStatus, gradeScale, gradeToMark } from "../utils/StudentLogic";
 import { ChangeEvent, MouseEvent, SyntheticEvent, useEffect, useState } from "react";
@@ -10,7 +10,7 @@ import { Calculate } from "@mui/icons-material";
 
 export default function Grades() {
   const { authed, logout } = useAuth();
-  const { theme, isDark } = useTheme();
+  const { isDark } = useTheme();
   const [year, setYear] = useState<string | null>(null);
   const [semester, setSemester] = useState("1");
   const [options, setOptions] = useState<{ [year: string]: boolean }>({});
@@ -34,7 +34,6 @@ export default function Grades() {
   const getGrades = async () => {
     try {
       const json = await getStudRes("grades", false);
-      console.log(json);
       if (json !== null) {
         const options: { [year: string]: boolean } = {};
         if (json.can_request_all)
@@ -165,20 +164,20 @@ export default function Grades() {
       <Stack gap={2} flexDirection="row" alignItems="center" flexWrap="wrap">
         <FormGroup>
           <Tooltip title="Use old grading scale">
-            <FormControlLabel control={<Checkbox checked={oldScale} onChange={handleScaleCheck}/>} label="100-Point Scale" />
+            <FormControlLabel control={<Checkbox checked={oldScale} onChange={handleScaleCheck} />} label="100-Point Scale" />
           </Tooltip>
         </FormGroup>
         <FormGroup>
           <Tooltip title="Round grades according to official grading scheme. (Only works with grades before new grading scale)">
-          <FormControlLabel control={<Checkbox checked={roundGrade} onChange={handleRoundCheck}/>} label="Round Grades" />
+            <FormControlLabel control={<Checkbox checked={roundGrade} onChange={handleRoundCheck} />} label="Round Grades" />
           </Tooltip>
         </FormGroup>
         <FormGroup>
           <Tooltip title="Automatically calculate entrance points">
-            <FormControlLabel control={<Checkbox checked={calcGrade} onChange={handleCalcCheck}/>} label="Calculate Grades" />
+            <FormControlLabel control={<Checkbox checked={calcGrade} onChange={handleCalcCheck} />} label="Calculate Grades" />
           </Tooltip>
         </FormGroup>
-        <BotDialog botEnabled={botEnabled} setBotEnabled={setBotEnabled}/>
+        <BotDialog botEnabled={botEnabled} setBotEnabled={setBotEnabled} />
       </Stack>
       {
         gradeTLoading ?
@@ -216,10 +215,21 @@ export default function Grades() {
                     <TableCell sx={tableCellStyle}>{gradeScale(course.iw, "iw", oldScale, roundGrade)}</TableCell>
                     <TableCell sx={tableCellStyle}>{gradeScale(course.final, "final", oldScale, roundGrade)}</TableCell>
                     <TableCell sx={tableCellStyle}>{calcGrade || course.final !== -1 ? calculateSum(course, roundGrade) : ""}</TableCell>
-                    <TableCell><Avatar sx={{
-                      color: theme.palette.primary.contrastText,
-                      backgroundColor: colorOfMark(course.sum, isDark()),
-                    }}>{gradeToMark(course.sum)}{calcGrade && course.sum === -1 && <Calculate />}</Avatar></TableCell>
+                    <TableCell>
+                      <Paper elevation={5} sx={{borderRadius: "50%"}}>
+                        <Avatar sx={{
+                          fontSize: 20,
+                          fontWeight: "bold",
+                          color: colorOfMark(course.sum, !isDark()),
+                          backgroundColor: colorOfMark(course.sum, isDark()),
+                        }}
+                        >
+                          {gradeToMark(course.sum)}{calcGrade && course.sum === -1 && <Calculate sx={{
+                            color: isDark() ? "#CCCCCC" : "#666666"
+                          }} />}
+                        </Avatar>
+                      </Paper>
+                    </TableCell>
                   </TableRow>)}
               </TableBody>
             </Table>
