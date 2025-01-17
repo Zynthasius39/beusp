@@ -1,5 +1,5 @@
 import { fetchPhoto, fetchStudGrades, fetchStudRes, fetchStudStatus } from "./Api";
-import { CourseJson, GradesJson } from "./Interfaces";
+import { CourseJson } from "./Interfaces";
 
 export const convertBlobToBase64 = (blob: Blob) => {
     return new Promise((resolve, reject) => {
@@ -90,37 +90,43 @@ export const colorOfMark = (grade: number, isDark: boolean) => {
     return color;
 }
 
-export const gradeScale = (grade: number, column: string, oldScale: boolean, round: boolean): string => {
-    if (grade == -1)
-        return ""
-    let gradeS: number = grade;
-    if (oldScale)
-        switch (column) {
-            case "act1": gradeS = grade / 15 * 100; break
-            case "act2": gradeS = grade / 15 * 100; break
-            case "att": gradeS = grade * 10; break
-            case "iw": gradeS = grade * 10; break
-            case "final": gradeS = grade * 2; break
-            default: break
-    }
-    gradeS = parseFloat(gradeS.toFixed(2));
-    return String(round ? gradeRound(gradeS) : gradeS);
+export const gradeScale = (course: CourseJson, oldScale: boolean, round: boolean): CourseJson => {
+    const act3_enabled = typeof course.act3 !== "undefined";
+    const courseG = Object.assign({}, course);
+    if (courseG.act1 !== -1)
+        courseG.act1 = parseFloat((oldScale ? Math.round(courseG.act1 / (act3_enabled ? 10 : 15) * 100) : round ? gradeRound(courseG.act1) : courseG.act1).toFixed(2));
+    if (courseG.act2 !== -1)
+        courseG.act2 = parseFloat((oldScale ? Math.round(courseG.act2 / (act3_enabled ? 10 : 15) * 100) : round ? gradeRound(courseG.act2) : course.act2).toFixed(2));
+    if (courseG.act3 !== -1 && act3_enabled)
+        courseG.act3 = parseFloat((oldScale ? courseG.act3 * 10 : round ? gradeRound(courseG.act3) : courseG.act3).toFixed(2));
+    if (courseG.att !== -1)
+        courseG.att = parseFloat((oldScale ? courseG.att * 10 : round ? gradeRound(course.att) : courseG.att).toFixed(2));
+    if (courseG.iw !== -1)
+        courseG.iw = parseFloat((oldScale ? courseG.iw * 10 : round ? gradeRound(course.iw) : courseG.iw).toFixed(2));
+    if (courseG.final !== -1)
+        courseG.final = parseFloat((oldScale ? courseG.final * 2 : round ? gradeRound(course.final) : courseG.final).toFixed(2));
+    return courseG;
 }
 
 export const calculateSum = (json: CourseJson, round: boolean) => {
-    if (round)
-        return gradeRound(json.act1) + 
+    let grade;
+    if (round) {
+        grade = gradeRound(json.act1) + 
         gradeRound(json.act2) +
         gradeRound(json.att) +
         gradeRound(json.iw) +
         gradeRound(json.final);
-    else {
-        return parseFloat((json.act1 +
-        json.act2 +
-        json.att +
-        json.iw +
-        json.final).toFixed(2));
-    }
+    } else {
+        grade = parseFloat((json.act1 +
+            json.act2 +
+            json.att +
+            json.iw +
+            json.final).toFixed(2));
+        }
+    if (grade < 0)
+        return 0;
+    else
+        return grade;
 }
 
 export const gradeRound = (grade: number) => {

@@ -17,6 +17,7 @@ export default function Grades() {
   const [ssAvaliable, setSsAvaliable] = useState(false);
   const [isAll, setIsAll] = useState(false);
   const [oldScale, setOldScale] = useState(false);
+  const [act3Enabled, setAct3Enabled] = useState(false);
   const [calcGrade, setCalcGrade] = useState(true);
   const [roundGrade, setRoundGrade] = useState(false);
   const [gradesLoading, setGradesLoading] = useState(true);
@@ -26,6 +27,7 @@ export default function Grades() {
   const navigate = useNavigate();
 
   const tableCellStyle = {
+    width: 35,
     fontSize: 18,
     fontWeight: "bold",
     textAlign: "center",
@@ -92,6 +94,10 @@ export default function Grades() {
 
   const handleCalcCheck = (_: ChangeEvent<HTMLInputElement>, v: boolean) => {
     setCalcGrade(v);
+  }
+
+  const handleAct3Check = (_: ChangeEvent<HTMLInputElement>, v: boolean) => {
+    setAct3Enabled(v);
   }
 
   useEffect(() => {
@@ -177,6 +183,11 @@ export default function Grades() {
             <FormControlLabel control={<Checkbox checked={calcGrade} onChange={handleCalcCheck} />} label="Calculate Grades" />
           </Tooltip>
         </FormGroup>
+        <FormGroup>
+          <Tooltip title="Show non-existing SDF3 grades">
+            <FormControlLabel control={<Checkbox checked={act3Enabled} onChange={handleAct3Check} />} label="Show SDF3" />
+          </Tooltip>
+        </FormGroup>
         <BotDialog botEnabled={botEnabled} setBotEnabled={setBotEnabled} />
       </Stack>
       {
@@ -193,44 +204,55 @@ export default function Grades() {
             <Table>
               <TableHead>
                 <TableRow>
-                  <TableCell>Course Code</TableCell>
+                  <TableCell sx={{width: 35}}>Course Code</TableCell>
                   <TableCell>Course Name</TableCell>
-                  <TableCell>SDF1</TableCell>
-                  <TableCell>SDF2</TableCell>
-                  <TableCell>ATT</TableCell>
-                  <TableCell>IW</TableCell>
-                  <TableCell>Exam</TableCell>
-                  <TableCell>Sum</TableCell>
-                  <TableCell>Mark</TableCell>
+                  <TableCell sx={{width: 35}}>SDF1</TableCell>
+                  <TableCell sx={{width: 35}}>SDF2</TableCell>
+                  {
+                    act3Enabled &&
+                    <TableCell sx={{width: 35}}>SDF3</TableCell>
+                  }
+                  <TableCell sx={{width: 35}}>ATT</TableCell>
+                  <TableCell sx={{width: 35}}>IW</TableCell>
+                  <TableCell sx={{width: 35}}>Exam</TableCell>
+                  <TableCell sx={{width: 35}}>Sum</TableCell>
+                  <TableCell sx={{width: 35}}>Mark</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
-                {Object.entries(gradesT || {}).map(([code, course]: [code: string, course: CourseJson]) =>
+                {Object.entries(gradesT || {}).map(([code, course]: [code: string, course: CourseJson]) => {
+                  const courseG = gradeScale(course, oldScale, roundGrade);
+                  return (
                   <TableRow>
                     <TableCell height={36}>{code}</TableCell>
                     <TableCell width={512}>{course.course_name}</TableCell>
-                    <TableCell sx={tableCellStyle}>{gradeScale(course.act1, "act1", oldScale, roundGrade)}</TableCell>
-                    <TableCell sx={tableCellStyle}>{gradeScale(course.act2, "act2", oldScale, roundGrade)}</TableCell>
-                    <TableCell sx={tableCellStyle}>{gradeScale(course.att, "att", oldScale, roundGrade)}</TableCell>
-                    <TableCell sx={tableCellStyle}>{gradeScale(course.iw, "iw", oldScale, roundGrade)}</TableCell>
-                    <TableCell sx={tableCellStyle}>{gradeScale(course.final, "final", oldScale, roundGrade)}</TableCell>
-                    <TableCell sx={tableCellStyle}>{calcGrade || course.final !== -1 ? calculateSum(course, roundGrade) : ""}</TableCell>
+                    <TableCell sx={tableCellStyle}>{courseG.act1 === -1 ? "" : courseG.act1}</TableCell>
+                    <TableCell sx={tableCellStyle}>{courseG.act2 === -1 ? "" : courseG.act2}</TableCell>
+                    {
+                      act3Enabled &&
+                      <TableCell sx={tableCellStyle}>{courseG.act3 === -1 ? "" : courseG.act3}</TableCell>
+                    }
+                    <TableCell sx={tableCellStyle}>{courseG.att === -1 ? "" : courseG.att}</TableCell>
+                    <TableCell sx={tableCellStyle}>{courseG.iw === -1 ? "" : courseG.iw}</TableCell>
+                    <TableCell sx={tableCellStyle}>{courseG.final === -1 ? "" : courseG.final}</TableCell>
+                    <TableCell sx={tableCellStyle}>{calcGrade || courseG.final !== -1 ? calculateSum(course, roundGrade) : ""}</TableCell>
                     <TableCell>
-                      <Paper elevation={5} sx={{borderRadius: "50%"}}>
+                      <Paper elevation={5} sx={{borderRadius: "50%", width: 40}}>
                         <Avatar sx={{
                           fontSize: 20,
                           fontWeight: "bold",
-                          color: colorOfMark(course.sum, !isDark()),
-                          backgroundColor: colorOfMark(course.sum, isDark()),
+                          color: colorOfMark(courseG.sum, !isDark()),
+                          backgroundColor: colorOfMark(courseG.sum, isDark()),
                         }}
                         >
-                          {gradeToMark(course.sum)}{calcGrade && course.sum === -1 && <Calculate sx={{
+                          {gradeToMark(courseG.sum)}{calcGrade && courseG.sum === -1 && <Calculate sx={{
                             color: isDark() ? "#CCCCCC" : "#666666"
                           }} />}
                         </Avatar>
                       </Paper>
                     </TableCell>
-                  </TableRow>)}
+                  </TableRow>)
+                })}
               </TableBody>
             </Table>
           </TableContainer>

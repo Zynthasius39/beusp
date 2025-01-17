@@ -87,10 +87,7 @@ const Navbar = (props: { name: string; page: string }) => {
           {props.page}
         </Typography>
         <MaterialUISwitch
-          sx={{ m: 1, display: {
-            xs: "none",
-            sm: "inherit",
-          } }}
+          sx={{ m: 1 }}
           defaultChecked
           checked={isDark()}
           onChange={handleThemeSwitch}

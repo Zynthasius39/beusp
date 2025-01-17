@@ -18,7 +18,7 @@ export interface ThemeContextType {
   setDark: (dark: boolean) => void;
 }
 
-export interface GradesJson extends CourseJson {
+export interface GradesJson {
   course_code: CourseJson
 }
 
@@ -26,6 +26,7 @@ export interface CourseJson {
   course_name: string,
   act1: number,
   act2: number,
+  act3: number,
   att: number,
   iw: number,
   final: number,
