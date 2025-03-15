@@ -81,9 +81,9 @@ const Dashboard = () => {
   const getTranscript = async () => {
     await getStudRes("transcript", true);
     try {
-      const homeJson = JSON.parse(localStorage.getItem("home") || "{}").home;
+      const homeJson = JSON.parse(localStorage.getItem("home") || "{}");
       if (homeJson != undefined) {
-        Object.entries(homeJson.student_info).map(([key, value]) => {
+        Object.entries(homeJson.studentInfo).map(([key, value]) => {
           if (key.includes("Education debt")) {
             setEduDebt(String(value));
           }
@@ -92,8 +92,8 @@ const Dashboard = () => {
       const json = JSON.parse(localStorage.getItem("transcript") || "{}").transcript;
       if (json != undefined) {
         setClassCount(Object.entries(json.semesters || {}).length);
-        setTotalCredits(Number(json.total_earned_credits));
-        setGpa(Number((Number(json.total_gpa || 0) / 100 * 4).toFixed(2)));
+        setTotalCredits(Number(json.totalEarnedCredits));
+        setGpa(Number((Number(json.totalGpa || 0) / 100 * 4).toFixed(2)));
         setDashLoading(false);
       }
     } catch (e) {
@@ -103,7 +103,7 @@ const Dashboard = () => {
   }
 
   const getHomeStudInfo = () => {
-    const json = JSON.parse(localStorage.getItem("home") || "{}").home?.student_info;
+    const json = JSON.parse(localStorage.getItem("home") || "{}").home?.studentInfo;
     if (json != null) {
       return json;
     }

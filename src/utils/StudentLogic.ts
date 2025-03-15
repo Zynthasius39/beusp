@@ -99,8 +99,8 @@ export const gradeScale = (course: CourseJson, oldScale: boolean, round: boolean
         courseG.act2 = parseFloat((oldScale ? Math.round(courseG.act2 / (act3_enabled ? 10 : 15) * 100) : round ? gradeRound(courseG.act2) : course.act2).toFixed(2));
     if (courseG.act3 !== -1 && act3_enabled)
         courseG.act3 = parseFloat((oldScale ? courseG.act3 * 10 : round ? gradeRound(courseG.act3) : courseG.act3).toFixed(2));
-    if (courseG.att !== -1)
-        courseG.att = parseFloat((oldScale ? courseG.att * 10 : round ? gradeRound(course.att) : courseG.att).toFixed(2));
+    if (courseG.attendance !== -1)
+        courseG.attendance = parseFloat((oldScale ? courseG.attendance * 10 : round ? gradeRound(course.attendance) : courseG.attendance).toFixed(2));
     if (courseG.iw !== -1)
         courseG.iw = parseFloat((oldScale ? courseG.iw * 10 : round ? gradeRound(course.iw) : courseG.iw).toFixed(2));
     if (courseG.final !== -1)
@@ -113,13 +113,13 @@ export const calculateSum = (json: CourseJson, round: boolean) => {
     if (round) {
         grade = gradeRound(json.act1) + 
         gradeRound(json.act2) +
-        gradeRound(json.att) +
+        gradeRound(json.attendance) +
         gradeRound(json.iw) +
         gradeRound(json.final);
     } else {
         grade = parseFloat((json.act1 +
             json.act2 +
-            json.att +
+            json.attendance +
             json.iw +
             json.final).toFixed(2));
         }

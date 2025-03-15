@@ -3,16 +3,15 @@ const port = "5000";
 const url = `http://${ip}:${port}/api`;
 
 export async function auth(student_id: string, password: string) {
-  const response = await fetch(url + "/auth", {
-    method: "POST",
+  const response = await fetch(url + "/auth?" + new URLSearchParams({
+      studentId: student_id,
+      password: password,
+    }).toString(), {
+    method: "GET",
     credentials: "include",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({
-      student_id: student_id,
-      password: password,
-    }),
   });
   if (!response.ok) {
     throw new Error(String(response.status));
@@ -21,7 +20,7 @@ export async function auth(student_id: string, password: string) {
 
 export async function unauth() {
   const response = await fetch(url + "/logout", {
-    method: "POST",
+    method: "GET",
     credentials: "include",
     headers: {
       "Content-Type": "application/json",
@@ -34,7 +33,7 @@ export async function unauth() {
 
 export async function verify() {
   const response = await fetch(url + "/verify", {
-    method: "POST",
+    method: "GET",
     credentials: "include",
     headers: {
       "Content-Type": "application/json",
@@ -47,11 +46,11 @@ export async function verify() {
 }
 
 export async function fetchPhoto() {
-  const response = await fetch(url + "/studphoto", {
+  const response = await fetch(url + "/resource/studphoto", {
     method: "GET",
     credentials: "include",
     headers: {
-      "Content-Type": "application/json",
+      "Content-Type": "image/jpeg",
     },
   });
   if (!response.ok) {

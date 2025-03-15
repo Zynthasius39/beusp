@@ -14,7 +14,7 @@ export default function Announces() {
 
   const getAnnounces = async () => {
     try {
-      const json = (await getStudRes("announces", false)).announces;
+      const json = (await getStudRes("announces", false));
       if (json != null) {
         setAnnouncesT(json);
       }

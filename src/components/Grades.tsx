@@ -37,12 +37,12 @@ export default function Grades() {
     try {
       const json = await getStudRes("grades", false);
       if (json !== null) {
-        const options: { [year: string]: boolean } = {};
-        if (json.can_request_all)
+        const options: { [year: string]: boolean} = {};
+        if (json.canRequestAll)
           options["ALL"] = true;
-        json.grade_options.forEach((o: { year: string, semester: string }) => {
+        json.entries.forEach((o: {year: string, semester: number}) => {
           if (!options[o.year])
-            options[o.year] = o.semester === "2";
+            options[o.year] = o.semester === 2;
         });
         const offset = options["ALL"] ? 2 : 1;
         const keys = Object.keys(options);
@@ -60,7 +60,7 @@ export default function Grades() {
   const getGradesTable = async (year: string, semester: string) => {
     const json = await getStudGrades(String(year), semester);
     if (json != null) {
-      setGradesT(json.grades);
+      setGradesT(json);
       setGradeTLoading(false);
     }
   }
@@ -232,7 +232,7 @@ export default function Grades() {
                       act3Enabled &&
                       <TableCell sx={tableCellStyle}>{courseG.act3 === -1 ? "" : courseG.act3}</TableCell>
                     }
-                    <TableCell sx={tableCellStyle}>{courseG.att === -1 ? "" : courseG.att}</TableCell>
+                    <TableCell sx={tableCellStyle}>{courseG.attendance === -1 ? "" : courseG.attendance}</TableCell>
                     <TableCell sx={tableCellStyle}>{courseG.iw === -1 ? "" : courseG.iw}</TableCell>
                     <TableCell sx={tableCellStyle}>{courseG.final === -1 ? "" : courseG.final}</TableCell>
                     <TableCell sx={tableCellStyle}>{calcGrade || courseG.final !== -1 ? calculateSum(course, roundGrade) : ""}</TableCell>

@@ -19,7 +19,7 @@ export interface ThemeContextType {
 }
 
 export interface GradesJson {
-  course_code: CourseJson
+  courseCode: CourseJson
 }
 
 export interface CourseJson {
@@ -27,7 +27,7 @@ export interface CourseJson {
   act1: number,
   act2: number,
   act3: number,
-  att: number,
+  attendance: number,
   iw: number,
   final: number,
   sum: number,
