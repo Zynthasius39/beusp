@@ -1,6 +1,6 @@
-const ip = "10.0.10.75";
+const ip = "localhost";
 const port = "5000";
-const url = `http://${ip}:${port}/api`;
+const url = `http://${ip}:${port}`;
 
 export async function auth(student_id: string, password: string) {
   const response = await fetch(url + "/auth?" + new URLSearchParams({
@@ -13,8 +13,8 @@ export async function auth(student_id: string, password: string) {
       "Content-Type": "application/json",
     },
   });
-  if (!response.ok) {
-    throw new Error(String(response.status));
+  if (isUnauthorized(response.status)) {
+    throw new UnauthorizedApiError(String(response.status));
   }
 }
 
@@ -26,8 +26,8 @@ export async function unauth() {
       "Content-Type": "application/json",
     },
   });
-  if (!response.ok) {
-    throw new Error(String(response.status));
+  if (isUnauthorized(response.status)) {
+    throw new UnauthorizedApiError(String(response.status));
   }
 }
 
@@ -39,7 +39,7 @@ export async function verify() {
       "Content-Type": "application/json",
     },
   });
-  if (!response.ok) {
+  if (isUnauthorized(response.status)) {
     return false;
   }
   return true;
@@ -53,8 +53,8 @@ export async function fetchPhoto() {
       "Content-Type": "image/jpeg",
     },
   });
-  if (!response.ok) {
-    throw new Error(String(response.status));
+  if (isUnauthorized(response.status)) {
+    throw new UnauthorizedApiError(String(response.status));
   }
   return await response.blob();
 }
@@ -64,9 +64,7 @@ export async function fetchStudRes(res: string) {
     method: "GET",
     credentials: "include",
   });
-  if (!response.ok) {
-    throw new Error(String(response.status));
-  }
+  checkResponseStatus(response);
   return await response.json();
 }
 
@@ -75,19 +73,57 @@ export async function fetchStudGrades(year: string, semester: string) {
     method: "GET",
     credentials: "include",
   });
-  if (!response.ok) {
-    throw new Error(String(response.status));
+  if (isUnauthorized(response.status)) {
+    throw new UnauthorizedApiError(String(response.status));
   }
   return await response.json();
 }
 
 export async function fetchStudStatus() {
-  const response = await fetch(`${url}/resource/status`, {
+  const response = await fetch(`${url}/status`, {
     method: "GET",
     credentials: "include",
   });
-  if (!response.ok) {
-    throw new Error(String(response.status));
+  if (isUnauthorized(response.status)) {
+    throw new UnauthorizedApiError(String(response.status));
   }
   return await response.json();
+}
+
+const isUnauthorized = (status: number) => {
+  return [400, 401].includes(status);
+}
+
+const isServerFault = (status: number) => {
+  return [500, 501, 502].includes(status);
+}
+
+const checkResponseStatus = (response: Response) => {
+  if (isUnauthorized(response.status))
+    throw new UnauthorizedApiError(String(response.status));
+  else if (isServerFault(response.status))
+    throw new ServerFaultApiError(String(response.status));
+  else if (!response.ok)
+    throw new UnknownApiError(String(response.status));
+}
+
+export class UnauthorizedApiError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'UnauthorizedApiError';
+  }
+}
+
+export class ServerFaultApiError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'ServerFaultError';
+  }
+}
+
+export class UnknownApiError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'ServerFaultError';
+  }
 }

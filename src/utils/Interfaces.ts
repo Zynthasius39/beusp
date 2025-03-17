@@ -23,7 +23,7 @@ export interface GradesJson {
 }
 
 export interface CourseJson {
-  course_name: string,
+  courseName: string,
   act1: number,
   act2: number,
   act3: number,

@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import { CourseJson, GradesJson } from "../utils/Interfaces";
 import BotDialog from "./BotDialog";
 import { Calculate } from "@mui/icons-material";
+import { UnauthorizedApiError } from "../utils/Api";
 
 export default function Grades() {
   const { authed, logout } = useAuth();
@@ -52,8 +53,12 @@ export default function Grades() {
         setGradesLoading(false);
       }
     } catch (e) {
-      logout();
-      navigate("/login");
+      if (e instanceof UnauthorizedApiError) {
+        logout();
+        navigate("/login");
+      } else {
+        throw e;
+      }
     }
   }
 
@@ -67,7 +72,7 @@ export default function Grades() {
 
   const getBotStatus = async () => {
     const json = await getStudStatus();
-    if (json?.status.bot_enabled) {
+    if (json?.botEnabled) {
       setBotEnabled(true);
     }
   }
@@ -206,11 +211,11 @@ export default function Grades() {
                 <TableRow>
                   <TableCell sx={{width: 35}}>Course Code</TableCell>
                   <TableCell>Course Name</TableCell>
-                  <TableCell sx={{width: 35}}>SDF1</TableCell>
-                  <TableCell sx={{width: 35}}>SDF2</TableCell>
+                  <TableCell sx={{width: 35}}>ACT1</TableCell>
+                  <TableCell sx={{width: 35}}>ACT2</TableCell>
                   {
                     act3Enabled &&
-                    <TableCell sx={{width: 35}}>SDF3</TableCell>
+                    <TableCell sx={{width: 35}}>ACT3</TableCell>
                   }
                   <TableCell sx={{width: 35}}>ATT</TableCell>
                   <TableCell sx={{width: 35}}>IW</TableCell>
@@ -225,7 +230,7 @@ export default function Grades() {
                   return (
                   <TableRow>
                     <TableCell height={36}>{code}</TableCell>
-                    <TableCell width={512}>{course.course_name}</TableCell>
+                    <TableCell width={512}>{course.courseName}</TableCell>
                     <TableCell sx={tableCellStyle}>{courseG.act1 === -1 ? "" : courseG.act1}</TableCell>
                     <TableCell sx={tableCellStyle}>{courseG.act2 === -1 ? "" : courseG.act2}</TableCell>
                     {

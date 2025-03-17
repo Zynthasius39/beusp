@@ -18,6 +18,7 @@ import { cloneElement, useEffect, useState } from "react";
 import { getStudRes } from "../utils/StudentLogic";
 import { useAuth } from "../utils/Auth";
 import { useNavigate } from "react-router-dom";
+import { UnauthorizedApiError } from "../utils/Api";
 
 const Dashboard = () => {
   const { theme } = useTheme();
@@ -89,7 +90,7 @@ const Dashboard = () => {
           }
         });
       }
-      const json = JSON.parse(localStorage.getItem("transcript") || "{}").transcript;
+      const json = JSON.parse(localStorage.getItem("transcript") || "{}");
       if (json != undefined) {
         setClassCount(Object.entries(json.semesters || {}).length);
         setTotalCredits(Number(json.totalEarnedCredits));
@@ -97,8 +98,12 @@ const Dashboard = () => {
         setDashLoading(false);
       }
     } catch (e) {
-      logout();
-      navigate("/logout");
+      if (e instanceof UnauthorizedApiError) {
+        logout();
+        navigate("/logout");
+      } else {
+        throw e;
+      }
     }
   }
 
