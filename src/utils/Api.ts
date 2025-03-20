@@ -1,12 +1,12 @@
 const ip = "localhost";
 const port = "5000";
-const url = `http://${ip}:${port}`;
+export const url = `http://${ip}:${port}`;
 
 export async function auth(student_id: string, password: string) {
   const response = await fetch(url + "/auth?" + new URLSearchParams({
-      studentId: student_id,
-      password: password,
-    }).toString(), {
+    studentId: student_id,
+    password: password,
+  }).toString(), {
     method: "GET",
     credentials: "include",
     headers: {
@@ -45,49 +45,22 @@ export async function verify() {
   return true;
 }
 
-export async function fetchPhoto() {
-  const response = await fetch(url + "/resource/studphoto", {
-    method: "GET",
-    credentials: "include",
-    headers: {
-      "Content-Type": "image/jpeg",
-    },
+export async function fetchCached(url: string, init = {}) {
+  const request = new Request(url, init);
+  return caches.match(request).then((response) => {
+    if (response !== undefined && response.status === 200) {
+      return response;
+    } else {
+      return fetch(request)
+        .then((response) => {
+          let responseClone = response.clone();
+          caches.open("v1").then((cache) => {
+            cache.put(request, responseClone);
+          });
+          return response;
+        });
+    }
   });
-  if (isUnauthorized(response.status)) {
-    throw new UnauthorizedApiError(String(response.status));
-  }
-  return await response.blob();
-}
-
-export async function fetchStudRes(res: string) {
-  const response = await fetch(`${url}/resource/${res}`, {
-    method: "GET",
-    credentials: "include",
-  });
-  checkResponseStatus(response);
-  return await response.json();
-}
-
-export async function fetchStudGrades(year: string, semester: string) {
-  const response = await fetch(year === "ALL" ? `${url}/resource/grades/all` : `${url}/resource/grades/${year}/${semester}`, {
-    method: "GET",
-    credentials: "include",
-  });
-  if (isUnauthorized(response.status)) {
-    throw new UnauthorizedApiError(String(response.status));
-  }
-  return await response.json();
-}
-
-export async function fetchStudStatus() {
-  const response = await fetch(`${url}/status`, {
-    method: "GET",
-    credentials: "include",
-  });
-  if (isUnauthorized(response.status)) {
-    throw new UnauthorizedApiError(String(response.status));
-  }
-  return await response.json();
 }
 
 const isUnauthorized = (status: number) => {
@@ -98,7 +71,7 @@ const isServerFault = (status: number) => {
   return [500, 501, 502].includes(status);
 }
 
-const checkResponseStatus = (response: Response) => {
+export const checkResponseStatus = (response: Response) => {
   if (isUnauthorized(response.status))
     throw new UnauthorizedApiError(String(response.status));
   else if (isServerFault(response.status))

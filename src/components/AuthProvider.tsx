@@ -23,14 +23,10 @@ export default function AuthProvider({ children }: { children: ReactNode}) {
   }, [authed]);
 
   const logout = useCallback(async () => {
-    // cookies.remove("StudentID");
-    // cookies.remove("SessionID");
-    // cookies.remove("ImgID");
-    localStorage.removeItem("home");
-    localStorage.removeItem("transcript");
-    localStorage.removeItem("studphoto");
-    localStorage.removeItem("studfullname");
-    localStorage.removeItem("announces");
+    cookies.remove("StudentID");
+    cookies.remove("SessionID");
+    cookies.remove("ImgID");
+    caches.delete("v1");
     setAuthed(false);
   }, [authed]);
 

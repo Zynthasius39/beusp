@@ -22,11 +22,10 @@ import { useTheme } from "../utils/Theme";
 import logo_dark from "../assets/beu_dark.svg";
 import logo_light from "../assets/beu_light.svg";
 import { MaterialUISwitch, PrimaryButton } from "../Components";
-import { getStudRes, getPhoto } from "../utils/StudentLogic";
 import { KeyboardEvent, MouseEvent, useCallback, useEffect, useRef, useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../utils/Auth";
-import { verify } from "../utils/Api";
+import { checkResponseStatus, fetchCached, UnauthorizedApiError, url, verify } from "../utils/Api";
 
 
 export default function Login() {
@@ -42,6 +41,24 @@ export default function Login() {
   const timer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const alertTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
+  const getHome = async () => {
+    await fetchCached(`${url}/resource/home`, {
+      method: "GET",
+      credentials: "include",
+    }).then(response => {
+      checkResponseStatus(response);
+      return response.json()
+    }).then(json => {
+      setName(json?.studentInfo?.fullNamePatronymic?.split(" ")[0]);
+    }).catch(e => {
+      if (e instanceof UnauthorizedApiError) {
+        logout();
+        navigate("/login");
+      } else {
+        console.error(e);
+      }
+    })
+  }
 
   const handleKeyDown = async (event: KeyboardEvent<HTMLDivElement>) => {
     if (event.key === "Enter") {
@@ -82,9 +99,8 @@ export default function Login() {
     }
     try {
       await login(studentId, password);
-      await getStudRes("home", true);
+      await getHome();
       getStudPhoto();
-      setName((localStorage.getItem("studfullname") || "Unauthorized").split(" ")[0]);
       navigate("/");
     } catch (e) {
       console.error("Error occured while authorizing:", e);
@@ -105,37 +121,41 @@ export default function Login() {
   }
 
   const getStudPhoto = async () => {
-    try {
-      setImage(await getPhoto());
-    } catch (error) {
-      console.error("Unable to get Student Photo:", error);
-      showAlert("Unable to get Student Photo: " + String(error), "error");
-    }
+    await fetchCached(`${url}/resource/studphoto`, {
+      method: "GET",
+      credentials: "include",
+      headers: {
+        "Content-Type": "image/jpeg",
+      },
+    }).then(response => {
+      checkResponseStatus(response);
+      return response.blob()
+    }).then(blob => {
+      setImage(URL.createObjectURL(blob));
+    }).catch(e => {
+      if (e instanceof UnauthorizedApiError) {
+        logout();
+        navigate("/login");
+      } else {
+        console.error(e);
+      }
+    })
   }
+
 
   const getComponent = async () => {
     if (!await verify()) {
       logout();
     } else {
       verifiedAuth();
-    }
-    const homeJson = JSON.parse(localStorage.getItem("home") || "{}").home;
-    if (homeJson != undefined) {
-      setName(homeJson.student_info["Name surname patronymic"].split(" ")[0]);
+      await getHome();
+      getStudPhoto();
     }
   }
 
 
   useEffect(() => {
-    if (!authed)
-      getComponent();
-    else {
-      getStudPhoto();
-      const homeJson = JSON.parse(localStorage.getItem("home") || "{}").home;
-      if (homeJson != undefined) {
-        setName(homeJson.student_info["Name surname patronymic"].split(" ")[0]);
-      }
-    }
+    getComponent();
     clearTimeout(timer.current);
   }, [name, imageURL]);
 
@@ -184,7 +204,7 @@ export default function Login() {
               setDark(checked);
               if (checked)
                 localStorage.setItem("theme", "dark");
-              else 
+              else
                 localStorage.removeItem("theme");
             }} sx={{ mb: "10px" }} />
           </Stack>

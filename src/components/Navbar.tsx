@@ -1,7 +1,6 @@
 import {
   Avatar,
   Box,
-  Button,
   Divider,
   IconButton,
   Menu,
@@ -17,7 +16,7 @@ import { ChangeEvent, MouseEvent, useCallback, useEffect, useState } from "react
 import { useTheme } from "../utils/Theme";
 import { useAuth } from "../utils/Auth";
 import { useNavigate } from "react-router-dom";
-import { getPhoto } from "../utils/StudentLogic";
+import { checkResponseStatus, fetchCached, UnauthorizedApiError, url } from "../utils/Api";
 
 const Navbar = (props: { name: string; page: string }) => {
   const { isDark, setDark } = useTheme();
@@ -32,13 +31,9 @@ const Navbar = (props: { name: string; page: string }) => {
   }, []);
 
   const handleLogout = useCallback(async () => {
-    try {
-      setImage("");
-      await logout();
-      navigate("/login");
-    } catch (e) {
-      console.error("Error occured while authorizing:", e);
-    }
+    setImage("");
+    await logout();
+    navigate("/login");
   }, []);
 
   const handleThemeSwitch = (event: ChangeEvent<HTMLInputElement>) => {
@@ -58,22 +53,56 @@ const Navbar = (props: { name: string; page: string }) => {
   };
 
   const getStudPhoto = async () => {
-    try {
-      setImage(await getPhoto());
-    } catch (error) {
-      console.error("Unable to get Student Photo:", error);
-    }
+    await fetchCached(`${url}/resource/studphoto`, {
+      method: "GET",
+      credentials: "include",
+      headers: {
+        "Content-Type": "image/jpeg",
+      },
+    }).then(response => {
+      checkResponseStatus(response);
+      return response.blob()
+    }).then(blob => {
+      setImage(URL.createObjectURL(blob));
+    }).catch(e => {
+      if (e instanceof UnauthorizedApiError) {
+        logout();
+        navigate("/login");
+      } else {
+        console.error(e);
+      }
+    })
+  }
+
+  const getHome = async () => {
+    await fetchCached(`${url}/resource/home`, {
+      method: "GET",
+      credentials: "include",
+    }).then(response => {
+      checkResponseStatus(response);
+      return response.json()
+    }).then(json => {
+      setName(json?.studentInfo?.fullNamePatronymic?.split(" ")[0]);
+    }).catch(e => {
+      if (e instanceof UnauthorizedApiError) {
+        logout();
+        navigate("/login");
+      } else {
+        console.error(e);
+      }
+    })
+  }
+
+  const getNavBar = async () => {
+    await getHome();
+    await getStudPhoto();
   }
 
   useEffect(() => {
     if (authed) {
-      getStudPhoto();
-      const homeJson = JSON.parse(localStorage.getItem("home") || "{}").home;
-      if (homeJson != undefined) {
-        setName(homeJson.student_info["Name surname patronymic"].split(" ")[0]);
-      }
+      getNavBar();
     }
-  }, [authed]);
+  }, []);
 
   return (
     <Box p={1}>

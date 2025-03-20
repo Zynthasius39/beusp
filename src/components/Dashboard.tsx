@@ -1,5 +1,5 @@
 import { DateCalendar } from "@mui/x-date-pickers";
-import { ClassTwoTone, ImportContactsTwoTone, SchoolTwoTone, TollTwoTone } from "@mui/icons-material";
+import { ClassTwoTone, ImportContactsTwoTone, Key, SchoolTwoTone, TollTwoTone } from "@mui/icons-material";
 import {
   Avatar,
   Card,
@@ -15,10 +15,9 @@ import {
 import { useTheme } from "../utils/Theme";
 import "../style/Dashboard.css";
 import { cloneElement, useEffect, useState } from "react";
-import { getStudRes } from "../utils/StudentLogic";
 import { useAuth } from "../utils/Auth";
 import { useNavigate } from "react-router-dom";
-import { UnauthorizedApiError } from "../utils/Api";
+import { checkResponseStatus, fetchCached, UnauthorizedApiError, url } from "../utils/Api";
 
 const Dashboard = () => {
   const { theme } = useTheme();
@@ -28,6 +27,7 @@ const Dashboard = () => {
   const [totalCredits, setTotalCredits] = useState(0);
   const [gpa, setGpa] = useState(0);
   const [eduDebt, setEduDebt] = useState("0 AZN");
+  const [homeTable, setHomeTable] = useState<object | undefined>(undefined);
   const navigate = useNavigate();
 
   const infoCards = [
@@ -80,44 +80,57 @@ const Dashboard = () => {
   }
 
   const getTranscript = async () => {
-    await getStudRes("transcript", true);
-    try {
-      const homeJson = JSON.parse(localStorage.getItem("home") || "{}");
-      if (homeJson != undefined) {
-        Object.entries(homeJson.studentInfo).map(([key, value]) => {
-          if (key.includes("Education debt")) {
-            setEduDebt(String(value));
-          }
-        });
-      }
-      const json = JSON.parse(localStorage.getItem("transcript") || "{}");
-      if (json != undefined) {
-        setClassCount(Object.entries(json.semesters || {}).length);
-        setTotalCredits(Number(json.totalEarnedCredits));
-        setGpa(Number((Number(json.totalGpa || 0) / 100 * 4).toFixed(2)));
-        setDashLoading(false);
-      }
-    } catch (e) {
+    await fetchCached(`${url}/resource/transcript`, {
+      method: "GET",
+      credentials: "include",
+    }).then(response => {
+      checkResponseStatus(response);
+      return response.json();
+    }).catch(e => {
       if (e instanceof UnauthorizedApiError) {
         logout();
-        navigate("/logout");
+        navigate("/login");
       } else {
         throw e;
       }
-    }
+    }).then(json => {
+      setClassCount(Object.entries(json.semesters || {}).length);
+      setTotalCredits(Number(json.totalEarnedCredits));
+      setGpa(Number((Number(json.totalGpa || 0) / 100 * 4).toFixed(2)));
+      setDashLoading(false);
+    })
   }
 
-  const getHomeStudInfo = () => {
-    const json = JSON.parse(localStorage.getItem("home") || "{}").home?.studentInfo;
-    if (json != null) {
-      return json;
-    }
-    return {};
+  const getHomeStudInfo = async () => {
+    await fetchCached(`${url}/resource/home`, {
+      method: "GET",
+      credentials: "include",
+    }).then(response => {
+      checkResponseStatus(response);
+      return response.json();
+    }).catch(e => {
+      if (e instanceof UnauthorizedApiError) {
+        logout();
+        navigate("/login");
+      } else {
+        throw e;
+      }
+    }).then(json => {
+      setEduDebt(`${json.studentInfo.eduDebt.amount} AZN`);
+      Object.entries(json.studentInfo)
+        .filter(([_, value]) => (
+          typeof value === "string" ||
+          typeof value === "number" ||
+          typeof value === "boolean"
+        ))
+      setHomeTable(json.studentInfo);
+    })
   }
 
   useEffect(() => {
     if (authed) {
       getTranscript();
+      getHomeStudInfo();
     }
   }, [authed]);
 
@@ -137,36 +150,36 @@ const Dashboard = () => {
       }}>
         {infoCards.map(infoCard => (
           <>
-          {
-            dashLoading ?
-            <Skeleton variant="rounded" sx={cardRootStyle} />
-            :
-            <Card sx={cardRootStyle}>
-              <Stack sx={infoCardStyle}>
-                <Avatar className="card-logo" sx={{
-                  backgroundColor: theme.palette.primary.dark, float: "left", width: {
-                    xs: "32px",
-                    sm: "64px",
-                  },
-                  height: {
-                    xs: "32px",
-                    sm: "64px",
-                  }
-                }}>
-                  {cloneElement(infoCard.icon, {
-                    sx: {
-                      color: theme.palette.primary.main, fontSize: {
-                        xs: "18px",
-                        sm: "36px",
+            {
+              dashLoading ?
+                <Skeleton variant="rounded" sx={cardRootStyle} />
+                :
+                <Card sx={cardRootStyle}>
+                  <Stack sx={infoCardStyle}>
+                    <Avatar className="card-logo" sx={{
+                      backgroundColor: theme.palette.primary.dark, float: "left", width: {
+                        xs: "32px",
+                        sm: "64px",
+                      },
+                      height: {
+                        xs: "32px",
+                        sm: "64px",
                       }
-                    }
-                  })}
-                </Avatar>
-                <Typography fontSize="inherit" textAlign="center">{infoCard.name}</Typography>
-              </Stack>
-              <Typography fontSize="inherit" fontWeight="bold">{infoCard.value}</Typography>
-            </Card>
-          }
+                    }}>
+                      {cloneElement(infoCard.icon, {
+                        sx: {
+                          color: theme.palette.primary.main, fontSize: {
+                            xs: "18px",
+                            sm: "36px",
+                          }
+                        }
+                      })}
+                    </Avatar>
+                    <Typography fontSize="inherit" textAlign="center">{infoCard.name}</Typography>
+                  </Stack>
+                  <Typography fontSize="inherit" fontWeight="bold">{infoCard.value}</Typography>
+                </Card>
+            }
           </>
         ))}
       </Stack>
@@ -174,17 +187,34 @@ const Dashboard = () => {
       <TableContainer>
         <Table>
           <TableBody>
-            {Object.entries(getHomeStudInfo()).map(([key, value]) => (
-              <TableRow
-                key={key.trim().replace(" ", "_").toLowerCase()}
-                sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-              >
-                <TableCell component="th" scope="row">
-                  {key}
-                </TableCell>
-                <TableCell align="right">{value as String}</TableCell>
-              </TableRow>
-            ))}
+            {
+              Object.entries(homeTable || {})
+                .filter(([_, value]) => (
+                  typeof value === "string" ||
+                  typeof value === "number" ||
+                  typeof value === "boolean"
+                ))
+                .map(([key, value]) => {
+                  var val;
+                  if (typeof value === "boolean")
+                    val = val ? "Yes" : "No";
+                  else if (value as String === "")
+                    val = "None";
+                  else
+                    val = value as String;
+                  return [key, val];
+                })
+                .map(([key, value]) => (
+                <TableRow
+                  key={key.trim()}
+                  sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                >
+                  <TableCell component="th" scope="row">
+                    {key}
+                  </TableCell>
+                  <TableCell align="right">{value}</TableCell>
+                </TableRow>
+              ))}
           </TableBody>
         </Table>
       </TableContainer>

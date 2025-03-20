@@ -1,13 +1,13 @@
 import { Autocomplete, Avatar, Checkbox, FormControlLabel, FormGroup, Paper, Skeleton, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, ToggleButton, ToggleButtonGroup, Tooltip } from "@mui/material";
 import { useAuth } from "../utils/Auth";
-import { calculateSum, colorOfMark, getStudGrades, getStudRes, getStudStatus, gradeScale, gradeToMark } from "../utils/StudentLogic";
+import { calculateSum, colorOfMark, gradeScale, gradeToMark } from "../utils/StudentLogic";
 import { ChangeEvent, MouseEvent, SyntheticEvent, useEffect, useState } from "react";
 import { useTheme } from "../utils/Theme";
 import { useNavigate } from "react-router-dom";
 import { CourseJson, GradesJson } from "../utils/Interfaces";
 import BotDialog from "./BotDialog";
 import { Calculate } from "@mui/icons-material";
-import { UnauthorizedApiError } from "../utils/Api";
+import { checkResponseStatus, fetchCached, UnauthorizedApiError, url } from "../utils/Api";
 
 export default function Grades() {
   const { authed, logout } = useAuth();
@@ -23,7 +23,6 @@ export default function Grades() {
   const [roundGrade, setRoundGrade] = useState(false);
   const [gradesLoading, setGradesLoading] = useState(true);
   const [gradeTLoading, setGradeTLoading] = useState(true);
-  const [botEnabled, setBotEnabled] = useState(false);
   const [gradesT, setGradesT] = useState<GradesJson | null>(null);
   const navigate = useNavigate();
 
@@ -35,46 +34,54 @@ export default function Grades() {
   }
 
   const getGrades = async () => {
-    try {
-      const json = await getStudRes("grades", false);
-      if (json !== null) {
-        const options: { [year: string]: boolean} = {};
-        if (json.canRequestAll)
-          options["ALL"] = true;
-        json.entries.forEach((o: {year: string, semester: number}) => {
-          if (!options[o.year])
-            options[o.year] = o.semester === 2;
-        });
-        const offset = options["ALL"] ? 2 : 1;
-        const keys = Object.keys(options);
-        setYear(keys[keys.length - offset]);
-        setSemester(options[keys[keys.length - offset]] ? "2" : "1");
-        setOptions(options);
-        setGradesLoading(false);
-      }
-    } catch (e) {
+    await fetchCached(`${url}/resource/grades`, {
+      method: "GET",
+      credentials: "include",
+    }).then(response => {
+      checkResponseStatus(response);
+      return response.json();
+    }).catch(e => {
       if (e instanceof UnauthorizedApiError) {
         logout();
         navigate("/login");
       } else {
-        throw e;
+        console.error(e);
       }
-    }
+    }).then(json => {
+      const options: { [year: string]: boolean } = {};
+      if (json.canRequestAll)
+        options["ALL"] = true;
+      json.entries.forEach((o: { year: string, semester: number }) => {
+        if (!options[o.year])
+          options[o.year] = o.semester === 2;
+      });
+      const offset = options["ALL"] ? 2 : 1;
+      const keys = Object.keys(options);
+      setYear(keys[keys.length - offset]);
+      setSemester(options[keys[keys.length - offset]] ? "2" : "1");
+      setOptions(options);
+      setGradesLoading(false);
+    });
   }
 
   const getGradesTable = async (year: string, semester: string) => {
-    const json = await getStudGrades(String(year), semester);
-    if (json != null) {
+    await fetchCached(year === "ALL" ? `${url}/resource/grades/all` : `${url}/resource/grades/${year}/${semester}`, {
+      method: "GET",
+      credentials: "include",
+    }).then(response => {
+      checkResponseStatus(response);
+      return response.json()
+    }).catch(e => {
+      if (e instanceof UnauthorizedApiError) {
+        logout();
+        navigate("/login");
+      } else {
+        console.error(e);
+      }
+    }).then(json => {
       setGradesT(json);
       setGradeTLoading(false);
-    }
-  }
-
-  const getBotStatus = async () => {
-    const json = await getStudStatus();
-    if (json?.botEnabled) {
-      setBotEnabled(true);
-    }
+    })
   }
 
   const handleSemesterBox = (_: MouseEvent<HTMLElement>, v: string) => {
@@ -106,9 +113,8 @@ export default function Grades() {
   }
 
   useEffect(() => {
-    if (authed && Object.keys(options).length === 0) {
+    if (authed && gradesT === null) {
       getGrades();
-      getBotStatus();
     }
     if (year !== null && semester !== null) {
       if (year === "ALL") {
@@ -193,7 +199,7 @@ export default function Grades() {
             <FormControlLabel control={<Checkbox checked={act3Enabled} onChange={handleAct3Check} />} label="Show SDF3" />
           </Tooltip>
         </FormGroup>
-        <BotDialog botEnabled={botEnabled} setBotEnabled={setBotEnabled} />
+        <BotDialog />
       </Stack>
       {
         gradeTLoading ?
@@ -209,54 +215,54 @@ export default function Grades() {
             <Table>
               <TableHead>
                 <TableRow>
-                  <TableCell sx={{width: 35}}>Course Code</TableCell>
+                  <TableCell sx={{ width: 35 }}>Course Code</TableCell>
                   <TableCell>Course Name</TableCell>
-                  <TableCell sx={{width: 35}}>ACT1</TableCell>
-                  <TableCell sx={{width: 35}}>ACT2</TableCell>
+                  <TableCell sx={{ width: 35 }}>ACT1</TableCell>
+                  <TableCell sx={{ width: 35 }}>ACT2</TableCell>
                   {
                     act3Enabled &&
-                    <TableCell sx={{width: 35}}>ACT3</TableCell>
+                    <TableCell sx={{ width: 35 }}>ACT3</TableCell>
                   }
-                  <TableCell sx={{width: 35}}>ATT</TableCell>
-                  <TableCell sx={{width: 35}}>IW</TableCell>
-                  <TableCell sx={{width: 35}}>Exam</TableCell>
-                  <TableCell sx={{width: 35}}>Sum</TableCell>
-                  <TableCell sx={{width: 35}}>Mark</TableCell>
+                  <TableCell sx={{ width: 35 }}>ATT</TableCell>
+                  <TableCell sx={{ width: 35 }}>IW</TableCell>
+                  <TableCell sx={{ width: 35 }}>Exam</TableCell>
+                  <TableCell sx={{ width: 35 }}>Sum</TableCell>
+                  <TableCell sx={{ width: 35 }}>Mark</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
                 {Object.entries(gradesT || {}).map(([code, course]: [code: string, course: CourseJson]) => {
                   const courseG = gradeScale(course, oldScale, roundGrade);
                   return (
-                  <TableRow>
-                    <TableCell height={36}>{code}</TableCell>
-                    <TableCell width={512}>{course.courseName}</TableCell>
-                    <TableCell sx={tableCellStyle}>{courseG.act1 === -1 ? "" : courseG.act1}</TableCell>
-                    <TableCell sx={tableCellStyle}>{courseG.act2 === -1 ? "" : courseG.act2}</TableCell>
-                    {
-                      act3Enabled &&
-                      <TableCell sx={tableCellStyle}>{courseG.act3 === -1 ? "" : courseG.act3}</TableCell>
-                    }
-                    <TableCell sx={tableCellStyle}>{courseG.attendance === -1 ? "" : courseG.attendance}</TableCell>
-                    <TableCell sx={tableCellStyle}>{courseG.iw === -1 ? "" : courseG.iw}</TableCell>
-                    <TableCell sx={tableCellStyle}>{courseG.final === -1 ? "" : courseG.final}</TableCell>
-                    <TableCell sx={tableCellStyle}>{calcGrade || courseG.final !== -1 ? calculateSum(course, roundGrade) : ""}</TableCell>
-                    <TableCell>
-                      <Paper elevation={5} sx={{borderRadius: "50%", width: 40}}>
-                        <Avatar sx={{
-                          fontSize: 20,
-                          fontWeight: "bold",
-                          color: colorOfMark(courseG.sum, !isDark()),
-                          backgroundColor: colorOfMark(courseG.sum, isDark()),
-                        }}
-                        >
-                          {gradeToMark(courseG.sum)}{calcGrade && courseG.sum === -1 && <Calculate sx={{
-                            color: isDark() ? "#CCCCCC" : "#666666"
-                          }} />}
-                        </Avatar>
-                      </Paper>
-                    </TableCell>
-                  </TableRow>)
+                    <TableRow>
+                      <TableCell height={36}>{code}</TableCell>
+                      <TableCell width={512}>{course.courseName}</TableCell>
+                      <TableCell sx={tableCellStyle}>{courseG.act1 === -1 ? "" : courseG.act1}</TableCell>
+                      <TableCell sx={tableCellStyle}>{courseG.act2 === -1 ? "" : courseG.act2}</TableCell>
+                      {
+                        act3Enabled &&
+                        <TableCell sx={tableCellStyle}>{courseG.act3 === -1 ? "" : courseG.act3}</TableCell>
+                      }
+                      <TableCell sx={tableCellStyle}>{courseG.attendance === -1 ? "" : courseG.attendance}</TableCell>
+                      <TableCell sx={tableCellStyle}>{courseG.iw === -1 ? "" : courseG.iw}</TableCell>
+                      <TableCell sx={tableCellStyle}>{courseG.final === -1 ? "" : courseG.final}</TableCell>
+                      <TableCell sx={tableCellStyle}>{calcGrade || courseG.final !== -1 ? calculateSum(course, roundGrade) : ""}</TableCell>
+                      <TableCell>
+                        <Paper elevation={5} sx={{ borderRadius: "50%", width: 40 }}>
+                          <Avatar sx={{
+                            fontSize: 20,
+                            fontWeight: "bold",
+                            color: colorOfMark(courseG.sum, !isDark()),
+                            backgroundColor: colorOfMark(courseG.sum, isDark()),
+                          }}
+                          >
+                            {gradeToMark(courseG.sum)}{calcGrade && courseG.sum === -1 && <Calculate sx={{
+                              color: isDark() ? "#CCCCCC" : "#666666"
+                            }} />}
+                          </Avatar>
+                        </Paper>
+                      </TableCell>
+                    </TableRow>)
                 })}
               </TableBody>
             </Table>

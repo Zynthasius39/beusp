@@ -1,4 +1,3 @@
-import { fetchPhoto, fetchStudGrades, fetchStudRes, fetchStudStatus } from "./Api";
 import { CourseJson } from "./Interfaces";
 
 export const convertBlobToBase64 = (blob: Blob) => {
@@ -13,45 +12,6 @@ export const convertBlobToBase64 = (blob: Blob) => {
         reader.readAsDataURL(blob);
     });
 };
-
-export const getPhoto = async () => {
-    let photo64 = localStorage.getItem("studphoto");
-    if (photo64 == null) {
-        const blob = await fetchPhoto();
-        photo64 = await convertBlobToBase64(blob)
-        .then((base64String) => {
-            return base64String;
-        })
-        .catch((error) => {
-            console.error(error);
-        }) as string;
-        localStorage.setItem("studphoto", photo64);
-    }
-    return photo64;
-};
-
-export const getStudGrades = async (year: string, semester: string) => {
-    const json = await fetchStudGrades(year, semester);
-    return json;
-}
-
-export const getStudRes = async (res: string, cache: boolean) => {
-    let json;
-    if (cache) {
-        json = localStorage.getItem(res);
-        if (json == null) {
-            json = await fetchStudRes(res)
-            localStorage.setItem(res, JSON.stringify(json));
-        }
-    } else {
-        json = await fetchStudRes(res);
-    }
-    return json;
-}
-
-export const getStudStatus = async () => {
-    return await fetchStudStatus();
-}
 
 export const gradeToMark = (grade: number) => {
     let mark;

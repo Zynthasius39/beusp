@@ -2,9 +2,9 @@ import { Avatar, Card, Stack, Typography } from "@mui/material";
 import { useTheme } from "../utils/Theme";
 import { NotificationsTwoTone } from "@mui/icons-material";
 import { useAuth } from "../utils/Auth";
-import { getStudRes } from "../utils/StudentLogic";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { checkResponseStatus, fetchCached, UnauthorizedApiError, url } from "../utils/Api";
 
 export default function Announces() {
   const { authed, logout } = useAuth();
@@ -13,15 +13,22 @@ export default function Announces() {
   const navigate = useNavigate();
 
   const getAnnounces = async () => {
-    try {
-      const json = (await getStudRes("announces", false));
-      if (json != null) {
-        setAnnouncesT(json);
+    await fetchCached(`${url}/resource/announces`, {
+      method: "GET",
+      credentials: "include",
+    }).then(response => {
+      checkResponseStatus(response);
+      return response.json();
+    }).catch(e => {
+      if (e instanceof UnauthorizedApiError) {
+        logout();
+        navigate("/login");
+      } else {
+        console.error(e);
       }
-    } catch (e) {
-      logout();
-      navigate("/login");
-    }
+    }).then(json => {
+      setAnnouncesT(json);
+    });
   }
 
   useEffect(() => {

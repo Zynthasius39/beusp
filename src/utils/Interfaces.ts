@@ -32,3 +32,35 @@ export interface CourseJson {
   final: number,
   sum: number,
 }
+
+export interface HomeStudentInfoJson extends JSON {
+  advisor: string,
+  beuEmail: string,
+  birthDate: string,
+  dimScore: number,
+  dissTopic: string,
+  dormDebt: number,
+  eduDebt: {
+    amount: number,
+    paymentAnnual: number,
+    paymentType: string,
+    semester: number,
+    year: number,
+  },
+  fullNamePatronymic: string,
+  groupCode: string,
+  lastLogin: {
+    datetime: string,
+    ip: string,
+  },
+  presidentScholar: boolean,
+  registerDate: string,
+  speciality: {
+    lang: string,
+    program: string,
+    year: number,
+  },
+  stateFunded: boolean,
+  status: string,
+  studentId: number,
+}

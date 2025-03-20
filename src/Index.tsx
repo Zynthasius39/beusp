@@ -9,6 +9,7 @@ import Dashboard from "./components/Dashboard";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import Grades from "./components/Grades";
+import Departments from "./components/Departments";
 
 export default function Index() {
   return (
@@ -25,6 +26,7 @@ export default function Index() {
               >
                 <Route index element={<Dashboard />} />
                 <Route path="announces" element={<Announces />} />
+                <Route path="departments" element={<Departments />} />
                 <Route path="grades" element={<Grades />} />
                 <Route path="*" element={<NoPage />} />
               </Route>

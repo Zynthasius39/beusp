@@ -5,12 +5,16 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
-import { ChangeEvent, SyntheticEvent, useState } from 'react';
+import { ChangeEvent, SyntheticEvent, useEffect, useState } from 'react';
 import { FormControlLabel, FormGroup, Radio, RadioGroup, Switch, Tooltip } from '@mui/material';
+import { useAuth } from '../utils/Auth';
+import { fetchBotSubs } from '../utils/Api';
 
-export default function BotDialog({botEnabled, setBotEnabled}: {botEnabled: boolean, setBotEnabled: (v: boolean) => void}) {
+export default function BotDialog() {
+    const { authed } = useAuth();
     const [openToEnable, setOpenToEnable] = useState(false);
     const [openToDisable, setOpenToDisable] = useState(false);
+    const [botEnabled, setBotEnabled] = useState(false);
     const [useDiscord, setUseDiscord] = useState(true);
     const [useEmail, setUseEmail] = useState(false);
     const [useTelegram, setUseTelegram] = useState(false);
@@ -27,12 +31,19 @@ export default function BotDialog({botEnabled, setBotEnabled}: {botEnabled: bool
     }
 
     const handleBotSwitch = (_: SyntheticEvent, v: boolean) => {
-        // if (v)
         setOpenToEnable(true);
-        // else
-            // setOpenToDisable(true);
         setBotEnabled(v);
     }
+
+    const getBotStatus = async () => {
+        setBotEnabled(true);
+    }
+
+    useEffect(() => {
+        if (authed) {
+            getBotStatus();
+        }
+    }, [authed]);
 
     return (
         <>
@@ -62,22 +73,22 @@ export default function BotDialog({botEnabled, setBotEnabled}: {botEnabled: bool
                         Please select a subscribing method and fill out the form. We
                         will send updates occasionally.
                     </DialogContentText>
-                        <RadioGroup
-                            // ref={radioGroupRef}
-                            aria-label="ringtone"
-                            name="ringtone"
-                            value={methodSubscribe}
-                            onChange={handleMethodSubscribe}
-                        >
+                    <RadioGroup
+                        // ref={radioGroupRef}
+                        aria-label="ringtone"
+                        name="ringtone"
+                        value={methodSubscribe}
+                        onChange={handleMethodSubscribe}
+                    >
                         {options?.map((o: string) => (
                             <FormControlLabel
-                            value={o}
-                            key={o}
-                            control={<Radio />}
-                            label={o}
+                                value={o}
+                                key={o}
+                                control={<Radio />}
+                                label={o}
                             />
                         ))}
-                        </RadioGroup>
+                    </RadioGroup>
                     {
                         useEmail &&
                         <TextField

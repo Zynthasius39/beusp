@@ -146,7 +146,7 @@ export const spMenu = [
     icon: <AnnouncementTwoTone color="primary" />,
     href: "/announces",
   },
-  { name: "Departments", icon: <FolderTwoTone color="primary" />, href: "" },
+  { name: "Departments", icon: <FolderTwoTone color="primary" />, href: "/departments" },
   { name: "Course", icon: <CalendarMonthTwoTone color="primary" />, href: "" },
   { name: "Grades", icon: <GradeTwoTone color="primary" />, href: "/grades" },
   { name: "Transcript", icon: <SummarizeTwoTone color="primary" />, href: "" },
