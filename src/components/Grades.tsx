@@ -116,6 +116,9 @@ export default function Grades() {
     if (authed && gradesT === null) {
       getGrades();
     }
+  }, [authed])
+
+  useEffect(() => {
     if (year !== null && semester !== null) {
       if (year === "ALL") {
         setIsAll(true);
@@ -128,7 +131,7 @@ export default function Grades() {
         getGradesTable(year, semester);
       }
     }
-  }, [authed, year, semester]);
+  }, [year, semester]);
 
   return (
     <Stack p={1} gap={2}>

@@ -96,3 +96,11 @@ export const gradeRound = (grade: number) => {
     else
         return fGrade;
 }
+
+export const isValidEmail = (email: string) => {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
+export const isValidDcWebhook = (url: string) => {
+    return /https:\/\/discord.com\/api\/webhooks\/\d{19}\/[-_a-zA-Z0-9]{68}\/?/.test(url);
+}

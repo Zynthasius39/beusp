@@ -33,7 +33,7 @@ export interface CourseJson {
   sum: number,
 }
 
-export interface HomeStudentInfoJson extends JSON {
+export interface HomeStudentInfoJson {
   advisor: string,
   beuEmail: string,
   birthDate: string,
@@ -63,4 +63,15 @@ export interface HomeStudentInfoJson extends JSON {
   stateFunded: boolean,
   status: string,
   studentId: number,
+}
+
+export interface BotSubsJson {
+  email?: string,
+  telegramUserId?: number,
+  discordWebhookUrl?: string,
+}
+
+export interface BotInfoJson {
+  botEmail: string | undefined,
+  botTelegram: string | undefined,
 }

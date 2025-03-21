@@ -288,7 +288,14 @@ export default function Login() {
               </div>
               <FormControlLabel control={<Checkbox />} label="Remember Me" />
               <Box sx={{ position: "relative" }}>
-                <PrimaryButton disabled={loading} fullWidth onClick={handleLogin}>Login</PrimaryButton>
+                <PrimaryButton
+                  disabled={loading}
+                  fullWidth
+                  onClick={handleLogin}
+                  sx={{
+                    fontSize: 16,
+                  }}
+                >Login</PrimaryButton>
                 {loading && (
                   <CircularProgress
                     size={24}
