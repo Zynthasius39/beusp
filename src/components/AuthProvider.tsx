@@ -14,18 +14,16 @@ export default function AuthProvider({ children }: { children: ReactNode}) {
   const setName = useCallback((name: string) => setname(name), [name]);
 
   const login = useCallback(async (student_id : number, password : string) => {
-    try {
-      await auth(String(student_id), password);
-      setAuthed(true);
-    } catch (e) {
-      throw e;
-    }
+    await auth(String(student_id), password);
+    caches.delete("v1");
+    setAuthed(true);
   }, [authed]);
 
   const logout = useCallback(async () => {
     cookies.remove("StudentID");
     cookies.remove("SessionID");
     cookies.remove("ImgID");
+    localStorage.removeItem("studphoto");
     caches.delete("v1");
     setAuthed(false);
   }, [authed]);

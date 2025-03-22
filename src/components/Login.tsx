@@ -41,8 +41,8 @@ export default function Login() {
   const timer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const alertTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
-  const getHome = async () => {
-    await fetchCached(`${url}/resource/home`, {
+  const getHome = () => {
+    fetchCached(`${url}/resource/home`, {
       method: "GET",
       credentials: "include",
     }).then(response => {
@@ -50,6 +50,7 @@ export default function Login() {
       return response.json()
     }).then(json => {
       setName(json?.studentInfo?.fullNamePatronymic?.split(" ")[0]);
+      getStudPhoto();
     }).catch(e => {
       if (e instanceof UnauthorizedApiError) {
         logout();
@@ -99,8 +100,7 @@ export default function Login() {
     }
     try {
       await login(studentId, password);
-      await getHome();
-      getStudPhoto();
+      getHome();
       navigate("/");
     } catch (e) {
       console.error("Error occured while authorizing:", e);
@@ -120,8 +120,8 @@ export default function Login() {
     }
   }
 
-  const getStudPhoto = async () => {
-    await fetchCached(`${url}/resource/studphoto`, {
+  const getStudPhoto = () => {
+    fetchCached(`${url}/resource/studphoto`, {
       method: "GET",
       credentials: "include",
       headers: {

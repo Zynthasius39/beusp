@@ -26,8 +26,6 @@ const Navbar = (props: { name: string; page: string }) => {
   const open = Boolean(anchorEl);
 
   const handleProfileClick = useCallback(async () => {
-    // Debuggin purposes
-    console.log(JSON.parse(localStorage.getItem("transcript") || "{}"));
   }, []);
 
   const handleLogout = useCallback(async () => {
@@ -52,8 +50,8 @@ const Navbar = (props: { name: string; page: string }) => {
     setAnchorEl(null);
   };
 
-  const getStudPhoto = async () => {
-    await fetchCached(`${url}/resource/studphoto`, {
+  const getStudPhoto = () => {
+    fetchCached(`${url}/resource/studphoto`, {
       method: "GET",
       credentials: "include",
       headers: {
@@ -63,7 +61,8 @@ const Navbar = (props: { name: string; page: string }) => {
       checkResponseStatus(response);
       return response.blob()
     }).then(blob => {
-      setImage(URL.createObjectURL(blob));
+      const url = URL.createObjectURL(blob)
+      setImage(url);
     }).catch(e => {
       if (e instanceof UnauthorizedApiError) {
         logout();
@@ -74,8 +73,8 @@ const Navbar = (props: { name: string; page: string }) => {
     })
   }
 
-  const getHome = async () => {
-    await fetchCached(`${url}/resource/home`, {
+  const getHome = () => {
+    fetchCached(`${url}/resource/home`, {
       method: "GET",
       credentials: "include",
     }).then(response => {
@@ -83,6 +82,7 @@ const Navbar = (props: { name: string; page: string }) => {
       return response.json()
     }).then(json => {
       setName(json?.studentInfo?.fullNamePatronymic?.split(" ")[0]);
+      getStudPhoto();
     }).catch(e => {
       if (e instanceof UnauthorizedApiError) {
         logout();
@@ -93,16 +93,11 @@ const Navbar = (props: { name: string; page: string }) => {
     })
   }
 
-  const getNavBar = async () => {
-    await getHome();
-    await getStudPhoto();
-  }
-
   useEffect(() => {
     if (authed) {
-      getNavBar();
+      getHome();
     }
-  }, []);
+  }, [authed]);
 
   return (
     <Box p={1}>

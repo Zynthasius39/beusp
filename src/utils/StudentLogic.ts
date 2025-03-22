@@ -71,18 +71,18 @@ export const gradeScale = (course: CourseJson, oldScale: boolean, round: boolean
 export const calculateSum = (json: CourseJson, round: boolean) => {
     let grade;
     if (round) {
-        grade = gradeRound(json.act1) + 
-        gradeRound(json.act2) +
-        gradeRound(json.attendance) +
-        gradeRound(json.iw) +
-        gradeRound(json.final);
+        grade = gradeRound(json.act1) +
+            gradeRound(json.act2) +
+            gradeRound(json.attendance) +
+            gradeRound(json.iw) +
+            gradeRound(json.final);
     } else {
         grade = parseFloat((json.act1 +
             json.act2 +
             json.attendance +
             json.iw +
             json.final).toFixed(2));
-        }
+    }
     if (grade < 0)
         return 0;
     else
@@ -103,4 +103,11 @@ export const isValidEmail = (email: string) => {
 
 export const isValidDcWebhook = (url: string) => {
     return /https:\/\/discord.com\/api\/webhooks\/\d{19}\/[-_a-zA-Z0-9]{68}\/?/.test(url);
+}
+
+export const formatTime = (seconds: number): string => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    const paddedSecs = secs.toString().padStart(2, '0');
+    return `${mins}:${paddedSecs}`;
 }

@@ -10,7 +10,7 @@ import { Alert, Box, CircularProgress, FormControlLabel, FormGroup, IconButton, 
 import { useAuth } from '../utils/Auth';
 import { checkResponseStatus, fetchCached, UnauthorizedApiError, url } from '../utils/Api';
 import { Close, Email, HeartBroken, Send, Telegram } from '@mui/icons-material';
-import { isValidDcWebhook, isValidEmail } from '../utils/StudentLogic';
+import { formatTime, isValidDcWebhook, isValidEmail } from '../utils/StudentLogic';
 import { PrimaryButton } from '../Components';
 import { useNavigate } from 'react-router-dom';
 import { BotInfoJson, BotSubsJson } from '../utils/Interfaces';
@@ -45,6 +45,32 @@ export default function BotDialog() {
         setUseTelegram(false);
     };
 
+    const handleUnsub = (service: "email" | "discord" | "telegram") => {
+        fetch(`${url}/bot/subscribe`, {
+            method: "DELETE",
+            credentials: "include",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                unsubscribe: [
+                    service,
+                ],
+            }),
+        }).then(response => {
+            checkResponseStatus(response)
+            getBotSubs();
+        }).catch(e => {
+            if (e instanceof UnauthorizedApiError) {
+                logout();
+                navigate("/login");
+            } else {
+                console.error(e);
+                showAlert("An error occured", "error");
+            }
+        })
+    }
+
     const handleEmailClick = () => {
         setIsOpen(false);
         setUseEmail(true);
@@ -69,6 +95,15 @@ export default function BotDialog() {
                 if (json.emailSent)
                     setUseEmail(false);
                 setVerifyEmail(true);
+            }).catch(e => {
+                clearInterval(timer.current);
+                if (e instanceof UnauthorizedApiError) {
+                    logout();
+                    navigate("/login");
+                } else {
+                    console.error(e);
+                    showAlert("An error occured", "error");
+                }
             })
         } else {
             setErrField({ error: true, helperText: "Invalid E-mail address" });
@@ -114,6 +149,7 @@ export default function BotDialog() {
                 })
             }).then(response => {
                 checkResponseStatus(response);
+                getBotSubs();
                 showAlert("Subscribed via Discord!", "success");
                 handleClose();
             }).catch(e => {
@@ -129,6 +165,7 @@ export default function BotDialog() {
 
     const handleTelegramClick = () => {
         setIsOpen(false);
+        getTelegramCode();
         setVerifyTimeout(100);
         setUseTelegram(true);
     }
@@ -161,6 +198,14 @@ export default function BotDialog() {
             return response.json()
         }).then((json: BotInfoJson) => {
             setBotInfo(json);
+        }).catch(e => {
+            if (e instanceof UnauthorizedApiError) {
+                logout();
+                navigate("/login");
+            } else {
+                console.error(e);
+                showAlert("An error occured", "error");
+            }
         })
     }
 
@@ -192,6 +237,14 @@ export default function BotDialog() {
                     }
                 return json;
             });
+        }).catch(e => {
+            if (e instanceof UnauthorizedApiError) {
+                logout();
+                navigate("/login");
+            } else {
+                console.error(e);
+                showAlert("An error occured", "error");
+            }
         })
     }
 
@@ -214,6 +267,9 @@ export default function BotDialog() {
             if (e instanceof UnauthorizedApiError) {
                 logout();
                 navigate("/login");
+            } else {
+                console.error(e);
+                showAlert("An error occured", "error");
             }
         })
     }
@@ -227,8 +283,7 @@ export default function BotDialog() {
 
     useEffect(() => {
         timer.current = setInterval(() => {
-            const timeout = verifyEmail ? 1724 : 60
-            setVerifyTimeout((prevTimeout) => prevTimeout - 100 / timeout);
+            setVerifyTimeout((prevTimeout) => prevTimeout - 100 / 60);
             if (Math.round(verifyTimeout) % 8 === 0)
                 getBotSubs();
         }, 1000);
@@ -250,9 +305,11 @@ export default function BotDialog() {
         <>
             <FormGroup>
                 <Tooltip title="Subscribe to BeuTMSBot v3 to receive notification when there is an update in grades table via Discord, E-Mail">
-                    <FormControlLabel control={<Switch />} checked={subs?.email || subs?.discordWebhookUrl || subs?.telegramUserId} onChange={handleBotSwitch} label="BeuTMSBot v3" />
+                    <FormControlLabel control={<Switch checked={subs?.email || subs?.discordWebhookUrl || subs?.telegramUserId || false} onChange={handleBotSwitch} />} label="BeuTMSBot v3" />
                 </Tooltip>
             </FormGroup>
+
+            {/* Main Dialog */}
             <Dialog
                 open={isOpen}
                 onClose={handleClose}
@@ -266,10 +323,9 @@ export default function BotDialog() {
                         <ListItem
                             key="email"
                             secondaryAction={
-                                <IconButton edge="end" aria-label="unsubscribe">
+                                <IconButton edge="end" aria-label="unsubscribe" onClick={() => handleUnsub("email")}>
                                     {
                                         subs?.email &&
-                                        // TODO: Unsubscribing
                                         <Close />
                                     }
                                 </IconButton>
@@ -288,7 +344,7 @@ export default function BotDialog() {
                         <ListItem
                             key="discord"
                             secondaryAction={
-                                <IconButton edge="end" aria-label="unsubscribe">
+                                <IconButton edge="end" aria-label="unsubscribe" onClick={() => handleUnsub("discord")}>
                                     {
                                         subs?.discordWebhookUrl &&
                                         <Close />
@@ -311,7 +367,7 @@ export default function BotDialog() {
                         <ListItem
                             key="telegram"
                             secondaryAction={
-                                <IconButton edge="end" aria-label="unsubscribe">
+                                <IconButton edge="end" aria-label="unsubscribe" onClick={() => handleUnsub("telegram")}>
                                     {
                                         subs?.telegramUserId &&
                                         <Close />
@@ -348,8 +404,6 @@ export default function BotDialog() {
                         autoFocus
                         required
                         margin="dense"
-                        id="email"
-                        name="email"
                         label="E-mail"
                         type="email"
                         fullWidth
@@ -375,41 +429,7 @@ export default function BotDialog() {
             >
                 <DialogTitle>Email Verification</DialogTitle>
                 <DialogContent>
-                    {
-                        Math.round(verifyTimeout) !== 0 ?
-                            <Box sx={{ position: 'relative', display: 'inline-flex' }}>
-                                <CircularProgress variant="determinate" value={verifyTimeout} size={256} thickness={6} />
-                                <Box
-                                    sx={{
-                                        top: 0,
-                                        left: 0,
-                                        bottom: 0,
-                                        right: 0,
-                                        position: 'absolute',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                    }}
-                                >
-                                    <Typography
-                                        variant="h2"
-                                        component="div"
-                                        sx={{ color: 'text.secondary' }}
-                                    >{
-                                            Math.round(verifyTimeout * 0.6)
-                                        }</Typography>
-                                </Box>
-                            </Box> :
-                            <Box width={256} textAlign="center">
-                                <HeartBroken sx={{ fontSize: 128 }} />
-                                <Typography
-                                    textAlign="center"
-                                >
-                                    Your link has been expired.
-                                    Send another one to verify your email.
-                                </Typography>
-                            </Box>
-                    }
+                    <DialogContentText>Please check your email. If you haven't received one, you can send again later. Updating with the existing email doesn't count as an update.</DialogContentText>
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleClose}>Close</Button>
@@ -418,7 +438,7 @@ export default function BotDialog() {
                         endIcon={<Send />}
                         disabled={Math.round(verifyTimeout) != 0}
                     >
-                        Send
+                        {Math.round(verifyTimeout) !== 0 ? formatTime(Math.round(verifyTimeout * 0.6)) : "Send"}
                     </PrimaryButton>
                 </DialogActions>
             </Dialog>
@@ -466,9 +486,9 @@ export default function BotDialog() {
                 <DialogTitle>Telegram Subscription</DialogTitle>
                 <DialogContent>
                     <DialogContentText>
-                        You need to be verified in telegram bot. Verification checking can take a while.
+                        You need to be verified in telegram bot. Verification checking can take a while. Updating with the existing telegram account doesn't count as an update.
                     </DialogContentText>
-                    <Stack alignItems="center" gap={2}>
+                    <Stack alignItems="center" gap={2} pt={4}>
                         <Box
                             sx={{
                                 position: 'relative',

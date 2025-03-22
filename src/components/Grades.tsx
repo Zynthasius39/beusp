@@ -65,7 +65,7 @@ export default function Grades() {
   }
 
   const getGradesTable = async (year: string, semester: string) => {
-    await fetchCached(year === "ALL" ? `${url}/resource/grades/all` : `${url}/resource/grades/${year}/${semester}`, {
+    await fetch(year === "ALL" ? `${url}/resource/grades/all` : `${url}/resource/grades/${year}/${semester}`, {
       method: "GET",
       credentials: "include",
     }).then(response => {
