@@ -1,6 +1,4 @@
-const ip = "localhost";
-const port = "5000";
-export const url = `http://${ip}:${port}`;
+export const url = `http://localhost:8080/api`;
 
 export async function auth(student_id: string, password: string) {
   const response = await fetch(url + "/auth?" + new URLSearchParams({
