@@ -1,11 +1,10 @@
 import { AutoFixHigh, Edit, ExpandLess, ExpandMore, Security, Storage } from "@mui/icons-material";
-import { Alert, Avatar, Box, Button, Collapse, Dialog, DialogActions, DialogContent, DialogContentText, List, ListItem, ListItemButton, ListItemIcon, ListItemText, MenuItem, Select, SelectChangeEvent, Snackbar, Stack, TextField, Typography } from "@mui/material";
+import { Alert, Avatar, Box, Button, Collapse, Dialog, DialogActions, DialogContent, DialogContentText, List, ListItem, ListItemButton, ListItemIcon, ListItemText, MenuItem, Select, SelectChangeEvent, Snackbar, Stack, Typography } from "@mui/material";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { PrimaryButton } from "../Components";
 import { checkResponseStatus, fetchCached, UnauthorizedApiError, url } from "../utils/Api";
 import { useAuth } from "../utils/Auth";
 import { useNavigate } from "react-router-dom";
-import { SettingsJson } from "../utils/Interfaces";
 
 export default function Settings() {
     const { authed, logout } = useAuth();

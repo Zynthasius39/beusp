@@ -1,4 +1,4 @@
-import { ReactNode, useCallback, useEffect, useState } from "react";
+import { ReactNode, useCallback, useState } from "react";
 import { AuthContext } from "../utils/Auth";
 import { auth } from "../utils/Api";
 import Cookies from "universal-cookie";
