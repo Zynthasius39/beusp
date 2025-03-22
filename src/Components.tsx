@@ -156,5 +156,5 @@ export const spMenu = [
   { name: "Attendance", icon: <GradingTwoTone color="primary" />, href: "" },
   { name: "Gate", icon: <DoorSlidingTwoTone color="primary" />, href: "" },
   { name: "Documents", icon: <ArticleTwoTone color="primary" />, href: "" },
-  { name: "Settings", icon: <SettingsTwoTone color="primary" />, href: "" },
+  { name: "Settings", icon: <SettingsTwoTone color="primary" />, href: "/settings" },
 ];

@@ -10,6 +10,7 @@ import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import Grades from "./components/Grades";
 import Departments from "./components/Departments";
+import Settings from "./components/Settings";
 
 export default function Index() {
   return (
@@ -28,6 +29,7 @@ export default function Index() {
                 <Route path="announces" element={<Announces />} />
                 <Route path="departments" element={<Departments />} />
                 <Route path="grades" element={<Grades />} />
+                <Route path="settings" element={<Settings />} />
                 <Route path="*" element={<NoPage />} />
               </Route>
               <Route path="/login" element={

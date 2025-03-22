@@ -75,3 +75,7 @@ export interface BotInfoJson {
   botEmail: string | undefined,
   botTelegram: string | undefined,
 }
+
+export interface SettingsJson {
+  lang: "en" | "az",
+}
