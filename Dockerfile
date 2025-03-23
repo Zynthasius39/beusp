@@ -20,3 +20,5 @@ RUN bun run build
 FROM nginx:1-alpine
 COPY --from=build /usr/src/beusp/dist /usr/share/nginx/html
 COPY beusp.nginx.conf /etc/nginx/conf.d/default.conf
+
+EXPOSE 80

@@ -1,4 +1,4 @@
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { HashRouter, Route, Routes } from "react-router-dom";
 import Announces from "./components/Announces";
 import NoPage from "./components/NoPage";
 import App from "./components/App";
@@ -17,7 +17,7 @@ export default function Index() {
     <AuthProvider>
       <ThemeUtilsProvider>
         <LocalizationProvider dateAdapter={AdapterDayjs}>
-          <BrowserRouter>
+          <HashRouter>
             <Routes>
               <Route
                 path="/"
@@ -36,7 +36,7 @@ export default function Index() {
                 <Login />
               } />
             </Routes>
-          </BrowserRouter>
+          </HashRouter>
         </LocalizationProvider>
       </ThemeUtilsProvider>
     </AuthProvider>
