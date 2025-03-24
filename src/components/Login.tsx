@@ -25,7 +25,8 @@ import { MaterialUISwitch, PrimaryButton } from "../Components";
 import { KeyboardEvent, MouseEvent, useCallback, useEffect, useRef, useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../utils/Auth";
-import { checkResponseStatus, fetchCached, UnauthorizedApiError, url, verify } from "../utils/Api";
+import { checkResponseStatus, fetchCached, UnauthorizedApiError, url } from "../utils/Api";
+import TosDialog from "./TosDialog";
 
 
 export default function Login() {
@@ -100,6 +101,7 @@ export default function Login() {
     }
     try {
       await login(studentId, password);
+      verifiedAuth();
       getHome();
       navigate("/");
     } catch (e) {
@@ -144,12 +146,10 @@ export default function Login() {
 
 
   const getComponent = async () => {
-    if (!await verify()) {
-      logout();
+    if (authed) {
+      getHome();
     } else {
-      verifiedAuth();
-      await getHome();
-      getStudPhoto();
+      logout();
     }
   }
 
@@ -157,7 +157,7 @@ export default function Login() {
   useEffect(() => {
     getComponent();
     clearTimeout(timer.current);
-  }, [name, imageURL]);
+  }, []);
 
   return (
     <Stack
@@ -329,6 +329,7 @@ export default function Login() {
           }
         </Stack>
       </FormGroup>
+      <TosDialog />
       <Snackbar
         open={alert != undefined}
       >
