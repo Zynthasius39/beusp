@@ -19,8 +19,6 @@ import {
 } from "@mui/material";
 import "../style/Login.css";
 import { useTheme } from "../utils/Theme";
-import logo_dark from "../assets/beu_dark.svg";
-import logo_light from "../assets/beu_light.svg";
 import { MaterialUISwitch, PrimaryButton } from "../Components";
 import { KeyboardEvent, MouseEvent, useCallback, useEffect, useRef, useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
@@ -192,7 +190,7 @@ export default function Login() {
           <Stack flexDirection="row" justifyContent="space-between">
             <Stack flexDirection="row" alignItems="center" gap={1}>
               <img
-                src={isDark() ? logo_light : logo_dark}
+                src={isDark() ? "/beu_light.svg" : "/beu_dark.svg"}
                 width={24}
                 style={{ backgroundColor: theme.palette.primary.main }}
               />

@@ -8,7 +8,6 @@ import {
   ListItemIcon,
   Box,
 } from "@mui/material";
-import logo_dark from "../assets/beu_dark.svg";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { useTheme } from "../utils/Theme";
 import { useCallback } from "react";
@@ -25,7 +24,7 @@ const DrawerList = () => {
   const handleLogout = useCallback(async () => {
     try {
       setImage("");
-      await logout();
+      logout();
       navigate("/login");
     } catch (e) {
       console.error("Error occured while authorizing:", e);
@@ -48,7 +47,7 @@ const DrawerList = () => {
         <img
           alt="Baku Engineering University"
           width={48}
-          src={logo_dark}
+          src="/beu_dark.svg"
           style={{
             backgroundColor:
               theme.palette.mode === "dark"
@@ -73,7 +72,7 @@ const DrawerList = () => {
           flexGrow: "1",
           overflowY: "auto",
         }}>
-          {spMenu.map(({ name, icon, href }) => (
+          {spMenu.map(({ name, icon, href }, index) => (
             <NavLink
               to={href}
               style={{
@@ -82,7 +81,7 @@ const DrawerList = () => {
               }}
             >
               <ListItemButton
-                key={name}
+                key={index}
                 sx={{
                   p: "5%",
                   pl: "10%",

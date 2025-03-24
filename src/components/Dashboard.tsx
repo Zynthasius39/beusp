@@ -204,9 +204,9 @@ const Dashboard = () => {
                     val = value as String;
                   return [key, val];
                 })
-                .map(([key, value]) => (
+                .map(([key, value], index) => (
                 <TableRow
-                  key={key.trim()}
+                  key={index}
                   sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                 >
                   <TableCell component="th" scope="row">
