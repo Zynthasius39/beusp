@@ -47,7 +47,7 @@ const DrawerList = () => {
         <img
           alt="Baku Engineering University"
           width={48}
-          src="/beu_dark.svg"
+          src="/static/beu_dark.svg"
           style={{
             backgroundColor:
               theme.palette.mode === "dark"

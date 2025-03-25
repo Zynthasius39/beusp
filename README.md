@@ -1,5 +1,5 @@
 <p float="left">
-  <img src="/src/assets/beu.svg" width="100px"/>
+  <img src="public/static/beu.svg" width="100px"/>
   <img src="https://github.com/user-attachments/assets/3e07f85b-7dbd-4181-b2e9-ae61f249006c" />
 </p>
 
@@ -11,6 +11,8 @@
 
 ![image1](https://github.com/user-attachments/assets/6701b74b-d888-4620-8217-a3a4c1a77bca)
 ![image2](https://github.com/user-attachments/assets/580adcbd-659b-44f8-9207-d8c5e2de11a1)
+
+### I prefer the old logo. Sorry, hated the new one. Having a deep meaning doesn't mean it's a good logo.
 
 ## Getting started
 - Starting a dev environment:

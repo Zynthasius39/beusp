@@ -190,7 +190,7 @@ export default function Login() {
           <Stack flexDirection="row" justifyContent="space-between">
             <Stack flexDirection="row" alignItems="center" gap={1}>
               <img
-                src={isDark() ? "/beu_light.svg" : "/beu_dark.svg"}
+                src={isDark() ? "/static/beu_light.svg" : "/static/beu_dark.svg"}
                 width={24}
                 style={{ backgroundColor: theme.palette.primary.main }}
               />
