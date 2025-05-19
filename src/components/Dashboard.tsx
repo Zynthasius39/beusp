@@ -197,7 +197,7 @@ const Dashboard = () => {
                 .map(([key, value]) => {
                   var val;
                   if (typeof value === "boolean")
-                    val = val ? "Yes" : "No";
+                    val = value ? "Yes" : "No";
                   else if (value as String === "")
                     val = "None";
                   else

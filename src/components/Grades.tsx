@@ -1,6 +1,6 @@
 import { Autocomplete, Avatar, Checkbox, FormControlLabel, FormGroup, Paper, Skeleton, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, ToggleButton, ToggleButtonGroup, Tooltip } from "@mui/material";
 import { useAuth } from "../utils/Auth";
-import { calculateSum, colorOfMark, gradeScale, gradeToMark } from "../utils/StudentLogic";
+import { calculateSum, colorOfMark, gradeScale, gradeToMark, getValue } from "../utils/StudentLogic";
 import { ChangeEvent, MouseEvent, SyntheticEvent, useEffect, useState } from "react";
 import { useTheme } from "../utils/Theme";
 import { useNavigate } from "react-router-dom";
@@ -240,15 +240,15 @@ export default function Grades() {
                     <TableRow>
                       <TableCell height={36}>{code}</TableCell>
                       <TableCell width={512}>{course.courseName}</TableCell>
-                      <TableCell sx={tableCellStyle}>{courseG.act1 === -1 ? "" : courseG.act1}</TableCell>
-                      <TableCell sx={tableCellStyle}>{courseG.act2 === -1 ? "" : courseG.act2}</TableCell>
+                      <TableCell sx={tableCellStyle}>{getValue(courseG.act1)}</TableCell>
+                      <TableCell sx={tableCellStyle}>{getValue(courseG.act2)}</TableCell>
                       {
                         act3Enabled &&
-                        <TableCell sx={tableCellStyle}>{courseG.act3 === -1 ? "" : courseG.act3}</TableCell>
+                        <TableCell sx={tableCellStyle}>{getValue(courseG.act3)}</TableCell>
                       }
-                      <TableCell sx={tableCellStyle}>{courseG.attendance === -1 ? "" : courseG.attendance}</TableCell>
-                      <TableCell sx={tableCellStyle}>{courseG.iw === -1 ? "" : courseG.iw}</TableCell>
-                      <TableCell sx={tableCellStyle}>{courseG.final === -1 ? "" : courseG.final}</TableCell>
+                      <TableCell sx={tableCellStyle}>{getValue(courseG.attendance)}</TableCell>
+                      <TableCell sx={tableCellStyle}>{getValue(courseG.iw)}</TableCell>
+                      <TableCell sx={tableCellStyle}>{getValue(courseG.final)}</TableCell>
                       <TableCell sx={tableCellStyle}>{calcGrade || courseG.final !== -1 ? calculateSum(course, roundGrade) : ""}</TableCell>
                       <TableCell>
                         <Paper elevation={5} sx={{ borderRadius: "50%", width: 40 }}>

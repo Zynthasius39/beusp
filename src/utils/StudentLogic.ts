@@ -71,17 +71,17 @@ export const gradeScale = (course: CourseJson, oldScale: boolean, round: boolean
 export const calculateSum = (json: CourseJson, round: boolean) => {
     let grade;
     if (round) {
-        grade = gradeRound(json.act1) +
-            gradeRound(json.act2) +
-            gradeRound(json.attendance) +
-            gradeRound(json.iw) +
-            gradeRound(json.final);
+        grade = gradeRound(getValueNum(json.act1)) +
+            gradeRound(getValueNum(json.act2)) +
+            gradeRound(getValueNum(json.attendance)) +
+            gradeRound(getValueNum(json.iw)) +
+            gradeRound(getValueNum(json.final));
     } else {
-        grade = parseFloat((json.act1 +
-            json.act2 +
-            json.attendance +
-            json.iw +
-            json.final).toFixed(2));
+        grade = parseFloat((getValueNum(json.act1) +
+            getValueNum(json.act2) +
+            getValueNum(json.attendance) +
+            getValueNum(json.iw) +
+            getValueNum(json.final)).toFixed(2));
     }
     if (grade < 0)
         return 0;
@@ -110,4 +110,15 @@ export const formatTime = (seconds: number): string => {
     const secs = seconds % 60;
     const paddedSecs = secs.toString().padStart(2, '0');
     return `${mins}:${paddedSecs}`;
+}
+
+export const getValue = (value: number): string => {
+    if (value === -1) return "";
+    if (value === -2) return "Q";
+    if (value === -3) return "ERR";
+    return value.toString();
+}
+
+export const getValueNum = (value: number): number => {
+    return value < 0 ? 0 : value;
 }
