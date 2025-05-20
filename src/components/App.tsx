@@ -53,7 +53,7 @@ export default function App() {
         </Box>
         <Stack flex={4} bgcolor="background.default" color="text.primary">
           <Navbar name={name} page={page}/>
-          <Box p={1} flex={8} overflow="auto">
+          <Box p={1} flex={8} sx={{ pb: 16 }} overflow="auto">
             <Outlet />
           </Box>
         </Stack>

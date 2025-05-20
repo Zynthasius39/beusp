@@ -1,15 +1,15 @@
 import { Button, styled, Switch } from "@mui/material";
 import {
   AnnouncementTwoTone,
-  ArticleTwoTone,
-  CalendarMonthTwoTone,
+  // ArticleTwoTone,
+  // CalendarMonthTwoTone,
   DashboardTwoTone,
-  DoorSlidingTwoTone,
-  FolderTwoTone,
+  // DoorSlidingTwoTone,
+  // FolderTwoTone,
   GradeTwoTone,
-  GradingTwoTone,
+  // GradingTwoTone,
   SettingsTwoTone,
-  SummarizeTwoTone,
+  // SummarizeTwoTone,
 } from "@mui/icons-material";
 
 export const MaterialUISwitch = styled(Switch)(({ theme }) => ({
@@ -149,12 +149,12 @@ export const spMenu = [
     icon: <AnnouncementTwoTone color="primary" />,
     href: "/announces",
   },
-  { name: "Departments", icon: <FolderTwoTone color="primary" />, href: "/departments" },
-  { name: "Course", icon: <CalendarMonthTwoTone color="primary" />, href: "" },
+  // { name: "Departments", icon: <FolderTwoTone color="primary" />, href: "/departments" },
+  // { name: "Course", icon: <CalendarMonthTwoTone color="primary" />, href: "" },
   { name: "Grades", icon: <GradeTwoTone color="primary" />, href: "/grades" },
-  { name: "Transcript", icon: <SummarizeTwoTone color="primary" />, href: "" },
-  { name: "Attendance", icon: <GradingTwoTone color="primary" />, href: "" },
-  { name: "Gate", icon: <DoorSlidingTwoTone color="primary" />, href: "" },
-  { name: "Documents", icon: <ArticleTwoTone color="primary" />, href: "" },
+  // { name: "Transcript", icon: <SummarizeTwoTone color="primary" />, href: "" },
+  // { name: "Attendance", icon: <GradingTwoTone color="primary" />, href: "" },
+  // { name: "Gate", icon: <DoorSlidingTwoTone color="primary" />, href: "" },
+  // { name: "Documents", icon: <ArticleTwoTone color="primary" />, href: "" },
   { name: "Settings", icon: <SettingsTwoTone color="primary" />, href: "/settings" },
 ];

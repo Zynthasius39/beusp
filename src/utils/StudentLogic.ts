@@ -113,6 +113,7 @@ export const formatTime = (seconds: number): string => {
 }
 
 export const getValue = (value: number): string => {
+    if (typeof value === "undefined") return "";
     if (value === -1) return "";
     if (value === -2) return "Q";
     if (value === -3) return "ERR";

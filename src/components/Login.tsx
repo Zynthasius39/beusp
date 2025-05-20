@@ -101,7 +101,10 @@ export default function Login() {
       await login(studentId, password);
       verifiedAuth();
       getHome();
-      navigate("/");
+
+      // Only reason for visiting is to check Grades page
+      // navigate("/");
+      navigate("/grades");
     } catch (e) {
       console.error("Error occured while authorizing:", e);
       showAlert("Invalid credentials", "error");
