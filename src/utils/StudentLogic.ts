@@ -1,4 +1,6 @@
+import { green, red, yellow } from "@mui/material/colors";
 import { CourseJson } from "./Interfaces";
+import { darkTheme, lightTheme } from "./Theme";
 
 export const convertBlobToBase64 = (blob: Blob) => {
     return new Promise((resolve, reject) => {
@@ -89,6 +91,14 @@ export const calculateSum = (json: CourseJson, round: boolean) => {
         return grade;
 }
 
+export const canPredictScholarship = (json: CourseJson): boolean => {
+    if (getValue(json.act1) === "") return false;
+    if (getValue(json.act2) === "") return false;
+    if (getValue(json.attendance) === "") return false;
+    if (getValue(json.iw) === "") return false;
+    return true;
+}
+
 export const gradeRound = (grade: number) => {
     const fGrade = Math.floor(grade);
     if (grade - fGrade > 0.5)
@@ -122,4 +132,59 @@ export const getValue = (value: number): string => {
 
 export const getValueNum = (value: number): number => {
     return value < 0 ? 0 : value;
+}
+
+export const pointsNeeded = (sum: number, category: "queen" | "rook" | "pawn"): number => {
+    switch (category) {
+        case "queen":
+            return 91 - sum;
+        case "rook":
+            return 71 - sum;
+        case "pawn":
+            return 51 - sum;
+    }
+}
+
+export const pointsNeededStr = (sum: number, category: "queen" | "rook" | "pawn"): string => {
+    const needed = pointsNeeded(sum, category);
+    return (needed === 50 ? "" : "+") + needed.toString();
+}
+
+export const pointNeedStyle = (sum: number, category: "queen" | "rook" | "pawn", isDark: boolean) => {
+    const baseColors = pointNeedColors(sum, category, isDark);
+    const baseStyle = {
+        fontWeight: "bold",
+    }
+
+    if (pointsNeeded(sum, category) > 50) {
+        return { ...baseStyle, textDecoration: "line-through", color: baseColors.lost };
+    }
+    if (pointsNeeded(sum, category) > 44) {
+        return { ...baseStyle, color: baseColors.hard };
+    }
+    if (pointsNeeded(sum, category) > 26) {
+        return { ...baseStyle, color: baseColors.mid };
+    }
+    return { ...baseStyle, color: baseColors.easy };
+}
+
+export const pointNeedColors = (sum: number, category: "queen" | "rook" | "pawn", isDark: boolean) => {
+    const theme = isDark ? darkTheme : lightTheme;
+    const colors = isDark ?
+        {
+            lost: theme.palette.text.secondary,
+            hard: red.A700,
+            mid: yellow.A700,
+            easy: green.A700,
+        } :
+        {
+            lost: theme.palette.text.secondary,
+            hard: red[500],
+            mid: yellow[500],
+            easy: green[500],
+        };
+    return {
+        ...colors,
+        fill: pointsNeeded(sum, category) > 50 ? theme.palette.text.disabled : theme.palette.text.primary,
+    }
 }
