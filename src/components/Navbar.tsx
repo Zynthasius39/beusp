@@ -29,7 +29,6 @@ const Navbar = (props: { name: string; page: string }) => {
   }, []);
 
   const handleLogout = useCallback(async () => {
-    setImage("");
     await logout();
     navigate("/login");
   }, []);

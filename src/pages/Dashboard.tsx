@@ -205,16 +205,16 @@ const Dashboard = () => {
                   return [key, val];
                 })
                 .map(([key, value], index) => (
-                <TableRow
-                  key={index}
-                  sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                >
-                  <TableCell component="th" scope="row">
-                    {key}
-                  </TableCell>
-                  <TableCell align="right">{value}</TableCell>
-                </TableRow>
-              ))}
+                  <TableRow
+                    key={index}
+                    sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                  >
+                    <TableCell component="th" scope="row">
+                      {key}
+                    </TableCell>
+                    <TableCell align="right">{value}</TableCell>
+                  </TableRow>
+                ))}
           </TableBody>
         </Table>
       </TableContainer>

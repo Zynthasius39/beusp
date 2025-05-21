@@ -20,6 +20,7 @@ export default function AuthProvider({ children }: { children: ReactNode}) {
   }, [authed]);
 
   const logout = useCallback(async () => {
+    setImage("");
     cookies.remove("StudentID");
     cookies.remove("SessionID");
     cookies.remove("ImgID");

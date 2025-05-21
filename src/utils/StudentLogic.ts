@@ -70,20 +70,25 @@ export const gradeScale = (course: CourseJson, oldScale: boolean, round: boolean
     return courseG;
 }
 
-export const calculateSum = (json: CourseJson, round: boolean) => {
+export const calculateSum = (json: CourseJson, round: boolean, act3Enabled: boolean) => {
     let grade;
     if (round) {
         grade = gradeRound(getValueNum(json.act1)) +
             gradeRound(getValueNum(json.act2)) +
+            (act3Enabled ? gradeRound(getValueNum(isNaN(json.act3) ? 0 : json.act3)) : 0) +
             gradeRound(getValueNum(json.attendance)) +
             gradeRound(getValueNum(json.iw)) +
-            gradeRound(getValueNum(json.final));
+            gradeRound(getValueNum(json.final)
+            );
     } else {
-        grade = parseFloat((getValueNum(json.act1) +
+        grade = parseFloat((
+            getValueNum(json.act1) +
             getValueNum(json.act2) +
+            (act3Enabled ? getValueNum(isNaN(json.act3) ? 0 : json.act3) : 0) +
             getValueNum(json.attendance) +
             getValueNum(json.iw) +
-            getValueNum(json.final)).toFixed(2));
+            getValueNum(json.final)
+        ).toFixed(2));
     }
     if (grade < 0)
         return 0;
@@ -91,11 +96,21 @@ export const calculateSum = (json: CourseJson, round: boolean) => {
         return grade;
 }
 
-export const canPredictScholarship = (json: CourseJson): boolean => {
-    if (getValue(json.act1) === "") return false;
-    if (getValue(json.act2) === "") return false;
-    if (getValue(json.attendance) === "") return false;
-    if (getValue(json.iw) === "") return false;
+export const canPredictScholarship = (json: CourseJson , act3Enabled: boolean): boolean => {
+    if (getGradeValue(json.act1) === "") return false;
+    if (getGradeValue(json.act2) === "") return false;
+    if (getGradeValue(json.act3) === "" && act3Enabled) return false;
+    if (getGradeValue(json.attendance) === "") return false;
+    if (getGradeValue(json.iw) === "") return false;
+    return true;
+}
+
+export const canPredictScholarshipNoIw = (json: CourseJson , act3Enabled: boolean): boolean => {
+    if (getGradeValue(json.act1) === "") return false;
+    if (getGradeValue(json.act2) === "") return false;
+    if (getGradeValue(json.act3) === "" && act3Enabled) return false;
+    if (getGradeValue(json.attendance) === "") return false;
+    if (getGradeValue(json.iw) !== "") return false;
     return true;
 }
 
@@ -122,7 +137,7 @@ export const formatTime = (seconds: number): string => {
     return `${mins}:${paddedSecs}`;
 }
 
-export const getValue = (value: number): string => {
+export const getGradeValue = (value: number): string => {
     if (typeof value === "undefined") return "";
     if (value === -1) return "";
     if (value === -2) return "Q";
@@ -152,20 +167,16 @@ export const pointsNeededStr = (sum: number, category: "queen" | "rook" | "pawn"
 
 export const pointNeedStyle = (sum: number, category: "queen" | "rook" | "pawn", isDark: boolean) => {
     const baseColors = pointNeedColors(sum, category, isDark);
-    const baseStyle = {
-        fontWeight: "bold",
-    }
-
     if (pointsNeeded(sum, category) > 50) {
-        return { ...baseStyle, textDecoration: "line-through", color: baseColors.lost };
+        return { textDecoration: "line-through", color: baseColors.lost };
     }
     if (pointsNeeded(sum, category) > 44) {
-        return { ...baseStyle, color: baseColors.hard };
+        return { color: baseColors.hard };
     }
     if (pointsNeeded(sum, category) > 26) {
-        return { ...baseStyle, color: baseColors.mid };
+        return { color: baseColors.mid };
     }
-    return { ...baseStyle, color: baseColors.easy };
+    return { color: baseColors.easy };
 }
 
 export const pointNeedColors = (sum: number, category: "queen" | "rook" | "pawn", isDark: boolean) => {

@@ -70,7 +70,9 @@ const isServerFault = (status: number) => {
 }
 
 export const checkResponseStatus = (response: Response) => {
-  if (isUnauthorized(response.status))
+  if (response.status === 404)
+    throw new NotFoundApiError(String(response.status));
+  else if (isUnauthorized(response.status))
     throw new UnauthorizedApiError(String(response.status));
   else if (isServerFault(response.status))
     throw new ServerFaultApiError(String(response.status));
@@ -82,6 +84,13 @@ export class UnauthorizedApiError extends Error {
   constructor(message: string) {
     super(message);
     this.name = 'UnauthorizedApiError';
+  }
+}
+
+export class NotFoundApiError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'NotFoundApiError';
   }
 }
 

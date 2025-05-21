@@ -18,11 +18,9 @@ export const useAuth = () => {
 
 export const isAuthed = (): boolean => {
     if (cookies.get("SessionID") === undefined || cookies.get("SessionID") === "") {
-      console.log(cookies.get("SessionID"));
       return false;
     }
     if (cookies.get("StudentID") === undefined || cookies.get("StudentID") === "") {
-      console.log(cookies.get("StudentID"));
       return false;
     }
     return true;

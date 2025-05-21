@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { Box, Stack } from "@mui/material";
-import Navbar from "./Navbar";
+import Navbar from "../components/Navbar";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
-import DrawerList from "./DrawerList";
+import DrawerList from "../components/DrawerList";
 import { useTheme } from "../utils/Theme";
 import { useAuth } from "../utils/Auth";
 import { verify } from "../utils/Api";
@@ -29,7 +29,7 @@ export default function App() {
   }
 
   useEffect(() => {
-      updatePage();
+    updatePage();
     if (!authed) {
       getComponent();
     }
@@ -52,8 +52,8 @@ export default function App() {
           <DrawerList />
         </Box>
         <Stack flex={4} bgcolor="background.default" color="text.primary">
-          <Navbar name={name} page={page}/>
-          <Box p={1} flex={8} sx={{ pb: 16 }} overflow="auto">
+          <Navbar name={name} page={page} />
+          <Box p={1} flex={8} sx={{ pb: 20 }} overflow="auto">
             <Outlet />
           </Box>
         </Stack>

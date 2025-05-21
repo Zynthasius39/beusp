@@ -24,7 +24,7 @@ import { KeyboardEvent, MouseEvent, useCallback, useEffect, useRef, useState } f
 import { NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../utils/Auth";
 import { checkResponseStatus, fetchCached, UnauthorizedApiError, url } from "../utils/Api";
-import TosDialog from "./TosDialog";
+import TosDialog from "../components/TosDialog";
 
 
 export default function Login() {
@@ -117,6 +117,7 @@ export default function Login() {
     try {
       setImage("");
       await logout();
+      navigate("/login");
     } catch (e) {
       console.error("Error occured while authorizing:", e);
       showAlert("Couldn't log out:" + String(e), "error");
@@ -151,6 +152,7 @@ export default function Login() {
       getHome();
     } else {
       logout();
+      navigate("/login");
     }
   }
 

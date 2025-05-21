@@ -1,16 +1,16 @@
 import { HashRouter, Route, Routes } from "react-router-dom";
-import Announces from "./components/Announces";
+import Announces from "./pages/Announces";
 import NoPage from "./components/NoPage";
-import App from "./components/App";
-import Login from "./components/Login";
-import AuthProvider from "./components/AuthProvider";
-import ThemeUtilsProvider from "./components/ThemeUtilsProvider";
-import Dashboard from "./components/Dashboard";
+import App from "./layouts/App";
+import Login from "./pages/Login";
+import AuthProvider from "./providers/AuthProvider";
+import ThemeUtilsProvider from "./providers/ThemeUtilsProvider";
+import Dashboard from "./pages/Dashboard";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
-import Grades from "./components/Grades";
-import Departments from "./components/Departments";
-import Settings from "./components/Settings";
+import Grades from "./pages/Grades";
+import Departments from "./pages/Departments";
+import Settings from "./pages/Settings";
 
 export default function Index() {
   return (

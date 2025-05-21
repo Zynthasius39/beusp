@@ -65,7 +65,6 @@ export default function Settings() {
             return response.json()
         }).then(json => {
             setTmsLang(json.lang);
-            console.log(json.lang);
         }).catch(e => {
             if (e instanceof UnauthorizedApiError) {
                 logout();

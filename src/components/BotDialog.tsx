@@ -8,7 +8,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import { ChangeEvent, SyntheticEvent, useCallback, useEffect, useRef, useState } from 'react';
 import { Alert, Box, FormControlLabel, FormGroup, IconButton, LinearProgress, Link, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Snackbar, Stack, Switch, Tooltip, Typography } from '@mui/material';
 import { useAuth } from '../utils/Auth';
-import { checkResponseStatus, fetchCached, UnauthorizedApiError, url } from '../utils/Api';
+import { checkResponseStatus, fetchCached, NotFoundApiError, UnauthorizedApiError, url } from '../utils/Api';
 import { Close, Email, Send, Telegram } from '@mui/icons-material';
 import { formatTime, isValidDcWebhook, isValidEmail } from '../utils/StudentLogic';
 import { PrimaryButton } from '../Components';
@@ -22,6 +22,7 @@ export default function BotDialog() {
     const [isOpen, setIsOpen] = useState(false);
     const [subs, setSubs] = useState<any | undefined>(undefined);
     const [botInfo, setBotInfo] = useState<BotInfoJson>({ botEmail: undefined, botTelegram: undefined });
+    const [botEnabled, setBotEnabled] = useState(false);
     const [useEmail, setUseEmail] = useState(false);
     const [verifyEmail, setVerifyEmail] = useState(false);
     const [email, setEmail] = useState("");
@@ -198,8 +199,12 @@ export default function BotDialog() {
             return response.json()
         }).then((json: BotInfoJson) => {
             setBotInfo(json);
+            setBotEnabled(true);
         }).catch(e => {
-            if (e instanceof UnauthorizedApiError) {
+            if (e instanceof NotFoundApiError) {
+                console.error(e);
+                showAlert("Bot is offline", "error");
+            } else if (e instanceof UnauthorizedApiError) {
                 logout();
                 navigate("/login");
             } else {
@@ -305,7 +310,15 @@ export default function BotDialog() {
         <>
             <FormGroup>
                 <Tooltip title="Subscribe to BeuTMSBot v3 to receive notification when there is an update in grades table via Discord, E-Mail">
-                    <FormControlLabel control={<Switch checked={subs?.email || subs?.discordWebhookUrl || subs?.telegramUserId || false} onChange={handleBotSwitch} />} label="BeuTMSBot v3" />
+                    <FormControlLabel
+                        control={
+                            <Switch
+                                checked={subs?.email || subs?.discordWebhookUrl || subs?.telegramUserId || false}
+                                onChange={handleBotSwitch}
+                            />}
+                        disabled={!botEnabled}
+                        label="BeuTMSBot v3"
+                    />
                 </Tooltip>
             </FormGroup>
 

@@ -8,28 +8,16 @@ import {
   ListItemIcon,
   Box,
 } from "@mui/material";
-import { NavLink, useLocation, useNavigate } from "react-router-dom";
+import { NavLink, useLocation} from "react-router-dom";
 import { useTheme } from "../utils/Theme";
-import { useCallback } from "react";
-import { useAuth } from "../utils/Auth";
 import { spMenu } from "../Components";
 import { LogoutTwoTone } from "@mui/icons-material";
+import { useAuth } from "../utils/Auth";
 
 const DrawerList = () => {
-  const { logout, setImage } = useAuth();
+  const { logout } = useAuth();
   const { theme } = useTheme();
-  const navigate = useNavigate();
   const path = useLocation().pathname;
-
-  const handleLogout = useCallback(async () => {
-    try {
-      setImage("");
-      logout();
-      navigate("/login");
-    } catch (e) {
-      console.error("Error occured while authorizing:", e);
-    }
-  }, []);
 
   return (
     <Stack
@@ -98,7 +86,7 @@ const DrawerList = () => {
           ))}
         </Box>
         <Link href="" color="inherit" underline="none" width={"100%"}>
-          <ListItemButton key="logout" sx={{ p: "5%", pl: "10%" }} onClick={handleLogout}>
+          <ListItemButton key="logout" sx={{ p: "5%", pl: "10%" }} onClick={logout}>
             <ListItemIcon>
               <LogoutTwoTone color="primary" />
             </ListItemIcon>

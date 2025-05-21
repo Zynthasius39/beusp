@@ -19,10 +19,11 @@ export interface ThemeContextType {
 }
 
 export interface GradesJson {
-  courseCode: CourseJson
+  [key: string]: CourseJson
 }
 
 export interface CourseJson {
+  courseCode: string,
   courseName: string,
   act1: number,
   act2: number,
@@ -31,6 +32,8 @@ export interface CourseJson {
   iw: number,
   final: number,
   sum: number,
+  calcSum: number,
+  mark: string,
 }
 
 export interface HomeStudentInfoJson {
