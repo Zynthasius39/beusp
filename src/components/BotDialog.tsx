@@ -13,7 +13,7 @@ import { Close, Email, Send, Telegram } from '@mui/icons-material';
 import { formatTime, isValidDcWebhook, isValidEmail } from '../utils/StudentLogic';
 import { PrimaryButton } from '../Components';
 import { useNavigate } from 'react-router-dom';
-import { BotInfoJson, BotSubsJson } from '../utils/Interfaces';
+import { AlertSeverity, BotInfoJson, BotSubsJson } from '../utils/Interfaces';
 import { useTheme } from '../utils/Theme';
 
 export default function BotDialog() {
@@ -175,13 +175,13 @@ export default function BotDialog() {
         setIsOpen(true);
     }
 
-    const showAlert = useCallback((msg: string, severity: string) => {
+    const showAlert = useCallback((msg: string, severity: AlertSeverity) => {
         if (alert != undefined) {
             setAlert(undefined);
             clearTimeout(alertTimer.current);
         }
         setAlert(
-            <Alert severity={severity as 'success' | 'error' | 'warning' | 'info'} sx={{ width: "100%" }}>
+            <Alert severity={severity} sx={{ width: "100%" }}>
                 {msg}
             </Alert>
         );

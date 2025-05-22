@@ -1,5 +1,14 @@
 import { Theme } from "@mui/material";
 
+export type Order = 'asc' | 'desc';
+export type ColorSeverity = "inherit" | "primary" | "secondary" | "error" | "info" | "success" | "warning";
+export type AlertSeverity = 'success' | 'error' | 'warning' | 'info';
+export type AttendanceCouples = Record<string, (AttendanceEntry & { courseCode: string })[]>
+
+export interface AttendanceJson {
+  [key: string]: AttendanceEntry
+}
+
 export interface AuthContextType {
   name: string;
   authed: boolean;
@@ -19,10 +28,10 @@ export interface ThemeContextType {
 }
 
 export interface GradesJson {
-  [key: string]: CourseJson
+  [key: string]: GradeEntry
 }
 
-export interface CourseJson {
+export interface GradeEntry {
   courseCode: string,
   courseName: string,
   act1: number,
@@ -34,6 +43,18 @@ export interface CourseJson {
   sum: number,
   calcSum: number,
   mark: string,
+}
+
+export interface AttendanceEntry {
+  absent: number,
+  absentPercent: number,
+  atds: number,
+  courseEducator: string,
+  courseCode: string,
+  courseName: string,
+  credit: string,
+  hours: number,
+  limit: number,
 }
 
 export interface HomeStudentInfoJson {
@@ -81,4 +102,10 @@ export interface BotInfoJson {
 
 export interface SettingsJson {
   lang: "en" | "az",
+}
+
+export interface SpMenuEntry {
+  name: string,
+  icon: JSX.Element,
+  href: string,
 }

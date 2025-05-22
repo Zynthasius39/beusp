@@ -15,20 +15,16 @@ import {
 import { useTheme } from "../utils/Theme";
 import "../style/Dashboard.css";
 import { cloneElement, useEffect, useState } from "react";
-import { useAuth } from "../utils/Auth";
-import { useNavigate } from "react-router-dom";
-import { checkResponseStatus, fetchCached, UnauthorizedApiError, url } from "../utils/Api";
+import { checkResponseStatus, fetchCached, url } from "../utils/Api";
 
 const Dashboard = () => {
   const { theme } = useTheme();
-  const { authed, logout } = useAuth();
   const [dashLoading, setDashLoading] = useState(true);
   const [classCount, setClassCount] = useState(0);
   const [totalCredits, setTotalCredits] = useState(0);
   const [gpa, setGpa] = useState(0);
   const [eduDebt, setEduDebt] = useState("0 AZN");
   const [homeTable, setHomeTable] = useState<object | undefined>(undefined);
-  const navigate = useNavigate();
 
   const infoCards = [
     { name: "Enrolled Classes", value: classCount, icon: <ImportContactsTwoTone /> },
@@ -87,12 +83,7 @@ const Dashboard = () => {
       checkResponseStatus(response);
       return response.json();
     }).catch(e => {
-      if (e instanceof UnauthorizedApiError) {
-        logout();
-        navigate("/login");
-      } else {
-        throw e;
-      }
+      console.error(e);
     }).then(json => {
       setClassCount(Object.entries(json.semesters || {}).length);
       setTotalCredits(Number(json.totalEarnedCredits));
@@ -109,12 +100,7 @@ const Dashboard = () => {
       checkResponseStatus(response);
       return response.json();
     }).catch(e => {
-      if (e instanceof UnauthorizedApiError) {
-        logout();
-        navigate("/login");
-      } else {
-        throw e;
-      }
+      console.error(e);
     }).then(json => {
       setEduDebt(`${json.studentInfo.eduDebt.amount} AZN`);
       Object.entries(json.studentInfo)
@@ -128,11 +114,9 @@ const Dashboard = () => {
   }
 
   useEffect(() => {
-    if (authed) {
-      getTranscript();
-      getHomeStudInfo();
-    }
-  }, [authed]);
+    getTranscript();
+    getHomeStudInfo();
+  }, []);
 
   return (
     <Stack sx={{

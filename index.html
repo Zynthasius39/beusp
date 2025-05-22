@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <link rel="icon" type="image/svg" href="/static/beu_round.svg" />
     <link rel="stylesheet"
         href="https://cdnjs.cloudflare.com/ajax/libs/github-fork-ribbon-css/0.2.3/gh-fork-ribbon.min.css" />
@@ -11,6 +11,11 @@
         * {
             font-family: "Roboto", sans-serif;
             margin: 0;
+        }
+
+        html,
+        body {
+            overscroll-behavior: none;
         }
 
         body {

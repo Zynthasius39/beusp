@@ -1,15 +1,11 @@
 import { Autocomplete, Checkbox, FormControlLabel, FormGroup, Skeleton, Stack, TextField, ToggleButton, ToggleButtonGroup, Tooltip } from "@mui/material";
-import { useAuth } from "../utils/Auth";
 import { ChangeEvent, MouseEvent, SyntheticEvent, useEffect, useState } from "react";
-import { GradesJson } from "../utils/Interfaces";
 import BotDialog from "../components/BotDialog";
-import { checkResponseStatus, fetchCached, UnauthorizedApiError, url } from "../utils/Api";
+import { checkResponseStatus, fetchCached, url } from "../utils/Api";
 import GradesTable from "../components/GradesTable";
-import { useNavigate } from "react-router-dom";
+import { GradesJson } from "../utils/Interfaces";
 
 export default function Grades() {
-  const navigate = useNavigate();
-  const { authed, logout } = useAuth();
   const [isAll, setIsAll] = useState(false);
   const [semester, setSemester] = useState("1");
   const [oldScale, setOldScale] = useState(false);
@@ -22,7 +18,7 @@ export default function Grades() {
   const [doIwAsm, setDoIwAsm] = useState(false);
   const [iwAsm, setIwAsm] = useState(10);
   const [year, setYear] = useState<string | null>(null);
-  const [gradesT, setGradesT] = useState<GradesJson | null>(null);
+  const [gradesT, setGradesT] = useState<GradesJson | undefined>(undefined);
   const [options, setOptions] = useState<{ [year: string]: boolean }>({});
   const [calcAnchorEl, setCalcAnchorEl] = useState<null | HTMLElement>(null);
 
@@ -34,12 +30,7 @@ export default function Grades() {
       checkResponseStatus(response);
       return response.json();
     }).catch(e => {
-      if (e instanceof UnauthorizedApiError) {
-        logout();
-        navigate("/login");
-      } else {
-        console.error(e);
-      }
+      console.error(e);
     }).then(json => {
       const options: { [year: string]: boolean } = {};
       if (json.canRequestAll)
@@ -65,12 +56,7 @@ export default function Grades() {
       checkResponseStatus(response);
       return response.json()
     }).catch(e => {
-      if (e instanceof UnauthorizedApiError) {
-        logout();
-        navigate("/login");
-      } else {
-        console.error(e);
-      }
+      console.error(e);
     }).then(json => {
       setGradesT(json);
       setGradeTLoading(false);
@@ -119,10 +105,9 @@ export default function Grades() {
   }
 
   useEffect(() => {
-    if (authed && gradesT === null) {
+    if (gradesT === undefined)
       getGrades();
-    }
-  }, [authed])
+  }, [])
 
   useEffect(() => {
     if (year !== null && semester !== null) {
@@ -145,10 +130,6 @@ export default function Grades() {
         {
           gradesLoading ?
             <Skeleton variant="rounded" animation="wave" sx={{
-              flexGrow: {
-                xs: 0,
-                sm: 1,
-              },
               width: 96,
               height: 52
             }} />
@@ -164,21 +145,29 @@ export default function Grades() {
             />
         }
         {
-          !isAll &&
-          <ToggleButtonGroup
-            color="primary"
-            value={semester}
-            onChange={handleSemesterBox}
-            exclusive
-            aria-label="semester number"
-          >
-            <ToggleButton value="1" aria-label="first">
-              1
-            </ToggleButton>
-            <ToggleButton value="2" aria-label="second" disabled={!ssAvaliable}>
-              2
-            </ToggleButton>
-          </ToggleButtonGroup>
+          gradesLoading ?
+            <Skeleton variant="rounded" animation="wave" sx={{
+              width: 64,
+              height: 52
+            }} />
+            :
+            (
+              !isAll &&
+              <ToggleButtonGroup
+                color="primary"
+                value={semester}
+                onChange={handleSemesterBox}
+                exclusive
+                aria-label="semester number"
+              >
+                <ToggleButton value="1" aria-label="first">
+                  1
+                </ToggleButton>
+                <ToggleButton value="2" aria-label="second" disabled={!ssAvaliable}>
+                  2
+                </ToggleButton>
+              </ToggleButtonGroup>
+            )
         }
         <BotDialog />
         <FormGroup>
@@ -219,14 +208,14 @@ export default function Grades() {
         </FormGroup>
       </Stack>
       <GradesTable
+        doIwAsm={doIwAsm}
+        iwAsm={iwAsm}
+        gradesT={gradesT}
         gradeTLoading={gradeTLoading}
         oldScale={oldScale}
         calcGrade={calcGrade}
         roundGrade={roundGrade}
         act3Enabled={act3Enabled}
-        gradesT={gradesT}
-        doIwAsm={doIwAsm}
-        iwAsm={iwAsm}
         calcAnchorEl={calcAnchorEl}
         setCalcAnchorEl={setCalcAnchorEl}
       />

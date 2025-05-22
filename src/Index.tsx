@@ -11,6 +11,7 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import Grades from "./pages/Grades";
 import Departments from "./pages/Departments";
 import Settings from "./pages/Settings";
+import Attendance from "./pages/Attendance";
 
 export default function Index() {
   return (
@@ -27,6 +28,7 @@ export default function Index() {
               >
                 <Route index element={<Dashboard />} />
                 <Route path="announces" element={<Announces />} />
+                <Route path="attendance" element={<Attendance />} />
                 <Route path="departments" element={<Departments />} />
                 <Route path="grades" element={<Grades />} />
                 <Route path="settings" element={<Settings />} />

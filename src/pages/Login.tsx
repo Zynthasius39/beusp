@@ -23,8 +23,9 @@ import { MaterialUISwitch, PrimaryButton } from "../Components";
 import { KeyboardEvent, MouseEvent, useCallback, useEffect, useRef, useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../utils/Auth";
-import { checkResponseStatus, fetchCached, UnauthorizedApiError, url } from "../utils/Api";
+import { checkResponseStatus, fetchCached, url } from "../utils/Api";
 import TosDialog from "../components/TosDialog";
+import { AlertSeverity } from "../utils/Interfaces";
 
 
 export default function Login() {
@@ -51,12 +52,7 @@ export default function Login() {
       setName(json?.studentInfo?.fullNamePatronymic?.split(" ")[0]);
       getStudPhoto();
     }).catch(e => {
-      if (e instanceof UnauthorizedApiError) {
-        logout();
-        navigate("/login");
-      } else {
-        console.error(e);
-      }
+      console.error(e);
     })
   }
 
@@ -75,13 +71,13 @@ export default function Login() {
     [],
   );
 
-  const showAlert = useCallback((msg: string, severity: string) => {
+  const showAlert = useCallback((msg: string, severity: AlertSeverity) => {
     if (alert != undefined) {
       setAlert(undefined);
       clearTimeout(alertTimer.current);
     }
     setAlert(
-      <Alert severity={severity as 'success' | 'error' | 'warning' | 'info'} sx={{ width: "100%" }}>
+      <Alert severity={severity} sx={{ width: "100%" }}>
         {msg}
       </Alert>
     );
@@ -137,28 +133,12 @@ export default function Login() {
     }).then(blob => {
       setImage(URL.createObjectURL(blob));
     }).catch(e => {
-      if (e instanceof UnauthorizedApiError) {
-        logout();
-        navigate("/login");
-      } else {
-        console.error(e);
-      }
+      console.error(e);
     })
   }
 
-
-  const getComponent = async () => {
-    if (authed) {
-      getHome();
-    } else {
-      logout();
-      navigate("/login");
-    }
-  }
-
-
   useEffect(() => {
-    getComponent();
+    getHome();
     clearTimeout(timer.current);
   }, []);
 

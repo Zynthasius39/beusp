@@ -1,9 +1,10 @@
-import { Button, styled, Switch } from "@mui/material";
+import { Box, Button, LinearProgress, LinearProgressProps, styled, Switch, Typography } from "@mui/material";
 import {
   AnnouncementTwoTone,
   // ArticleTwoTone,
   // CalendarMonthTwoTone,
   DashboardTwoTone,
+  Edit,
   // DoorSlidingTwoTone,
   // FolderTwoTone,
   GradeTwoTone,
@@ -11,6 +12,12 @@ import {
   SettingsTwoTone,
   // SummarizeTwoTone,
 } from "@mui/icons-material";
+import { SpMenuEntry } from "./utils/Interfaces";
+import { thresholdColor } from "./utils/StudentLogic";
+
+const createSpMenuEntry = (name: string, icon: JSX.Element, href: string): SpMenuEntry => ({ name, icon, href });
+
+const baseOfPercent = (percent: number, base: number | null) => (base !== null ? percent * 100 / base : percent);
 
 export const MaterialUISwitch = styled(Switch)(({ theme }) => ({
   width: 62,
@@ -142,19 +149,58 @@ export const PrimaryButton = styled(Button, {
   }
 }));
 
+export const AttendanceLinearProgress = (
+  props: LinearProgressProps & {
+    percent: number,
+    percentNext: number,
+    base: number | null,
+    warning?: number,
+    critical?: number,
+    doAttAsm: boolean,
+  }) => {
+  const color = thresholdColor(props.percentNext, props.warning, props.critical);
+  return <Box sx={{ display: 'flex', alignItems: 'center' }}>
+    <Box sx={{ width: '100%', mr: 1 }}>
+      <LinearProgress
+        {...props}
+        sx={{
+          '& .MuiLinearProgress-dashed': {
+            animation: 'none',
+            backgroundImage: 'none',
+          },
+          '& .MuiLinearProgress-bar1Buffer': {
+            borderRadius: 8
+          },
+          '& .MuiLinearProgress-bar2Buffer': {
+            borderRadius: 8
+          },
+          height: 21,
+          borderRadius: 8
+        }}
+        color={color}
+        value={baseOfPercent(props.percent, props.base)}
+        valueBuffer={baseOfPercent(props.percentNext, props.base)}
+      />
+    </Box>
+    <Box sx={{ minWidth: 35 }}>
+      <Typography
+        variant="body1"
+        sx={{ color: props.doAttAsm ? color + '.main' : 'inherit' }}
+      >{`${Math.round(props.percentNext)}%`}</Typography>
+    </Box>
+  </Box>
+}
+
 export const spMenu = [
-  { name: "Dashboard", icon: <DashboardTwoTone color="primary" />, href: "/" },
-  {
-    name: "Announces",
-    icon: <AnnouncementTwoTone color="primary" />,
-    href: "/announces",
-  },
-  // { name: "Departments", icon: <FolderTwoTone color="primary" />, href: "/departments" },
-  // { name: "Course", icon: <CalendarMonthTwoTone color="primary" />, href: "" },
-  { name: "Grades", icon: <GradeTwoTone color="primary" />, href: "/grades" },
-  // { name: "Transcript", icon: <SummarizeTwoTone color="primary" />, href: "" },
-  // { name: "Attendance", icon: <GradingTwoTone color="primary" />, href: "" },
-  // { name: "Gate", icon: <DoorSlidingTwoTone color="primary" />, href: "" },
-  // { name: "Documents", icon: <ArticleTwoTone color="primary" />, href: "" },
-  { name: "Settings", icon: <SettingsTwoTone color="primary" />, href: "/settings" },
+  createSpMenuEntry("Dashboard", <DashboardTwoTone color="primary" />, "/"),
+  createSpMenuEntry("Announces", <AnnouncementTwoTone color="primary" />, "/announces"),
+  createSpMenuEntry("Attendance", <Edit color="primary" />, "/attendance"),
+  // createSpMenuEntry("Departments", <FolderTwoTone color="primary" />, "/departments"),
+  // createSpMenuEntry("Course", <CalendarMonthTwoTone color="primary" />, ""),
+  createSpMenuEntry("Grades", <GradeTwoTone color="primary" />, "/grades"),
+  // createSpMenuEntry("Transcript", <SummarizeTwoTone color="primary" />, ""),
+  // createSpMenuEntry("Attendance", <GradingTwoTone color="primary" />, ""),
+  // createSpMenuEntry("Gate", <DoorSlidingTwoTone color="primary" />, ""),
+  // createSpMenuEntry("Documents", <ArticleTwoTone color="primary" />, ""),
+  createSpMenuEntry("Settings", <SettingsTwoTone color="primary" />, "/settings"),
 ];

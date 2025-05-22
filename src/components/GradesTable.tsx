@@ -1,12 +1,10 @@
 import { Avatar, IconButton, Paper, Skeleton, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TableSortLabel } from "@mui/material";
 import { Dispatch, MouseEvent, SetStateAction, useState } from "react";
-import { CourseJson, GradesJson } from "../utils/Interfaces";
+import { GradeEntry, GradesJson, Order } from "../utils/Interfaces";
 import { calculateSum, canPredictScholarship, colorOfMark, getGradeValue, gradeScale, gradeToMark } from "../utils/StudentLogic";
 import { useTheme } from "../utils/Theme";
 import { Calculate } from "@mui/icons-material";
 import GradesPopper from "./GradesPopper";
-
-type Order = 'asc' | 'desc';
 
 interface GradesTableProps {
     doIwAsm: boolean,
@@ -16,7 +14,7 @@ interface GradesTableProps {
     calcGrade: boolean,
     roundGrade: boolean,
     act3Enabled: boolean,
-    gradesT: GradesJson | null,
+    gradesT: GradesJson | undefined,
     calcAnchorEl: HTMLElement | null,
     setCalcAnchorEl: Dispatch<SetStateAction<HTMLElement | null>>,
 }
@@ -34,23 +32,23 @@ const courseHeaders: Record<string, string> = {
     "mark": "Mark",
 }
 
-function descendingComparator<CourseJson>(a: CourseJson, b: CourseJson, orderBy: keyof CourseJson) {
+function descendingComparator<GradeEntry>(a: GradeEntry, b: GradeEntry, orderBy: keyof GradeEntry) {
     if (orderBy === "mark")
-        if (a["sum" as keyof CourseJson] !== -1 && b["sum" as keyof CourseJson] !== -1)
-            orderBy = "sum" as keyof CourseJson;
+        if (a["sum" as keyof GradeEntry] !== -1 && b["sum" as keyof GradeEntry] !== -1)
+            orderBy = "sum" as keyof GradeEntry;
         else
-            orderBy = "calcSum" as keyof CourseJson;
+            orderBy = "calcSum" as keyof GradeEntry;
     if (orderBy === "sum" && a[orderBy] === -1 && b[orderBy] === -1)
-        orderBy = "calcSum" as keyof CourseJson;
+        orderBy = "calcSum" as keyof GradeEntry;
     if (b[orderBy] < a[orderBy]) return -1;
     if (b[orderBy] > a[orderBy]) return 1;
     return 0;
 }
 
-function getComparator<Key extends keyof CourseJson>(
+function getComparator<Key extends keyof GradeEntry>(
     order: Order,
     orderBy: Key
-): (a: CourseJson, b: CourseJson) => number {
+): (a: GradeEntry, b: GradeEntry) => number {
     return order === 'desc'
         ? (a, b) => descendingComparator(a, b, orderBy)
         : (a, b) => -descendingComparator(a, b, orderBy);
@@ -71,9 +69,9 @@ export default function GradesTable({
     const { isDark } = useTheme();
     const [calcNeeded, setCalcNeeded] = useState<null | number>(null);
     const [order, setOrder] = useState<Order>('asc');
-    const [orderBy, setOrderBy] = useState<keyof CourseJson>('courseName');
+    const [orderBy, setOrderBy] = useState<keyof GradeEntry>('courseName');
 
-    const handleSort = (property: keyof CourseJson) => {
+    const handleSort = (property: keyof GradeEntry) => {
         const isAsc = orderBy === property && order === 'asc';
         setOrder(isAsc ? 'desc' : 'asc');
         setOrderBy(property);
@@ -94,7 +92,7 @@ export default function GradesTable({
         textAlign: "center",
     }
 
-    const handleCalcClick = (e: MouseEvent<HTMLElement>, course: CourseJson) => {
+    const handleCalcClick = (e: MouseEvent<HTMLElement>, course: GradeEntry) => {
         setCalcNeeded(canPredictScholarship(course, act3Enabled) ? calculateSum(course, roundGrade, act3Enabled) : null);
         setCalcAnchorEl(calcAnchorEl === e.currentTarget ? null : e.currentTarget);
     }
@@ -117,11 +115,11 @@ export default function GradesTable({
                                 .map(h => {
                                     if (!(h === "act3" && !act3Enabled))
                                         return (
-                                            <TableCell key={h} sx={{ width: 35, ...(h !== "courseCode" && h !== "courseName" ? tableCellStyle : {}) }}>
+                                            <TableCell key={h} sx={[{ width: 35 }, h !== "courseCode" && h !== "courseName" && tableCellStyle ]}>
                                                 <TableSortLabel
                                                     active={orderBy === h}
                                                     direction={orderBy === h ? order : "asc"}
-                                                    onClick={() => handleSort(h as keyof CourseJson)}
+                                                    onClick={() => handleSort(h as keyof GradeEntry)}
                                                 >
                                                     {courseHeaders[h] ?? h}
                                                 </TableSortLabel>

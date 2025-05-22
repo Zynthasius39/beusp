@@ -1,5 +1,5 @@
 import { green, red, yellow } from "@mui/material/colors";
-import { CourseJson } from "./Interfaces";
+import { ColorSeverity, GradeEntry } from "./Interfaces";
 import { darkTheme, lightTheme } from "./Theme";
 
 export const convertBlobToBase64 = (blob: Blob) => {
@@ -52,7 +52,7 @@ export const colorOfMark = (grade: number, isDark: boolean) => {
     return color;
 }
 
-export const gradeScale = (course: CourseJson, oldScale: boolean, round: boolean): CourseJson => {
+export const gradeScale = (course: GradeEntry, oldScale: boolean, round: boolean): GradeEntry => {
     const act3_enabled = typeof course.act3 !== "undefined";
     const courseG = Object.assign({}, course);
     if (courseG.act1 !== -1)
@@ -70,7 +70,7 @@ export const gradeScale = (course: CourseJson, oldScale: boolean, round: boolean
     return courseG;
 }
 
-export const calculateSum = (json: CourseJson, round: boolean, act3Enabled: boolean) => {
+export const calculateSum = (json: GradeEntry, round: boolean, act3Enabled: boolean) => {
     let grade;
     if (round) {
         grade = gradeRound(getValueNum(json.act1)) +
@@ -96,7 +96,7 @@ export const calculateSum = (json: CourseJson, round: boolean, act3Enabled: bool
         return grade;
 }
 
-export const canPredictScholarship = (json: CourseJson , act3Enabled: boolean): boolean => {
+export const canPredictScholarship = (json: GradeEntry, act3Enabled: boolean): boolean => {
     if (getGradeValue(json.act1) === "") return false;
     if (getGradeValue(json.act2) === "") return false;
     if (getGradeValue(json.act3) === "" && act3Enabled) return false;
@@ -105,7 +105,7 @@ export const canPredictScholarship = (json: CourseJson , act3Enabled: boolean): 
     return true;
 }
 
-export const canPredictScholarshipNoIw = (json: CourseJson , act3Enabled: boolean): boolean => {
+export const canPredictScholarshipNoIw = (json: GradeEntry, act3Enabled: boolean): boolean => {
     if (getGradeValue(json.act1) === "") return false;
     if (getGradeValue(json.act2) === "") return false;
     if (getGradeValue(json.act3) === "" && act3Enabled) return false;
@@ -198,4 +198,13 @@ export const pointNeedColors = (sum: number, category: "queen" | "rook" | "pawn"
         ...colors,
         fill: pointsNeeded(sum, category) > 50 ? theme.palette.text.disabled : theme.palette.text.primary,
     }
+}
+
+export const thresholdColor = (percent: number, warning?: number, critical?: number) => {
+    let color = 'primary';
+    if (warning !== undefined && percent >= warning)
+        color = 'warning';
+    if (critical !== undefined && percent >= critical)
+        color = 'error';
+    return color as ColorSeverity; 
 }

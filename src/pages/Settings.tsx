@@ -2,12 +2,10 @@ import { AutoFixHigh, Edit, ExpandLess, ExpandMore, Security, Storage } from "@m
 import { Alert, Avatar, Box, Button, Collapse, Dialog, DialogActions, DialogContent, DialogContentText, List, ListItem, ListItemButton, ListItemIcon, ListItemText, MenuItem, Select, SelectChangeEvent, Snackbar, Stack, Typography } from "@mui/material";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { PrimaryButton } from "../Components";
-import { checkResponseStatus, fetchCached, UnauthorizedApiError, url } from "../utils/Api";
-import { useAuth } from "../utils/Auth";
-import { useNavigate } from "react-router-dom";
+import { checkResponseStatus, fetchCached, url } from "../utils/Api";
+import { AlertSeverity } from "../utils/Interfaces";
 
 export default function Settings() {
-    const { authed, logout } = useAuth();
     const [uiOpen, setUiOpen] = useState(false);
     const [secOpen, setSecOpen] = useState(false);
     const [serOpen, setSerOpen] = useState(false);
@@ -15,15 +13,14 @@ export default function Settings() {
     const [tmsLang, setTmsLang] = useState<"en" | "az">("en");
     const [alert, setAlert] = useState<JSX.Element | undefined>(undefined);
     const alertTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
-    const navigate = useNavigate();
 
-    const showAlert = useCallback((msg: string, severity: string) => {
+    const showAlert = useCallback((msg: string, severity: AlertSeverity) => {
         if (alert != undefined) {
             setAlert(undefined);
             clearTimeout(alertTimer.current);
         }
         setAlert(
-            <Alert severity={severity as 'success' | 'error' | 'warning' | 'info'} sx={{ width: "100%" }}>
+            <Alert severity={severity} sx={{ width: "100%" }}>
                 {msg}
             </Alert>
         );
@@ -46,13 +43,8 @@ export default function Settings() {
             checkResponseStatus(response);
             getSettings();
         }).catch(e => {
-            if (e instanceof UnauthorizedApiError) {
-                logout();
-                navigate("/login");
-            } else {
-                console.error(e);
-                showAlert("An error occured", "error");
-            }
+            console.error(e);
+            showAlert("An error occurred", "error");
         })
     }
 
@@ -66,21 +58,14 @@ export default function Settings() {
         }).then(json => {
             setTmsLang(json.lang);
         }).catch(e => {
-            if (e instanceof UnauthorizedApiError) {
-                logout();
-                navigate("/login");
-            } else {
-                console.error(e);
-                showAlert("An error occured", "error");
-            }
+            console.error(e);
+            showAlert("An error occurred", "error");
         })
     }
 
     useEffect(() => {
-        if (authed) {
-            getSettings();
-        }
-    }, [authed])
+        getSettings();
+    }, [])
 
     return (
         <>
