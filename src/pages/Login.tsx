@@ -23,14 +23,12 @@ import { MaterialUISwitch, PrimaryButton } from "../Components";
 import { KeyboardEvent, MouseEvent, useCallback, useEffect, useRef, useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../utils/Auth";
-import { checkResponseStatus, fetchCached, url } from "../utils/Api";
 import TosDialog from "../components/TosDialog";
 import { AlertSeverity } from "../utils/Interfaces";
 
-
 export default function Login() {
   const { theme, isDark, setDark } = useTheme();
-  const { authed, login, logout, imageURL, name, verifiedAuth, setImage, setName } = useAuth();
+  const { user, authed, login, logout } = useAuth();
   const navigate = useNavigate();
   const [alignment, setAlignment] = useState("student");
   const [studentId, setStudentID] = useState(0);
@@ -41,20 +39,20 @@ export default function Login() {
   const timer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const alertTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
-  const getHome = () => {
-    fetchCached(`${url}/resource/home`, {
-      method: "GET",
-      credentials: "include",
-    }).then(response => {
-      checkResponseStatus(response);
-      return response.json()
-    }).then(json => {
-      setName(json?.studentInfo?.fullNamePatronymic?.split(" ")[0]);
-      getStudPhoto();
-    }).catch(e => {
-      console.error(e);
-    })
-  }
+  // const getHome = () => {
+  //   fetchCached(`${url}/resource/home`, {
+  //     method: "GET",
+  //     credentials: "include",
+  //   }).then(response => {
+  //     checkResponseStatus(response);
+  //     return response.json()
+  //   }).then(json => {
+  //     setName(json?.studentInfo?.fullNamePatronymic?.split(" ")[0]);
+  //     getStudPhoto();
+  //   }).catch(e => {
+  //     console.error(e);
+  //   })
+  // }
 
   const handleKeyDown = async (event: KeyboardEvent<HTMLDivElement>) => {
     if (event.key === "Enter") {
@@ -95,8 +93,7 @@ export default function Login() {
     }
     try {
       await login(studentId, password);
-      verifiedAuth();
-      getHome();
+      // getHome();
 
       // Only reason for visiting is to check Grades page
       // navigate("/");
@@ -111,34 +108,15 @@ export default function Login() {
     setStudentID(0);
     setPassword("");
     try {
-      setImage("");
       await logout();
-      navigate("/login");
     } catch (e) {
       console.error("Error occured while authorizing:", e);
       showAlert("Couldn't log out:" + String(e), "error");
     }
   }
 
-  const getStudPhoto = () => {
-    fetchCached(`${url}/resource/studphoto`, {
-      method: "GET",
-      credentials: "include",
-      headers: {
-        "Content-Type": "image/jpeg",
-      },
-    }).then(response => {
-      checkResponseStatus(response);
-      return response.blob()
-    }).then(blob => {
-      setImage(URL.createObjectURL(blob));
-    }).catch(e => {
-      console.error(e);
-    })
-  }
-
   useEffect(() => {
-    getHome();
+    // getHome();
     clearTimeout(timer.current);
   }, []);
 
@@ -205,12 +183,13 @@ export default function Login() {
                 />
                 :
                 <>
-                  {imageURL === "" ?
-                    <Skeleton variant="circular" width="100px" height="100px" />
-                    :
-                    <Avatar alt="studphoto" src={imageURL} sx={{ width: "100px", height: "100px" }} />
+                  {
+                    user?.imageURL === "" ?
+                      <Skeleton variant="circular" width="100px" height="100px" />
+                      :
+                      <Avatar alt="studphoto" src={user?.imageURL} sx={{ width: "100px", height: "100px" }} />
                   }
-                  <Typography variant="h5" pb="30px">{name}</Typography>
+                  <Typography variant="h5" pb="30px">{user?.name}</Typography>
                   <Box>
                     <NavLink to="/">
                       <PrimaryButton disabled={loading} sx={{ width: "120px", mr: "10px" }}>Dashboard</PrimaryButton>

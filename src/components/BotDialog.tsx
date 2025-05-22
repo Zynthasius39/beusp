@@ -8,13 +8,14 @@ import DialogTitle from '@mui/material/DialogTitle';
 import { ChangeEvent, SyntheticEvent, useCallback, useEffect, useRef, useState } from 'react';
 import { Alert, Box, FormControlLabel, FormGroup, IconButton, LinearProgress, Link, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Snackbar, Stack, Switch, Tooltip, Typography } from '@mui/material';
 import { useAuth } from '../utils/Auth';
-import { checkResponseStatus, fetchCached, NotFoundApiError, UnauthorizedApiError, url } from '../utils/Api';
+import { checkResponseStatus, NotFoundApiError, UnauthorizedApiError, url } from '../utils/Api';
 import { Close, Email, Send, Telegram } from '@mui/icons-material';
 import { formatTime, isValidDcWebhook, isValidEmail } from '../utils/StudentLogic';
 import { PrimaryButton } from '../Components';
-import { useNavigate } from 'react-router-dom';
 import { AlertSeverity, BotInfoJson, BotSubsJson } from '../utils/Interfaces';
 import { useTheme } from '../utils/Theme';
+import { createFetchWithAuth } from '../features/FetchWithAuth';
+import { createFetchCached } from '../features/FetchCached';
 
 export default function BotDialog() {
     const { authed, logout } = useAuth();
@@ -35,7 +36,8 @@ export default function BotDialog() {
     const [alert, setAlert] = useState<JSX.Element | undefined>(undefined);
     const timer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
     const alertTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
-    const navigate = useNavigate();
+    const fetchCached = createFetchCached(logout);
+    const fetch = createFetchWithAuth(logout);
 
     const handleClose = () => {
         clearInterval(timer.current);
@@ -64,7 +66,6 @@ export default function BotDialog() {
         }).catch(e => {
             if (e instanceof UnauthorizedApiError) {
                 logout();
-                navigate("/login");
             } else {
                 console.error(e);
                 showAlert("An error occured", "error");
@@ -100,7 +101,6 @@ export default function BotDialog() {
                 clearInterval(timer.current);
                 if (e instanceof UnauthorizedApiError) {
                     logout();
-                    navigate("/login");
                 } else {
                     console.error(e);
                     showAlert("An error occured", "error");
@@ -156,7 +156,6 @@ export default function BotDialog() {
             }).catch(e => {
                 if (e instanceof UnauthorizedApiError) {
                     logout();
-                    navigate("/login");
                 } else {
                     console.error(e);
                     showAlert("An error occured", "error");
@@ -206,7 +205,6 @@ export default function BotDialog() {
                 showAlert("Bot is offline", "error");
             } else if (e instanceof UnauthorizedApiError) {
                 logout();
-                navigate("/login");
             } else {
                 console.error(e);
                 showAlert("An error occured", "error");
@@ -245,7 +243,6 @@ export default function BotDialog() {
         }).catch(e => {
             if (e instanceof UnauthorizedApiError) {
                 logout();
-                navigate("/login");
             } else {
                 console.error(e);
                 showAlert("An error occured", "error");
@@ -271,7 +268,6 @@ export default function BotDialog() {
         }).catch(e => {
             if (e instanceof UnauthorizedApiError) {
                 logout();
-                navigate("/login");
             } else {
                 console.error(e);
                 showAlert("An error occured", "error");

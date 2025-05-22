@@ -1,11 +1,15 @@
 import { Autocomplete, Checkbox, FormControlLabel, FormGroup, Skeleton, Stack, TextField, ToggleButton, ToggleButtonGroup, Tooltip } from "@mui/material";
 import { ChangeEvent, MouseEvent, SyntheticEvent, useEffect, useState } from "react";
 import BotDialog from "../components/BotDialog";
-import { checkResponseStatus, fetchCached, url } from "../utils/Api";
+import { checkResponseStatus, url } from "../utils/Api";
 import GradesTable from "../components/GradesTable";
 import { GradesJson } from "../utils/Interfaces";
+import { createFetchCached } from "../features/FetchCached";
+import { useAuth } from "../utils/Auth";
+import { createFetchWithAuth } from "../features/FetchWithAuth";
 
 export default function Grades() {
+  const { logout } = useAuth();
   const [isAll, setIsAll] = useState(false);
   const [semester, setSemester] = useState("1");
   const [oldScale, setOldScale] = useState(false);
@@ -21,6 +25,8 @@ export default function Grades() {
   const [gradesT, setGradesT] = useState<GradesJson | undefined>(undefined);
   const [options, setOptions] = useState<{ [year: string]: boolean }>({});
   const [calcAnchorEl, setCalcAnchorEl] = useState<null | HTMLElement>(null);
+  const fetchCached = createFetchCached(logout);
+  const fetch = createFetchWithAuth(logout);
 
   const getGrades = async () => {
     await fetchCached(`${url}/resource/grades`, {

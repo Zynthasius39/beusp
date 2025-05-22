@@ -15,9 +15,12 @@ import {
 import { useTheme } from "../utils/Theme";
 import "../style/Dashboard.css";
 import { cloneElement, useEffect, useState } from "react";
-import { checkResponseStatus, fetchCached, url } from "../utils/Api";
+import { checkResponseStatus, UnauthorizedApiError, url } from "../utils/Api";
+import { createFetchCached } from "../features/FetchCached";
+import { useAuth } from "../utils/Auth";
 
 const Dashboard = () => {
+  const { logout } = useAuth();
   const { theme } = useTheme();
   const [dashLoading, setDashLoading] = useState(true);
   const [classCount, setClassCount] = useState(0);
@@ -25,6 +28,7 @@ const Dashboard = () => {
   const [gpa, setGpa] = useState(0);
   const [eduDebt, setEduDebt] = useState("0 AZN");
   const [homeTable, setHomeTable] = useState<object | undefined>(undefined);
+  const fetchCached = createFetchCached(logout);
 
   const infoCards = [
     { name: "Enrolled Classes", value: classCount, icon: <ImportContactsTwoTone /> },
@@ -83,7 +87,11 @@ const Dashboard = () => {
       checkResponseStatus(response);
       return response.json();
     }).catch(e => {
-      console.error(e);
+      if (e instanceof UnauthorizedApiError) {
+        logout();
+      } else {
+        console.error(e);
+      }
     }).then(json => {
       setClassCount(Object.entries(json.semesters || {}).length);
       setTotalCredits(Number(json.totalEarnedCredits));

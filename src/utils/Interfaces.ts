@@ -9,15 +9,17 @@ export interface AttendanceJson {
   [key: string]: AttendanceEntry
 }
 
+export interface User {
+  name: string,
+  imageURL: string,
+}
+
 export interface AuthContextType {
-  name: string;
-  authed: boolean;
-  login: (student_id: number, password: string) => Promise<void>;
-  logout: () => Promise<void>;
-  imageURL: string;
-  verifiedAuth: () => void;
-  setImage: (url: string) => void;
-  setName: (name: string) => void;
+  user: User | null,
+  authed: boolean,
+  login: (student_id: number, password: string) => Promise<void>,
+  logout: () => Promise<void>,
+  verify: () => Promise<boolean>
 }
 
 export interface ThemeContextType {

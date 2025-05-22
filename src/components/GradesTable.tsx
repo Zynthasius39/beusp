@@ -115,7 +115,7 @@ export default function GradesTable({
                                 .map(h => {
                                     if (!(h === "act3" && !act3Enabled))
                                         return (
-                                            <TableCell key={h} sx={[{ width: 35 }, h !== "courseCode" && h !== "courseName" && tableCellStyle ]}>
+                                            <TableCell key={h} sx={[{ width: 35 }, h !== "courseCode" && h !== "courseName" && tableCellStyle]}>
                                                 <TableSortLabel
                                                     active={orderBy === h}
                                                     direction={orderBy === h ? order : "asc"}
@@ -135,7 +135,7 @@ export default function GradesTable({
                         sortedRows.map((course, inx) => {
                             const courseG = gradeScale(course, oldScale, roundGrade);
                             return (
-                                <TableRow key={inx}>
+                                <TableRow key={inx} sx={{ backgroundColor: inx % 2 === 0 ? 'background.paper' : 'inherit' }}>
                                     <TableCell height={36}>{course.courseCode}</TableCell>
                                     <TableCell width={512}>{course.courseName}</TableCell>
                                     <TableCell sx={tableCellStyle}>{getGradeValue(courseG.act1)}</TableCell>

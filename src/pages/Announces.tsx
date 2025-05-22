@@ -3,14 +3,14 @@ import { useTheme } from "../utils/Theme";
 import { NotificationsTwoTone } from "@mui/icons-material";
 import { useAuth } from "../utils/Auth";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { checkResponseStatus, fetchCached, UnauthorizedApiError, url } from "../utils/Api";
+import { checkResponseStatus, UnauthorizedApiError, url } from "../utils/Api";
+import { createFetchCached } from "../features/FetchCached";
 
 export default function Announces() {
   const { authed, logout } = useAuth();
   const { theme } = useTheme();
   const [announcesT, setAnnouncesT] = useState([]);
-  const navigate = useNavigate();
+  const fetchCached = createFetchCached(logout);
 
   const getAnnounces = async () => {
     await fetchCached(`${url}/resource/announces`, {
@@ -22,7 +22,6 @@ export default function Announces() {
     }).catch(e => {
       if (e instanceof UnauthorizedApiError) {
         logout();
-        navigate("/login");
       } else {
         console.error(e);
       }

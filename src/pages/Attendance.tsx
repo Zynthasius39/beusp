@@ -1,10 +1,14 @@
 import { Autocomplete, Checkbox, FormControlLabel, FormGroup, Skeleton, Stack, TextField, ToggleButton, ToggleButtonGroup, Tooltip } from "@mui/material";
 import { ChangeEvent, MouseEvent, SyntheticEvent, useEffect, useState } from "react";
-import { checkResponseStatus, fetchCached, url } from "../utils/Api";
+import { checkResponseStatus, url } from "../utils/Api";
 import AttendanceTable from "../components/AttendanceTable";
 import { AttendanceJson } from "../utils/Interfaces";
+import { createFetchCached } from "../features/FetchCached";
+import { useAuth } from "../utils/Auth";
+import { createFetchWithAuth } from "../features/FetchWithAuth";
 
 export default function Attendance() {
+    const { logout } = useAuth();
     const [year, setYear] = useState<string | null>(null);
     const [semester, setSemester] = useState("1");
     const [options, setOptions] = useState<{ [year: string]: boolean }>({});
@@ -12,6 +16,8 @@ export default function Attendance() {
     const [attLoading, setAttLoading] = useState(true);
     const [doAttAsm, setDoAttAsm] = useState(false);
     const [attdsT, setAttdsT] = useState<AttendanceJson | undefined>(undefined);
+    const fetchCached = createFetchCached(logout);
+    const fetch = createFetchWithAuth(logout);
 
     const ssAvaliable = year ? options[year] : false;
 
@@ -24,6 +30,7 @@ export default function Attendance() {
             return response.json();
         }).catch(e => {
             console.error(e);
+            logout();
         }).then(json => {
             const options: { [year: string]: boolean } = {};
             json.entries.forEach((o: { year: string, semester: number }) => {
@@ -46,8 +53,10 @@ export default function Attendance() {
         }).then(response => {
             checkResponseStatus(response);
             return response.json()
-        }).catch(e => console.error(e)
-        ).then(json => {
+        }).catch(e => {
+            console.error(e);
+            logout();
+        }).then(json => {
             setAttdsT(json);
             setAttLoading(false);
         })
