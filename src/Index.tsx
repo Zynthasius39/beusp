@@ -12,6 +12,7 @@ import Grades from "./pages/Grades";
 import Departments from "./pages/Departments";
 import Settings from "./pages/Settings";
 import Attendance from "./pages/Attendance";
+import { Typography } from "@mui/material";
 
 export default function Index() {
   return (
@@ -35,7 +36,23 @@ export default function Index() {
                 <Route path="*" element={<NoPage />} />
               </Route>
               <Route path="/login" element={
-                <Login />
+                <>
+                  <Login />
+                  <Typography
+                    sx={{
+                      fontFamily: "monospace",
+                      position: "fixed",
+                      bottom: 0,
+                      left: 0,
+                      padding: "32px",
+                      color: 'primary.main',
+                      fontSize: 25,
+                      PointerEvent: "none",
+                    }}
+                  >
+                    v{__APP_VERSION__}
+                  </Typography>
+                </>
               } />
             </Routes>
           </HashRouter>

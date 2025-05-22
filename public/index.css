@@ -1,0 +1,31 @@
+* {
+    font-family: "Roboto", sans-serif;
+    margin: 0;
+}
+
+html,
+body {
+    overscroll-behavior: none;
+}
+
+body {
+    height: 100dvh;
+    overflow: hidden;
+}
+
+#root {
+    height: 100%;
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+input[type="number"] {
+    -moz-appearance: textfield;
+}
+
+.version {
+  }

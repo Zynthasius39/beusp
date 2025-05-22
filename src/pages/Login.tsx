@@ -39,21 +39,6 @@ export default function Login() {
   const timer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const alertTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
-  // const getHome = () => {
-  //   fetchCached(`${url}/resource/home`, {
-  //     method: "GET",
-  //     credentials: "include",
-  //   }).then(response => {
-  //     checkResponseStatus(response);
-  //     return response.json()
-  //   }).then(json => {
-  //     setName(json?.studentInfo?.fullNamePatronymic?.split(" ")[0]);
-  //     getStudPhoto();
-  //   }).catch(e => {
-  //     console.error(e);
-  //   })
-  // }
-
   const handleKeyDown = async (event: KeyboardEvent<HTMLDivElement>) => {
     if (event.key === "Enter") {
       handleLogin();
@@ -93,7 +78,6 @@ export default function Login() {
     }
     try {
       await login(studentId, password);
-      // getHome();
 
       // Only reason for visiting is to check Grades page
       // navigate("/");
@@ -116,7 +100,6 @@ export default function Login() {
   }
 
   useEffect(() => {
-    // getHome();
     clearTimeout(timer.current);
   }, []);
 
