@@ -6,7 +6,7 @@ export default function VersionTag(props: TypographyProps) {
             {...props}
             sx={{
                 fontFamily: "monospace",
-                padding: "32px",
+                pl: 4,
                 color: 'primary.main',
                 fontSize: 25,
                 PointerEvent: "none",

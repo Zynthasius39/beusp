@@ -179,6 +179,7 @@ export default function GradesTable({
             <GradesPopper
                 calcNeeded={calcNeeded}
                 calcAnchorEl={calcAnchorEl}
+                setCalcAnchorEl={setCalcAnchorEl}
             />
         </TableContainer >
 }

@@ -7,7 +7,7 @@ import { checkResponseStatus, UnauthorizedApiError, url } from "../utils/Api";
 import { createFetchCached } from "../features/FetchCached";
 
 export default function Announces() {
-  const { authed, logout } = useAuth();
+  const { logout } = useAuth();
   const { theme } = useTheme();
   const [announcesT, setAnnouncesT] = useState([]);
   const fetchCached = createFetchCached(logout);
@@ -31,14 +31,12 @@ export default function Announces() {
   }
 
   useEffect(() => {
-    if (authed) {
-      getAnnounces();
-    }
-  }, [authed]);
+    getAnnounces();
+  }, []);
 
   return (<Stack p={1} gap={2}>
-    {announcesT.map(({ body, name }) => (
-      <Card>
+    {announcesT.map(({ body, name }, inx) => (
+      <Card key={inx}>
         <Stack p={2} flexDirection="row" justifyContent="center" alignItems="center" gap={2} fontSize="12px">
           <Stack flexDirection="row" width="200px" gap={2}>
             <Avatar sx={{
@@ -50,7 +48,6 @@ export default function Announces() {
             <Typography fontSize="inherit" width={96} fontWeight="bold">{name}</Typography>
           </Stack>
           <Typography fontSize="inherit" flexGrow={1}>{body}</Typography>
-          {/* <Typography fontSize="inherit">{date}</Typography> */}
         </Stack>
       </Card>
     ))}

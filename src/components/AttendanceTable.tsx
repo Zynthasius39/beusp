@@ -86,8 +86,12 @@ export default function AttendanceTable({ attdsT, attLoading, attAsm, doAttAsm }
         const base = courseCode.split('-')[0];
         if (!attdsGrouped[base]) attdsGrouped[base] = [];
         attdsGrouped[base].push({ ...att, courseCode });
-        if (doAttAsm && courseCode === base) attdsGrouped[base][attdsGrouped[base].length - 1].absent += attAsm;
     });
+
+    Object.keys(attdsGrouped ?? {}).forEach(courseCode => {
+        if (doAttAsm)
+            attdsGrouped[courseCode][attdsGrouped[courseCode].length - 1].absent += attAsm;
+    })
 
     const sortedAttdsGrouped = Object.values(attdsGrouped ?? {}).slice().sort(getComparator(order, orderBy));
 
