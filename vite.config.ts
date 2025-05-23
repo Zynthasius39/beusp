@@ -12,7 +12,7 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks: {
-          react: ["react", "react-dom"],
+          react: ["react", "react-dom", "react-router"],
           emotion: ["@emotion/react", "@emotion/styled"],
           mui: ["@mui/material", "@mui/icons-material", "@mui/x-date-pickers"],
         }

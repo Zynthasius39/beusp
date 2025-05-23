@@ -12,7 +12,9 @@ import Grades from "./pages/Grades";
 import Departments from "./pages/Departments";
 import Settings from "./pages/Settings";
 import Attendance from "./pages/Attendance";
-import { Typography } from "@mui/material";
+import VersionTag from "./components/VersionTag";
+import './style/Index.css'
+import './style/gh-fork-ribbon.min.css'
 
 export default function Index() {
   return (
@@ -38,20 +40,12 @@ export default function Index() {
               <Route path="/login" element={
                 <>
                   <Login />
-                  <Typography
+                  <VersionTag
                     sx={{
-                      fontFamily: "monospace",
                       position: "fixed",
                       bottom: 0,
                       left: 0,
-                      padding: "32px",
-                      color: 'primary.main',
-                      fontSize: 25,
-                      PointerEvent: "none",
-                    }}
-                  >
-                    v{__APP_VERSION__}
-                  </Typography>
+                    }} />,
                 </>
               } />
             </Routes>

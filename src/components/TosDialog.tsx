@@ -1,6 +1,6 @@
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle } from "@mui/material";
 import { useEffect, useState } from "react";
-import { PrimaryButton } from "../Components";
+import { PrimaryButton } from "./PrimaryButton";
 
 export default function TosDialog() {
     const [open, setOpen] = useState(true);

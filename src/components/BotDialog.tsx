@@ -11,11 +11,11 @@ import { useAuth } from '../utils/Auth';
 import { checkResponseStatus, NotFoundApiError, UnauthorizedApiError, url } from '../utils/Api';
 import { Close, Email, Send, Telegram } from '@mui/icons-material';
 import { formatTime, isValidDcWebhook, isValidEmail } from '../utils/StudentLogic';
-import { PrimaryButton } from '../Components';
 import { AlertSeverity, BotInfoJson, BotSubsJson } from '../utils/Interfaces';
 import { useTheme } from '../utils/Theme';
 import { createFetchWithAuth } from '../features/FetchWithAuth';
 import { createFetchCached } from '../features/FetchCached';
+import { PrimaryButton } from './PrimaryButton';
 
 export default function BotDialog() {
     const { authed, logout } = useAuth();

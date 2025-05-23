@@ -8,11 +8,12 @@ import {
   ListItemIcon,
   Box,
 } from "@mui/material";
-import { NavLink, useLocation} from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 import { useTheme } from "../utils/Theme";
-import { spMenu } from "../Components";
+import { spMenu } from "../Config";
 import { LogoutTwoTone } from "@mui/icons-material";
 import { useAuth } from "../utils/Auth";
+import VersionTag from "./VersionTag";
 
 const DrawerList = () => {
   const { logout } = useAuth();
@@ -60,16 +61,16 @@ const DrawerList = () => {
           flexGrow: "1",
           overflowY: "auto",
         }}>
-          {spMenu.map(({ name, icon, href }, index) => (
+          {spMenu.map(({ name, icon, href }, inx) => (
             <NavLink
               to={href}
+              key={inx}
               style={{
                 color: "inherit",
                 textDecoration: "none",
               }}
             >
               <ListItemButton
-                key={index}
                 sx={{
                   p: "5%",
                   pl: "10%",
@@ -85,6 +86,7 @@ const DrawerList = () => {
             </NavLink>
           ))}
         </Box>
+        <VersionTag sx={{ position: "inherit" }} />
         <Link href="" color="inherit" underline="none" width={"100%"}>
           <ListItemButton key="logout" sx={{ p: "5%", pl: "10%" }} onClick={logout}>
             <ListItemIcon>

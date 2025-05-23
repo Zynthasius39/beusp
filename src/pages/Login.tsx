@@ -19,12 +19,13 @@ import {
 } from "@mui/material";
 import "../style/Login.css";
 import { useTheme } from "../utils/Theme";
-import { MaterialUISwitch, PrimaryButton } from "../Components";
 import { KeyboardEvent, MouseEvent, useCallback, useEffect, useRef, useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../utils/Auth";
 import TosDialog from "../components/TosDialog";
 import { AlertSeverity } from "../utils/Interfaces";
+import { MaterialUISwitch } from "../components/MaterialUISwitch";
+import { PrimaryButton } from "../components/PrimaryButton";
 
 export default function Login() {
   const { theme, isDark, setDark } = useTheme();

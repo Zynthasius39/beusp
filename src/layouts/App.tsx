@@ -4,7 +4,7 @@ import Navbar from "../components/Navbar";
 import { Outlet, useLocation } from "react-router-dom";
 import DrawerList from "../components/DrawerList";
 import { useTheme } from "../utils/Theme";
-import { spMenu } from "../Components";
+import { spMenu } from "../Config";
 
 export default function App() {
   const { theme } = useTheme();

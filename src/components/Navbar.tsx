@@ -11,10 +11,10 @@ import {
   Typography,
 } from "@mui/material";
 import Drawer from "./Drawer";
-import { MaterialUISwitch } from "../Components";
 import { ChangeEvent, MouseEvent, useState } from "react";
 import { useTheme } from "../utils/Theme";
 import { useAuth } from "../utils/Auth";
+import { MaterialUISwitch } from "./MaterialUISwitch";
 
 const Navbar = (props: { page: string }) => {
   const { isDark, setDark } = useTheme();
@@ -54,7 +54,6 @@ const Navbar = (props: { page: string }) => {
         </Typography>
         <MaterialUISwitch
           sx={{ m: 1 }}
-          defaultChecked
           checked={isDark()}
           onChange={handleThemeSwitch}
         />

@@ -140,39 +140,35 @@ const Dashboard = () => {
         gap: "10px",
         p: "10px",
       }}>
-        {infoCards.map(infoCard => (
-          <>
-            {
-              dashLoading ?
-                <Skeleton variant="rounded" sx={cardRootStyle} />
-                :
-                <Card sx={cardRootStyle}>
-                  <Stack sx={infoCardStyle}>
-                    <Avatar className="card-logo" sx={{
-                      backgroundColor: theme.palette.primary.dark, float: "left", width: {
-                        xs: "32px",
-                        sm: "64px",
-                      },
-                      height: {
-                        xs: "32px",
-                        sm: "64px",
+        {infoCards.map((infoCard, inx) => (
+          dashLoading ?
+            <Skeleton key={inx} variant="rounded" sx={cardRootStyle} />
+            :
+            <Card key={inx} sx={cardRootStyle}>
+              <Stack sx={infoCardStyle}>
+                <Avatar className="card-logo" sx={{
+                  backgroundColor: theme.palette.primary.dark, float: "left", width: {
+                    xs: "32px",
+                    sm: "64px",
+                  },
+                  height: {
+                    xs: "32px",
+                    sm: "64px",
+                  }
+                }}>
+                  {cloneElement(infoCard.icon, {
+                    sx: {
+                      color: theme.palette.primary.main, fontSize: {
+                        xs: "18px",
+                        sm: "36px",
                       }
-                    }}>
-                      {cloneElement(infoCard.icon, {
-                        sx: {
-                          color: theme.palette.primary.main, fontSize: {
-                            xs: "18px",
-                            sm: "36px",
-                          }
-                        }
-                      })}
-                    </Avatar>
-                    <Typography fontSize="inherit" textAlign="center">{infoCard.name}</Typography>
-                  </Stack>
-                  <Typography fontSize="inherit" fontWeight="bold">{infoCard.value}</Typography>
-                </Card>
-            }
-          </>
+                    }
+                  })}
+                </Avatar>
+                <Typography fontSize="inherit" textAlign="center">{infoCard.name}</Typography>
+              </Stack>
+              <Typography fontSize="inherit" fontWeight="bold">{infoCard.value}</Typography>
+            </Card>
         ))}
       </Stack>
       <DateCalendar readOnly />
@@ -196,9 +192,9 @@ const Dashboard = () => {
                     val = value as String;
                   return [key, val];
                 })
-                .map(([key, value], index) => (
+                .map(([key, value], inx) => (
                   <TableRow
-                    key={index}
+                    key={inx}
                     sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                   >
                     <TableCell component="th" scope="row">

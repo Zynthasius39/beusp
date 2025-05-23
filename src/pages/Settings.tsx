@@ -1,12 +1,12 @@
 import { AutoFixHigh, Edit, ExpandLess, ExpandMore, Security, Storage } from "@mui/icons-material";
 import { Alert, Avatar, Box, Button, Collapse, Dialog, DialogActions, DialogContent, DialogContentText, List, ListItem, ListItemButton, ListItemIcon, ListItemText, MenuItem, Select, SelectChangeEvent, Snackbar, Stack, Typography } from "@mui/material";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { PrimaryButton } from "../Components";
 import { checkResponseStatus, url } from "../utils/Api";
 import { AlertSeverity } from "../utils/Interfaces";
 import { createFetchCached } from "../features/FetchCached";
 import { createFetchWithAuth } from "../features/FetchWithAuth";
 import { useAuth } from "../utils/Auth";
+import { PrimaryButton } from "../components/PrimaryButton";
 
 export default function Settings() {
     const { logout } = useAuth();

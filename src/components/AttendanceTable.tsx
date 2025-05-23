@@ -1,8 +1,8 @@
 import { Skeleton, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TableSortLabel } from "@mui/material"
 import { AttendanceCouples, AttendanceEntry, AttendanceJson, Order } from "../utils/Interfaces"
 import { useState } from "react";
-import { AttendanceLinearProgress } from "../Components";
 import { thresholdColor } from "../utils/StudentLogic";
+import { AttendanceLinearProgress } from "./AttendanceLinearProgress";
 
 interface AttendanceTableProps {
     attdsT: AttendanceJson | undefined,
@@ -37,14 +37,28 @@ const tableCellStyle = {
 }
 
 export function descendingComparator(a: AttendanceEntry[], b: AttendanceEntry[], orderBy: keyof AttendanceEntry) {
-    if (b[1][orderBy] < a[1][orderBy]) return -1;
-    if (b[1][orderBy] > a[1][orderBy]) return 1;
-    if (b[1][orderBy] === a[1][orderBy]) {
+    if (a.length > 1 && b.length > 1) {
+        if (b[1][orderBy] < a[1][orderBy]) return -1;
+        if (b[1][orderBy] > a[1][orderBy]) return 1;
+        if (b[1][orderBy] === a[1][orderBy]) {
+            if (b[0][orderBy] < a[0][orderBy]) return -1;
+            if (b[0][orderBy] > a[0][orderBy]) return 1;
+            return 0;
+        }
+        return 0;
+    } else if (a.length > 1) {
+        if (b[0][orderBy] < a[1][orderBy]) return -1;
+        if (b[0][orderBy] > a[1][orderBy]) return 1;
+        return 0;
+    } else if (b.length > 1) {
+        if (b[1][orderBy] < a[0][orderBy]) return -1;
+        if (b[1][orderBy] > a[0][orderBy]) return 1;
+        return 0;
+    } else {
         if (b[0][orderBy] < a[0][orderBy]) return -1;
         if (b[0][orderBy] > a[0][orderBy]) return 1;
         return 0;
     }
-    return 0;
 }
 
 export function getComparator<Key extends keyof AttendanceEntry>(
@@ -60,6 +74,7 @@ export default function AttendanceTable({ attdsT, attLoading, attAsm, doAttAsm }
     const [order, setOrder] = useState<Order>('asc');
     const [orderBy, setOrderBy] = useState<keyof AttendanceEntry>('courseName');
 
+    let count = 0;
     const handleSort = (property: keyof AttendanceEntry) => {
         const isAsc = orderBy === property && order === 'asc';
         setOrder(isAsc ? 'desc' : 'asc');
@@ -116,7 +131,7 @@ export default function AttendanceTable({ attdsT, attLoading, attAsm, doAttAsm }
                 </TableHead>
                 <TableBody>
                     {
-                        sortedAttdsGrouped?.map((attds, indx) => {
+                        sortedAttdsGrouped?.map(attds => {
                             const init = { hours: 0, absent: 0 };
                             attds.forEach(att => {
                                 init.hours += att.hours;
@@ -125,7 +140,7 @@ export default function AttendanceTable({ attdsT, attLoading, attAsm, doAttAsm }
                             const preAbsentPercent = Math.ceil(init.absent / init.hours * 100);
                             const calcAbsentPercent = preAbsentPercent >= 25 ? 25 : preAbsentPercent;
                             return attds.map((att, inx) =>
-                                <TableRow key={indx + inx} sx={{ backgroundColor: inx === 0 ? 'background.paper' : 'inherit' }}>
+                                <TableRow key={count} sx={{ backgroundColor: count++ % 2 === 0 ? 'background.paper' : 'inherit' }}>
                                     <TableCell height={36}>{att.courseCode}</TableCell>
                                     <TableCell width={512}>{att.courseName}</TableCell>
                                     <TableCell width={512}>{att.courseEducator}</TableCell>
