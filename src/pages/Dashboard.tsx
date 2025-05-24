@@ -109,6 +109,7 @@ const Dashboard = () => {
       return response.json();
     }).catch(e => {
       console.error(e);
+      logout();
     }).then(json => {
       setEduDebt(`${json.studentInfo.eduDebt.amount} AZN`);
       Object.entries(json.studentInfo)

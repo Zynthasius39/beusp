@@ -24,6 +24,7 @@ export default function Announces() {
         logout();
       } else {
         console.error(e);
+        logout();
       }
     }).then(json => {
       setAnnouncesT(json);
