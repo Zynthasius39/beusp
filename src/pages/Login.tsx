@@ -3,12 +3,9 @@ import {
   Avatar,
   Box,
   Button,
-  Checkbox,
   CircularProgress,
   Divider,
-  FormControlLabel,
   FormGroup,
-  Link,
   Skeleton,
   Snackbar,
   Stack,
@@ -26,6 +23,7 @@ import TosDialog from "../components/TosDialog";
 import { AlertSeverity } from "../utils/Interfaces";
 import { MaterialUISwitch } from "../components/MaterialUISwitch";
 import { PrimaryButton } from "../components/PrimaryButton";
+import { ServerFaultApiError, UnauthorizedApiError } from "../utils/Api";
 
 export default function Login() {
   const { theme, isDark, setDark } = useTheme();
@@ -85,7 +83,12 @@ export default function Login() {
       navigate("/grades");
     } catch (e) {
       console.error("Error occured while authorizing:", e);
-      showAlert("Invalid credentials", "error");
+      if (e instanceof UnauthorizedApiError)
+        showAlert("Invalid credentials", "error");
+      else if (e instanceof ServerFaultApiError)
+        showAlert("Error occured on our end", "error");
+      else
+        showAlert("Unexcepted error occured", "error");
     }
   };
 
@@ -232,7 +235,7 @@ export default function Login() {
                   }}
                 />
               </div>
-              <FormControlLabel control={<Checkbox />} label="Remember Me" />
+              {/* <FormControlLabel control={<Checkbox />} label="Remember Me" /> */}
               <Box sx={{ position: "relative" }}>
                 <PrimaryButton
                   disabled={loading}
@@ -240,6 +243,7 @@ export default function Login() {
                   onClick={handleLogin}
                   sx={{
                     fontSize: 16,
+                    mt: 1,
                   }}
                 >Login</PrimaryButton>
                 {loading && (
@@ -250,15 +254,15 @@ export default function Login() {
                       position: 'absolute',
                       top: '50%',
                       left: '50%',
-                      marginTop: '-12px',
-                      marginLeft: '-12px',
+                      mt: '-12px',
+                      ml: '-12px',
                     }}
                   />
                 )}
               </Box>
-              <Link href="#" underline="none" textAlign="center" fontSize={14}>
+              {/* <Link href="#" underline="none" textAlign="center" fontSize={14}>
                 Forgot your password?
-              </Link>
+              </Link> */}
               <Divider sx={{ pt: "5px", pb: "5px" }} />
               <ToggleButtonGroup
                 fullWidth
@@ -269,7 +273,7 @@ export default function Login() {
                 aria-label="account type"
               >
                 <ToggleButton value="student">Student</ToggleButton>
-                <ToggleButton value="educater">Educater</ToggleButton>
+                <ToggleButton disabled value="educater">Educater</ToggleButton>
               </ToggleButtonGroup>
             </>
           }
@@ -281,6 +285,7 @@ export default function Login() {
       >
         {alert}
       </Snackbar>
+      <a id="github-ribbon" className="github-fork-ribbon right-bottom fixed" href="https://github.com/Zynthasius39/beusp" data-ribbon="View on GitHub" title="View on GitHub">View on GitHub</a>
     </Stack>
   );
 }

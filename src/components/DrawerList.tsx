@@ -23,7 +23,10 @@ const DrawerList = () => {
   return (
     <Stack
       direction="column"
-      sx={{ height: "100%", backgroundColor: theme.palette.background.paper }}
+      sx={{
+        height: "100%",
+        backgroundColor: theme.palette.background.paper
+      }}
     >
       <Stack
         p={2}

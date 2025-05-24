@@ -1,14 +1,36 @@
-import { ReactNode } from "react";
-import { Navigate, useLocation } from "react-router-dom";
+import { ReactNode, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "../utils/Auth";
+import { CircularProgress, Stack } from "@mui/material";
 
 export function RequireAuth({ children }: { children: ReactNode }) {
-  const { authed } = useAuth();
-  const location = useLocation();
+  const [, setTick] = useState(0);
+  const { authed, verifySession, logout } = useAuth();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    verifySession().then(v => {
+      if (v)
+        setTick(t => t + 1);
+      else {
+        navigate("/login");
+        logout();
+      }
+    });
+  }, [])
 
   return authed ? (
     children
   ) : (
-    <Navigate to="/login" replace state={{ path: location.pathname }} />
+    <Stack
+      sx={{
+        backgroundColor: 'background.default',
+        justifyContent: "center",
+        alignItems: "center",
+        height: "100%",
+      }}
+    >
+      <CircularProgress size={192} />
+    </Stack>
   );
 }

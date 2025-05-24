@@ -24,24 +24,39 @@ export default function App() {
       color={theme.palette.primary.contrastText}
       bgcolor={theme.palette.background.default}
       justifyContent="space-between"
-      height={"100vh"}
+      height="100vh"
+      width="100vw"
     >
       <Stack direction="row" height="100%">
         <Box
           sx={{
             display: { xs: "none", md: "block" },
             borderRight: "1px solid " + theme.palette.divider,
+            flexShrink: 0,
           }}
         >
           <DrawerList />
         </Box>
-        <Stack flex={4} bgcolor="background.default" color="text.primary">
+        <Stack
+          flexGrow={1}
+          bgcolor="background.default"
+          color="text.primary"
+          overflow="auto"
+        >
           <Navbar page={page} />
-          <Box p={1} flex={8} sx={{ pb: 20 }} overflow="auto">
+          <Box
+            sx={{
+              p: 1,
+              pb: 20,
+              flexGrow: 1,
+              overflow: "auto",
+            }}
+          >
             <Outlet />
           </Box>
         </Stack>
       </Stack>
+      <a id="github-ribbon" className="github-fork-ribbon right-bottom fixed" href="https://github.com/Zynthasius39/beusp" data-ribbon="View on GitHub" title="View on GitHub">View on GitHub</a>
     </Stack>
   );
 }

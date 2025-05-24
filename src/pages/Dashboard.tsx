@@ -133,8 +133,7 @@ const Dashboard = () => {
       flexDirection: "row",
     }}>
       <Stack sx={{
-        flex: "1 1 calc(50% - 150px)",
-        alignItems: "center",
+        width: "100%",
         justifyContent: "center",
         flexDirection: "row",
         flexWrap: "wrap",
@@ -148,7 +147,9 @@ const Dashboard = () => {
             <Card key={inx} sx={cardRootStyle}>
               <Stack sx={infoCardStyle}>
                 <Avatar className="card-logo" sx={{
-                  backgroundColor: theme.palette.primary.dark, float: "left", width: {
+                  backgroundColor: theme.palette.primary.dark,
+                  float: "left",
+                  width: {
                     xs: "32px",
                     sm: "64px",
                   },
@@ -159,7 +160,8 @@ const Dashboard = () => {
                 }}>
                   {cloneElement(infoCard.icon, {
                     sx: {
-                      color: theme.palette.primary.main, fontSize: {
+                      color: theme.palette.primary.main,
+                      fontSize: {
                         xs: "18px",
                         sm: "36px",
                       }

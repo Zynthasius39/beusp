@@ -176,6 +176,6 @@ export default function Attendance() {
                 attAsm={attAsm}
                 doAttAsm={doAttAsm}
             />
-        </Stack>
+        </Stack >
     )
 }

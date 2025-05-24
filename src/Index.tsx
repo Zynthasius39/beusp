@@ -1,6 +1,6 @@
-import { HashRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Announces from "./pages/Announces";
-import NoPage from "./components/NoPage";
+import Error from "./pages/Error";
 import App from "./layouts/App";
 import Login from "./pages/Login";
 import AuthProvider from "./providers/AuthProvider";
@@ -15,27 +15,30 @@ import Attendance from "./pages/Attendance";
 import VersionTag from "./components/VersionTag";
 import './style/Index.css'
 import './style/gh-fork-ribbon.min.css'
+import { RequireAuth } from "./providers/RequireAuth";
 
 export default function Index() {
   return (
     <AuthProvider>
       <ThemeUtilsProvider>
         <LocalizationProvider dateAdapter={AdapterDayjs}>
-          <HashRouter>
+          <BrowserRouter>
             <Routes>
+              <Route path="*" element={<Error errorCode={404} errorText="Not Found" />} />
               <Route
                 path="/"
                 element={
-                  <App />
+                  <RequireAuth>
+                    <App />
+                  </RequireAuth>
                 }
               >
                 <Route index element={<Dashboard />} />
-                <Route path="announces" element={<Announces />} />
-                <Route path="attendance" element={<Attendance />} />
-                <Route path="departments" element={<Departments />} />
-                <Route path="grades" element={<Grades />} />
-                <Route path="settings" element={<Settings />} />
-                <Route path="*" element={<NoPage />} />
+                <Route path="/announces" element={<Announces />} />
+                <Route path="/attendance" element={<Attendance />} />
+                <Route path="/departments" element={<Departments />} />
+                <Route path="/grades" element={<Grades />} />
+                <Route path="/settings" element={<Settings />} />
               </Route>
               <Route path="/login" element={
                 <>
@@ -43,15 +46,16 @@ export default function Index() {
                   <VersionTag
                     sx={{
                       position: "fixed",
+                      p: 4,
                       bottom: 0,
                       left: 0,
                     }} />,
                 </>
               } />
             </Routes>
-          </HashRouter>
+          </BrowserRouter>
         </LocalizationProvider>
-      </ThemeUtilsProvider>
-    </AuthProvider>
+      </ThemeUtilsProvider >
+    </AuthProvider >
   );
 }

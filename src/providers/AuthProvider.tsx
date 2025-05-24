@@ -1,6 +1,6 @@
 import { ReactNode, useCallback, useEffect, useState } from "react";
 import { AuthContext } from "../utils/Auth";
-import { checkResponseStatus, isUnauthorized, UnauthorizedApiError, url } from "../utils/Api";
+import { checkResponseStatus, isServerFault, isUnauthorized, ServerFaultApiError, UnauthorizedApiError, url } from "../utils/Api";
 import Cookies from "universal-cookie";
 import { User } from "../utils/Interfaces";
 import { createFetchCached } from "../features/FetchCached";
@@ -10,9 +10,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
   const [authed, setAuthed] = useState(false);
   const cookies = new Cookies(null, { path: "/" });
 
-  // const setName = useCallback((name: string) => setname(name), [name]);
-
-  const login = useCallback(async (student_id: number, password: string) => {
+  const login = async (student_id: number, password: string) => {
     const res = await fetch(`${url}/auth?` + new URLSearchParams({
       studentId: String(student_id),
       password: password,
@@ -23,12 +21,15 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
         "Content-Type": "application/json",
       },
     });
-    if (isUnauthorized(res.status)) {
+    if (isUnauthorized(res.status))
       throw new UnauthorizedApiError(String(res.status));
+    else if (isServerFault(res.status))
+      throw new ServerFaultApiError(String(res.status));
+    else {
+      caches.delete("v1");
+      setAuthed(true);
     }
-    caches.delete("v1");
-    setAuthed(true);
-  }, [authed]);
+  };
 
   const logout = useCallback(async () => {
     fetch(url + "/logout", {
@@ -45,10 +46,9 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
     caches.delete("v1");
     setUser(null);
     setAuthed(false);
-    window.location.href = "/#/login";
   }, [authed]);
 
-  const verify = useCallback(async () => {
+  const verify = async () => {
     const res = await fetch(url + "/verify", {
       method: "GET",
       credentials: "include",
@@ -59,12 +59,9 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
     if (isUnauthorized(res.status)) {
       return false;
     }
+    setAuthed(true);
     return true;
-  }, [authed]);
-
-  // const setImage = useCallback((url: string) => {
-  //   setImageURL(url);
-  // }, [imageURL]);
+  };
 
   const fetchCached = createFetchCached(logout);
 
@@ -107,9 +104,20 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
     }
   }
 
+  const verifySession = async () => {
+    const verified = await verify();
+    if (!verified)
+      logout();
+    return verified;
+  };
+
   useEffect(() => {
     getUser();
   }, [authed])
 
-  return <AuthContext.Provider value={{ user, authed, login, logout, verify }}>{children}</AuthContext.Provider>;
+  useEffect(() => {
+    verify();
+  }, [])
+
+  return <AuthContext.Provider value={{ user, authed, login, logout, verify, verifySession }}>{children}</AuthContext.Provider>;
 }

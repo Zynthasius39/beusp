@@ -35,22 +35,45 @@ export default function Announces() {
     getAnnounces();
   }, []);
 
-  return (<Stack p={1} gap={2}>
-    {announcesT.map(({ body, name }, inx) => (
-      <Card key={inx}>
-        <Stack p={2} flexDirection="row" justifyContent="center" alignItems="center" gap={2} fontSize="12px">
-          <Stack flexDirection="row" width="200px" gap={2}>
-            <Avatar sx={{
-              backgroundColor: theme.palette.primary.dark,
-              color: theme.palette.primary.main,
-            }}>
-              <NotificationsTwoTone />
-            </Avatar>
-            <Typography fontSize="inherit" width={96} fontWeight="bold">{name}</Typography>
+  return (
+    <Stack p={1} gap={2}>
+      {announcesT.map(({ body, name }, inx) => (
+        <Card key={inx}>
+          <Stack
+            sx={{
+              p: 2,
+              fontSize: 14,
+              gap: 2,
+            }}
+          >
+            <Stack
+              flexDirection="row"
+              alignItems="center"
+              gap={2}
+            >
+              <Avatar
+                sx={{
+                  backgroundColor: theme.palette.primary.dark,
+                  color: theme.palette.primary.main,
+                }}
+              >
+                <NotificationsTwoTone />
+              </Avatar>
+              <Typography
+                fontSize="inherit"
+                fontWeight="bold"
+              >
+                {name}
+              </Typography>
+            </Stack>
+            <Typography
+              fontSize="inherit"
+            >
+              {body}
+            </Typography>
           </Stack>
-          <Typography fontSize="inherit" flexGrow={1}>{body}</Typography>
-        </Stack>
-      </Card>
-    ))}
-  </Stack >);
+        </Card>
+      ))}
+    </Stack >
+  );
 }

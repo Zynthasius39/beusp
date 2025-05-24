@@ -19,7 +19,8 @@ export interface AuthContextType {
   authed: boolean,
   login: (student_id: number, password: string) => Promise<void>,
   logout: () => Promise<void>,
-  verify: () => Promise<boolean>
+  verify: () => Promise<boolean>,
+  verifySession: () => Promise<boolean>,
 }
 
 export interface ThemeContextType {

@@ -97,13 +97,11 @@ export default function AttendanceTable({ attdsT, attLoading, attAsm, doAttAsm }
 
     return attLoading ?
         <Skeleton variant="rounded" animation="wave" sx={{
-            maxWidth: "calc(100dvw - 32px)",
             height: 512
         }} />
         :
         <TableContainer sx={{
             overflow: "auto",
-            maxWidth: "calc(100dvw - 32px)",
         }}
         >
             <Table>
