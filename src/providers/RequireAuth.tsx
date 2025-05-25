@@ -9,15 +9,16 @@ export function RequireAuth({ children }: { children: ReactNode }) {
   const navigate = useNavigate();
 
   useEffect(() => {
-    verifySession().then(v => {
-      if (v)
-        setTick(t => t + 1);
-      else {
-        navigate("/login");
-        logout();
-      }
-    });
-  }, [])
+    if (!authed)
+      verifySession().then(v => {
+        if (v)
+          setTick(t => t + 1);
+        else {
+          navigate("/login");
+          logout();
+        }
+      });
+  }, [authed])
 
   return authed ? (
     children
@@ -30,7 +31,7 @@ export function RequireAuth({ children }: { children: ReactNode }) {
         height: "100%",
       }}
     >
-      <CircularProgress size={192} />
+      <CircularProgress size={128} />
     </Stack>
   );
 }

@@ -1,4 +1,4 @@
-import { ReactNode, useCallback, useEffect, useState } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import { AuthContext } from "../utils/Auth";
 import { checkResponseStatus, isServerFault, isUnauthorized, ServerFaultApiError, UnauthorizedApiError, url } from "../utils/Api";
 import Cookies from "universal-cookie";
@@ -31,7 +31,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const logout = useCallback(async () => {
+  const logout = async () => {
     fetch(url + "/logout", {
       method: "GET",
       credentials: "include",
@@ -46,7 +46,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
     caches.delete("v1");
     setUser(null);
     setAuthed(false);
-  }, [authed]);
+  };
 
   const verify = async () => {
     const res = await fetch(url + "/verify", {
@@ -83,25 +83,23 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   const getUser = async () => {
-    if (await verify()) {
-      await fetchCached(`${url}/resource/home`, {
-        method: "GET",
-        credentials: "include",
-      }).then(response => {
-        checkResponseStatus(response);
-        return response.json()
-      }).then(json => {
-        getStudPhoto().then(url => {
-          setUser({ name: json?.studentInfo?.fullNamePatronymic?.split(" ")[0], imageURL: url ?? "" });
-        });
-      }).catch(e => {
-        if (e instanceof UnauthorizedApiError) {
-          logout();
-        } else {
-          console.error(e);
-        }
+    await fetchCached(`${url}/resource/home`, {
+      method: "GET",
+      credentials: "include",
+    }).then(response => {
+      checkResponseStatus(response);
+      return response.json()
+    }).then(json => {
+      getStudPhoto().then(url => {
+        setUser({ name: json?.studentInfo?.fullNamePatronymic?.split(" ")[0], imageURL: url ?? "" });
       });
-    }
+    }).catch(e => {
+      if (e instanceof UnauthorizedApiError) {
+        logout();
+      } else {
+        console.error(e);
+      }
+    });
   }
 
   const verifySession = async () => {
@@ -114,10 +112,6 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     getUser();
   }, [authed])
-
-  useEffect(() => {
-    verify();
-  }, [])
 
   return <AuthContext.Provider value={{ user, authed, login, logout, verify, verifySession }}>{children}</AuthContext.Provider>;
 }

@@ -2,7 +2,6 @@ import {
   Stack,
   List,
   Typography,
-  Link,
   ListItemButton,
   Divider,
   ListItemIcon,
@@ -15,7 +14,13 @@ import { LogoutTwoTone } from "@mui/icons-material";
 import { useAuth } from "../utils/Auth";
 import VersionTag from "./VersionTag";
 
-const DrawerList = () => {
+const listButtonStyle = {
+  p: 2,
+  pl: 4,
+  flexGrow: 0,
+}
+
+export default function DrawerList() {
   const { logout } = useAuth();
   const { theme } = useTheme();
   const path = useLocation().pathname;
@@ -25,7 +30,7 @@ const DrawerList = () => {
       direction="column"
       sx={{
         height: "100%",
-        backgroundColor: theme.palette.background.paper
+        backgroundColor: theme.palette.background.paper,
       }}
     >
       <Stack
@@ -58,10 +63,11 @@ const DrawerList = () => {
           flexGrow: 1,
           display: "flex",
           flexDirection: "column",
+          pb: 0,
         }}
       >
         <Box sx={{
-          flexGrow: "1",
+          flexGrow: 1,
           overflowY: "auto",
         }}>
           {spMenu.map(({ name, icon, href }, inx) => (
@@ -74,12 +80,12 @@ const DrawerList = () => {
               }}
             >
               <ListItemButton
-                sx={{
-                  p: "5%",
-                  pl: "10%",
-                  bgcolor:
-                    path === href ? theme.palette.primary.dark : "inherit",
-                }}
+                sx={[
+                  listButtonStyle,
+                  {
+                    bgcolor: path === href ? theme.palette.primary.dark : "inherit",
+                  },
+                ]}
               >
                 <ListItemIcon>
                   {icon}
@@ -89,18 +95,23 @@ const DrawerList = () => {
             </NavLink>
           ))}
         </Box>
-        <VersionTag sx={{ position: "inherit" }} />
-        <Link href="" color="inherit" underline="none" width={"100%"}>
-          <ListItemButton key="logout" sx={{ p: "5%", pl: "10%" }} onClick={logout}>
-            <ListItemIcon>
-              <LogoutTwoTone color="primary" />
-            </ListItemIcon>
-            <Typography fontSize={14}>LogOut</Typography>
-          </ListItemButton>
-        </Link>
+        <VersionTag sx={{
+          position: "inherit",
+          color: theme.palette.text.disabled,
+          fontSize: 16
+        }}
+        />
+        <ListItemButton
+          key="logout"
+          onClick={logout}
+          sx={listButtonStyle}
+        >
+          <ListItemIcon>
+            <LogoutTwoTone color="primary" />
+          </ListItemIcon>
+          <Typography fontSize={14}>LogOut</Typography>
+        </ListItemButton>
       </List>
     </Stack>
   );
 };
-
-export default DrawerList;
