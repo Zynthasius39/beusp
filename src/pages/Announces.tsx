@@ -3,7 +3,7 @@ import { useTheme } from "../utils/Theme";
 import { NotificationsTwoTone } from "@mui/icons-material";
 import { useAuth } from "../utils/Auth";
 import { useEffect, useState } from "react";
-import { checkResponseStatus, UnauthorizedApiError, url } from "../utils/Api";
+import { api, checkResponseStatus, UnauthorizedApiError } from "../utils/Api";
 import { createFetchCached } from "../features/FetchCached";
 
 export default function Announces() {
@@ -13,7 +13,7 @@ export default function Announces() {
   const fetchCached = createFetchCached(logout);
 
   const getAnnounces = async () => {
-    await fetchCached(`${url}/resource/announces`, {
+    await fetchCached(`${api}/resource/announces`, {
       method: "GET",
       credentials: "include",
     }).then(response => {

@@ -4,6 +4,7 @@ export type Order = 'asc' | 'desc';
 export type ColorSeverity = "inherit" | "primary" | "secondary" | "error" | "info" | "success" | "warning";
 export type AlertSeverity = 'success' | 'error' | 'warning' | 'info';
 export type AttendanceCouples = Record<string, (AttendanceEntry & { courseCode: string })[]>
+export type ApiMode = "live" | "demo";
 
 export interface AttendanceJson {
   [key: string]: AttendanceEntry

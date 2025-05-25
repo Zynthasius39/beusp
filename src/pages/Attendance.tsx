@@ -1,6 +1,6 @@
 import { Autocomplete, Checkbox, FormControlLabel, FormGroup, Skeleton, Stack, TextField, ToggleButton, ToggleButtonGroup, Tooltip } from "@mui/material";
 import { ChangeEvent, MouseEvent, SyntheticEvent, useEffect, useState } from "react";
-import { checkResponseStatus, url } from "../utils/Api";
+import { api, checkResponseStatus } from "../utils/Api";
 import AttendanceTable from "../components/AttendanceTable";
 import { AttendanceJson } from "../utils/Interfaces";
 import { createFetchCached } from "../features/FetchCached";
@@ -22,7 +22,7 @@ export default function Attendance() {
     const ssAvaliable = year ? options[year] : false;
 
     const getAttendances = async () => {
-        await fetchCached(`${url}/resource/grades`, {
+        await fetchCached(`${api}/resource/grades`, {
             method: "GET",
             credentials: "include",
         }).then(response => {
@@ -47,7 +47,7 @@ export default function Attendance() {
     }
 
     const getAttendanceTable = async (year: string, semester: string) => {
-        await fetch(`${url}/resource/attendance/${year}/${semester}`, {
+        await fetch(`${api}/resource/attendance/${year}/${semester}`, {
             method: "GET",
             credentials: "include",
         }).then(response => {

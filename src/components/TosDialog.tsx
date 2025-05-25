@@ -1,4 +1,4 @@
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle } from "@mui/material";
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import { PrimaryButton } from "./PrimaryButton";
 
@@ -23,14 +23,19 @@ export default function TosDialog() {
     } else
         return (
             <Dialog open={open}>
-                <DialogTitle>
+                <DialogTitle variant="h4">
                     Terms of Service
                 </DialogTitle>
                 <DialogContent>
-                    Your credentials gets saved in plain text after you login.
-                    Credentials will be used by bot to login into your account.
-                    It's highly recommended to host your own instance for your own privacy.
-                    This is a demo frontend for beusproxy project, not all of the features are present.
+                    <Typography>
+                        Your credentials gets saved in plain text after you login when using <b>LIVE</b> server!
+                        Credentials will be used by bot to login into your account.
+                        It's highly recommended to host your own instance for your own privacy.
+                    </Typography>
+                    <Typography>
+                        You can also use <b>DEMO</b> mode to preview the page.
+                        This is a demo frontend for beusproxy project, not all of the features are present.
+                    </Typography>
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={() => window.location.href = "https://www.youtube.com/watch?v=dQw4w9WgXcQ"}>

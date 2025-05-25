@@ -8,7 +8,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import { ChangeEvent, SyntheticEvent, useCallback, useEffect, useRef, useState } from 'react';
 import { Alert, Box, FormControlLabel, FormGroup, IconButton, LinearProgress, Link, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Snackbar, Stack, Switch, Tooltip, Typography } from '@mui/material';
 import { useAuth } from '../utils/Auth';
-import { checkResponseStatus, NotFoundApiError, UnauthorizedApiError, url } from '../utils/Api';
+import { api, checkResponseStatus, NotFoundApiError, UnauthorizedApiError } from '../utils/Api';
 import { Close, Email, Send, Telegram } from '@mui/icons-material';
 import { formatTime, isValidDcWebhook, isValidEmail } from '../utils/StudentLogic';
 import { AlertSeverity, BotInfoJson, BotSubsJson } from '../utils/Interfaces';
@@ -49,7 +49,7 @@ export default function BotDialog() {
     };
 
     const handleUnsub = (service: "email" | "discord" | "telegram") => {
-        fetch(`${url}/bot/subscribe`, {
+        fetch(`${api}/bot/subscribe`, {
             method: "DELETE",
             credentials: "include",
             headers: {
@@ -81,7 +81,7 @@ export default function BotDialog() {
     const handleEmailSub = () => {
         if (isValidEmail(email)) {
             setVerifyTimeout(100);
-            fetch(`${url}/bot/subscribe`, {
+            fetch(`${api}/bot/subscribe`, {
                 method: "PUT",
                 credentials: "include",
                 headers: {
@@ -139,7 +139,7 @@ export default function BotDialog() {
 
     const handleDiscordSub = () => {
         if (isValidDcWebhook(discord))
-            fetch(`${url}/bot/subscribe`, {
+            fetch(`${api}/bot/subscribe`, {
                 method: "PUT",
                 credentials: "include",
                 headers: {
@@ -190,7 +190,7 @@ export default function BotDialog() {
     }, [alert]);
 
     const getBotInfo = () => {
-        fetchCached(`${url}/bot`, {
+        fetchCached(`${api}/bot`, {
             method: "GET",
             credentials: "include",
         }).then(response => {
@@ -213,7 +213,7 @@ export default function BotDialog() {
     }
 
     const getBotSubs = () => {
-        fetch(`${url}/bot/subscribe`, {
+        fetch(`${api}/bot/subscribe`, {
             method: "GET",
             credentials: "include",
         }).then(response => {
@@ -251,7 +251,7 @@ export default function BotDialog() {
     }
 
     const getTelegramCode = () => {
-        fetch(`${url}/bot/subscribe`, {
+        fetch(`${api}/bot/subscribe`, {
             method: "PUT",
             credentials: "include",
             headers: {

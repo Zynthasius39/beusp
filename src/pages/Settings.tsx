@@ -1,7 +1,7 @@
 import { AutoFixHigh, Edit, ExpandLess, ExpandMore, Security, Storage } from "@mui/icons-material";
 import { Alert, Avatar, Box, Button, Collapse, Dialog, DialogActions, DialogContent, DialogContentText, List, ListItem, ListItemButton, ListItemIcon, ListItemText, MenuItem, Select, SelectChangeEvent, Snackbar, Stack, Typography } from "@mui/material";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { checkResponseStatus, url } from "../utils/Api";
+import { api, checkResponseStatus } from "../utils/Api";
 import { AlertSeverity } from "../utils/Interfaces";
 import { createFetchCached } from "../features/FetchCached";
 import { createFetchWithAuth } from "../features/FetchWithAuth";
@@ -36,7 +36,7 @@ export default function Settings() {
     }, [alert]);
 
     const handleTmsLangSelect = (e: SelectChangeEvent) => {
-        fetch(`${url}/settings`, {
+        fetch(`${api}/settings`, {
             method: "POST",
             credentials: "include",
             headers: {
@@ -55,7 +55,7 @@ export default function Settings() {
     }
 
     const getSettings = () => {
-        fetchCached(`${url}/resource/home`, {
+        fetchCached(`${api}/resource/home`, {
             method: "GET",
             credentials: "include",
         }, false).then(response => {

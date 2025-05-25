@@ -15,7 +15,7 @@ import {
 import { useTheme } from "../utils/Theme";
 import "../style/Dashboard.css";
 import { cloneElement, useEffect, useState } from "react";
-import { checkResponseStatus, UnauthorizedApiError, url } from "../utils/Api";
+import { api, checkResponseStatus, UnauthorizedApiError } from "../utils/Api";
 import { createFetchCached } from "../features/FetchCached";
 import { useAuth } from "../utils/Auth";
 
@@ -80,7 +80,7 @@ const Dashboard = () => {
   }
 
   const getTranscript = async () => {
-    await fetchCached(`${url}/resource/transcript`, {
+    await fetchCached(`${api}/resource/transcript`, {
       method: "GET",
       credentials: "include",
     }).then(response => {
@@ -101,7 +101,7 @@ const Dashboard = () => {
   }
 
   const getHomeStudInfo = async () => {
-    await fetchCached(`${url}/resource/home`, {
+    await fetchCached(`${api}/resource/home`, {
       method: "GET",
       credentials: "include",
     }).then(response => {

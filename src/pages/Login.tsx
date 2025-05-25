@@ -20,23 +20,22 @@ import { KeyboardEvent, MouseEvent, useCallback, useEffect, useRef, useState } f
 import { NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../utils/Auth";
 import TosDialog from "../components/TosDialog";
-import { AlertSeverity } from "../utils/Interfaces";
+import { AlertSeverity, ApiMode } from "../utils/Interfaces";
 import { MaterialUISwitch } from "../components/MaterialUISwitch";
 import { PrimaryButton } from "../components/PrimaryButton";
-import { ServerFaultApiError, UnauthorizedApiError } from "../utils/Api";
+import { ServerFaultApiError, setApiMode, UnauthorizedApiError } from "../utils/Api";
 
 export default function Login() {
   const { theme, isDark, setDark } = useTheme();
   const { user, authed, login, logout } = useAuth();
-  const navigate = useNavigate();
-  const [alignment, setAlignment] = useState("student");
+  const [alignment, setAlignment] = useState<ApiMode>("live");
   const [studentId, setStudentID] = useState(0);
-  // const [pmsUsername, setPmsUsername] = useState(""); // Future use :P
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [alert, setAlert] = useState<JSX.Element | undefined>(undefined);
   const timer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const alertTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const navigate = useNavigate();
 
   const handleKeyDown = async (event: KeyboardEvent<HTMLDivElement>) => {
     if (event.key === "Enter") {
@@ -47,7 +46,8 @@ export default function Login() {
   const handleButtonGroup = useCallback(
     (_: MouseEvent<HTMLElement>, v: string) => {
       if (v !== null) {
-        setAlignment(v);
+        setAlignment(v as ApiMode);
+        setApiMode(v as ApiMode);
       }
     },
     [],
@@ -105,6 +105,7 @@ export default function Login() {
 
   useEffect(() => {
     clearTimeout(timer.current);
+    setAlignment(localStorage.getItem("offline_mode") === "1" ? "demo" : "live");
   }, []);
 
   return (
@@ -188,39 +189,22 @@ export default function Login() {
             </Stack>
             :
             <>
-              {alignment === "student" ? (
-                <div>
-                  <Typography variant="body2" id="login-label" pb="5px">
-                    Student ID
-                  </Typography>
-                  <TextField
-                    id="input-id"
-                    type="number"
-                    placeholder="220106099"
-                    fullWidth={true}
-                    onKeyDown={handleKeyDown}
-                    onChange={(e) => {
-                      setStudentID(Number(e.target.value));
-                    }}
-                  />
-                </div>
-              ) : (
-                <div>
-                  <Typography variant="body2" id="login-label" pb="5px">
-                    Username
-                  </Typography>
-                  <TextField
-                    id="input-username"
-                    type="text"
-                    placeholder="ypiriyev"
-                    fullWidth={true}
-                    onKeyDown={handleKeyDown}
-                  // onChange={(e) => {
-                  //   setEduUsername(e.target.value);
-                  // }}
-                  />
-                </div>
-              )}
+              <div>
+                <Typography variant="body2" id="login-label" pb="5px">
+                  Student ID
+                </Typography>
+                <TextField
+                  id="input-id"
+                  type="number"
+                  placeholder={alignment === "demo" ? "Come in, my friend!" : "220106000"}
+                  fullWidth={true}
+                  onKeyDown={handleKeyDown}
+                  onChange={(e) => {
+                    setStudentID(Number(e.target.value));
+                  }}
+                  disabled={alignment === "demo"}
+                />
+              </div>
               <div>
                 <Typography variant="body2" id="login-label" pb="5px">
                   Password
@@ -233,6 +217,7 @@ export default function Login() {
                   onChange={(e) => {
                     setPassword(e.target.value);
                   }}
+                  disabled={alignment === "demo"}
                 />
               </div>
               {/* <FormControlLabel control={<Checkbox />} label="Remember Me" /> */}
@@ -272,8 +257,8 @@ export default function Login() {
                 exclusive
                 aria-label="account type"
               >
-                <ToggleButton value="student">Student</ToggleButton>
-                <ToggleButton disabled value="educater">Educater</ToggleButton>
+                <ToggleButton value="live">Live</ToggleButton>
+                <ToggleButton value="demo">Demo</ToggleButton>
               </ToggleButtonGroup>
             </>
           }

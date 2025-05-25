@@ -1,4 +1,14 @@
-export const url = `http://localhost:8080/api`;
+import { ApiMode } from "./Interfaces";
+
+const live_url = `http://localhost:8080/api`;
+const offline_url = `http://localhost:8081/api`;
+export let api = localStorage.getItem("offline_mode") === "1" ? offline_url : live_url;
+
+export const setApiMode = (mode: ApiMode) => {
+  const isLive = mode === "live";
+  localStorage.setItem("offline_mode", isLive ? "0" : "1");
+  api = isLive ? live_url : offline_url;
+}
 
 export const isUnauthorized = (status: number) => {
   return [400, 401].includes(status);

@@ -1,6 +1,6 @@
 import { ReactNode, useEffect, useState } from "react";
 import { AuthContext } from "../utils/Auth";
-import { checkResponseStatus, isServerFault, isUnauthorized, ServerFaultApiError, UnauthorizedApiError, url } from "../utils/Api";
+import { api, checkResponseStatus, isServerFault, isUnauthorized, ServerFaultApiError, UnauthorizedApiError } from "../utils/Api";
 import Cookies from "universal-cookie";
 import { User } from "../utils/Interfaces";
 import { createFetchCached } from "../features/FetchCached";
@@ -11,7 +11,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
   const cookies = new Cookies(null, { path: "/" });
 
   const login = async (student_id: number, password: string) => {
-    const res = await fetch(`${url}/auth?` + new URLSearchParams({
+    const res = await fetch(`${api}/auth?` + new URLSearchParams({
       studentId: String(student_id),
       password: password,
     }).toString(), {
@@ -32,7 +32,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const logout = async () => {
-    fetch(url + "/logout", {
+    fetch(`${api}/logout`, {
       method: "GET",
       credentials: "include",
       headers: {
@@ -49,7 +49,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const verify = async () => {
-    const res = await fetch(url + "/verify", {
+    const res = await fetch(`${api}/verify`, {
       method: "GET",
       credentials: "include",
       headers: {
@@ -66,7 +66,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
   const fetchCached = createFetchCached(logout);
 
   const getStudPhoto = async () => {
-    return await fetchCached(`${url}/resource/studphoto`, {
+    return await fetchCached(`${api}/resource/studphoto`, {
       method: "GET",
       credentials: "include",
       headers: {
@@ -83,7 +83,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   const getUser = async () => {
-    await fetchCached(`${url}/resource/home`, {
+    await fetchCached(`${api}/resource/home`, {
       method: "GET",
       credentials: "include",
     }).then(response => {

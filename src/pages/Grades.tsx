@@ -1,7 +1,7 @@
 import { Autocomplete, Checkbox, FormControlLabel, FormGroup, Skeleton, Stack, TextField, ToggleButton, ToggleButtonGroup, Tooltip } from "@mui/material";
 import { ChangeEvent, MouseEvent, SyntheticEvent, useEffect, useState } from "react";
 import BotDialog from "../components/BotDialog";
-import { checkResponseStatus, url } from "../utils/Api";
+import { api, checkResponseStatus } from "../utils/Api";
 import GradesTable from "../components/GradesTable";
 import { GradesJson } from "../utils/Interfaces";
 import { createFetchCached } from "../features/FetchCached";
@@ -29,7 +29,7 @@ export default function Grades() {
   const fetch = createFetchWithAuth(logout);
 
   const getGrades = async () => {
-    await fetchCached(`${url}/resource/grades`, {
+    await fetchCached(`${api}/resource/grades`, {
       method: "GET",
       credentials: "include",
     }).then(response => {
@@ -55,7 +55,7 @@ export default function Grades() {
   }
 
   const getGradesTable = async (year: string, semester: string) => {
-    await fetch(year === "ALL" ? `${url}/resource/grades/all` : `${url}/resource/grades/${year}/${semester}`, {
+    await fetch(year === "ALL" ? `${api}/resource/grades/all` : `${api}/resource/grades/${year}/${semester}`, {
       method: "GET",
       credentials: "include",
     }).then(response => {
