@@ -8,7 +8,7 @@ import GradesPopper from "./GradesPopper";
 
 interface GradesTableProps {
     doIwAsm: boolean,
-    iwAsm: number,
+    iwAsm: string,
     gradeTLoading: boolean,
     oldScale: boolean,
     calcGrade: boolean,
@@ -80,7 +80,7 @@ export default function GradesTable({
     const courseArr = Object.entries(gradesT ?? {}).map(([k, v]) => ({ ...v, courseCode: k }));
     courseArr.forEach(e => {
         if (doIwAsm && e.iw === -1)
-            e.iw = iwAsm;
+            e.iw = Number(iwAsm);
         e.calcSum = calculateSum(e, roundGrade, act3Enabled);
     });
     const sortedRows = courseArr.slice().sort(getComparator(order, orderBy));

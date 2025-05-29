@@ -6,7 +6,7 @@ import { AttendanceLinearProgress } from "./AttendanceLinearProgress";
 
 interface AttendanceTableProps {
     attdsT: AttendanceJson | undefined,
-    attAsm: number,
+    attAsm: string,
     attLoading: boolean,
     doAttAsm: boolean,
 }
@@ -90,7 +90,7 @@ export default function AttendanceTable({ attdsT, attLoading, attAsm, doAttAsm }
 
     Object.keys(attdsGrouped ?? {}).forEach(courseCode => {
         if (doAttAsm)
-            attdsGrouped[courseCode][attdsGrouped[courseCode].length - 1].absent += attAsm;
+            attdsGrouped[courseCode][0].absent += Number(attAsm);
     })
 
     const sortedAttdsGrouped = Object.values(attdsGrouped ?? {}).slice().sort(getComparator(order, orderBy));

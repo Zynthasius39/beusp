@@ -1,5 +1,5 @@
 import { Autocomplete, Checkbox, FormControlLabel, FormGroup, Skeleton, Stack, TextField, ToggleButton, ToggleButtonGroup, Tooltip } from "@mui/material";
-import { ChangeEvent, MouseEvent, SyntheticEvent, useEffect, useState } from "react";
+import { ChangeEvent, KeyboardEvent, MouseEvent, SyntheticEvent, useEffect, useState } from "react";
 import { api, checkResponseStatus } from "../utils/Api";
 import AttendanceTable from "../components/AttendanceTable";
 import { AttendanceJson } from "../utils/Interfaces";
@@ -12,7 +12,7 @@ export default function Attendance() {
     const [year, setYear] = useState<string | null>(null);
     const [semester, setSemester] = useState("1");
     const [options, setOptions] = useState<{ [year: string]: boolean }>({});
-    const [attAsm, setAttAsm] = useState(1);
+    const [attAsm, setAttAsm] = useState('');
     const [attLoading, setAttLoading] = useState(true);
     const [doAttAsm, setDoAttAsm] = useState(false);
     const [attdsT, setAttdsT] = useState<AttendanceJson | undefined>(undefined);
@@ -20,6 +20,7 @@ export default function Attendance() {
     const fetch = createFetchWithAuth(logout);
 
     const ssAvaliable = year ? options[year] : false;
+    const maxAtt = 30;
 
     const getAttendances = async () => {
         await fetchCached(`${api}/resource/grades`, {
@@ -80,11 +81,31 @@ export default function Attendance() {
     }
 
     const handleAttAsm = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        const targetValue = Number(e.target.value);
-        if (!isNaN(targetValue))
-            if (targetValue >= 0 && targetValue <= 30)
-                setAttAsm(targetValue);
+        let input = e.target.value;
+
+        if (!/^\d*$/.test(input)) return;
+
+        if (input.length > 1 && input.startsWith('0')) {
+            input = input.replace(/^0+/, '');
+        }
+
+        if (Number(input) <= maxAtt)
+            setAttAsm(input);
     }
+
+    const handleKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
+        let current = parseInt(attAsm || '0', 10);
+
+        if (e.key === 'ArrowUp') {
+            current = Math.min(current + 1, 30);
+            setAttAsm(String(current));
+            e.preventDefault();
+        } else if (e.key === 'ArrowDown') {
+            current = Math.max(current - 1, 0);
+            setAttAsm(String(current));
+            e.preventDefault();
+        }
+    };
 
     useEffect(() => {
         if (attdsT === undefined)
@@ -154,17 +175,19 @@ export default function Attendance() {
                         )
                 }
                 <FormGroup sx={{ display: "flex", flexDirection: "row" }}>
-                    <Tooltip title="Use old grading scale">
+                    <Tooltip title="Predicts absent percent">
                         <FormControlLabel control={<Checkbox checked={doAttAsm} onChange={handlePredictAtt} />} label="Predict Absents" />
                     </Tooltip>
                     {
                         doAttAsm &&
                         <TextField
                             id="input-iwasm"
-                            type="number"
+                            type="text"
+                            inputMode="numeric"
                             placeholder="1"
                             value={attAsm}
                             onChange={handleAttAsm}
+                            onKeyDown={handleKeyDown}
                             sx={{ width: 49 }}
                         />
                     }

@@ -1,5 +1,5 @@
 import { Autocomplete, Checkbox, FormControlLabel, FormGroup, Skeleton, Stack, TextField, ToggleButton, ToggleButtonGroup, Tooltip } from "@mui/material";
-import { ChangeEvent, MouseEvent, SyntheticEvent, useEffect, useState } from "react";
+import { ChangeEvent, KeyboardEvent, MouseEvent, SyntheticEvent, useEffect, useState } from "react";
 import BotDialog from "../components/BotDialog";
 import { api, checkResponseStatus } from "../utils/Api";
 import GradesTable from "../components/GradesTable";
@@ -20,7 +20,7 @@ export default function Grades() {
   const [gradeTLoading, setGradeTLoading] = useState(true);
   const [gradesLoading, setGradesLoading] = useState(true);
   const [doIwAsm, setDoIwAsm] = useState(false);
-  const [iwAsm, setIwAsm] = useState(10);
+  const [iwAsm, setIwAsm] = useState('10');
   const [year, setYear] = useState<string | null>(null);
   const [gradesT, setGradesT] = useState<GradesJson | undefined>(undefined);
   const [options, setOptions] = useState<{ [year: string]: boolean }>({});
@@ -104,11 +104,32 @@ export default function Grades() {
   }
 
   const handleIwAsm = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const targetValue = Number(e.target.value);
-    if (!isNaN(targetValue))
-      if (targetValue >= 0 && targetValue <= 10)
-        setIwAsm(targetValue);
+    let input = e.target.value;
+
+    if (!/^\d*$/.test(input)) return;
+
+    if (input.length > 1 && input.startsWith('0')) {
+      input = input.replace(/^0+/, '');
+    }
+
+    if (Number(input) <= 10)
+      setIwAsm(input);
   }
+
+  const handleKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
+    let current = parseInt(iwAsm || '0', 10);
+
+    if (e.key === 'ArrowUp') {
+      current = Math.min(current + 1, 10);
+      setIwAsm(String(current));
+      e.preventDefault();
+    } else if (e.key === 'ArrowDown') {
+      current = Math.max(current - 1, 0);
+      setIwAsm(String(current));
+      e.preventDefault();
+    }
+  };
+
 
   useEffect(() => {
     if (gradesT === undefined)
@@ -208,6 +229,7 @@ export default function Grades() {
               placeholder="10"
               value={iwAsm}
               onChange={handleIwAsm}
+              onKeyDown={handleKeyDown}
               sx={{ width: 49 }}
             />
           }
