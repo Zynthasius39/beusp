@@ -1,4 +1,4 @@
-import { green, red, yellow } from "@mui/material/colors";
+import { green, orange, red, yellow } from "@mui/material/colors";
 import { ColorSeverity, GradeEntry } from "./Interfaces";
 import { darkTheme, lightTheme } from "./Theme";
 
@@ -191,7 +191,7 @@ export const pointNeedColors = (sum: number, category: "queen" | "rook" | "pawn"
         {
             lost: theme.palette.text.secondary,
             hard: red[500],
-            mid: yellow[500],
+            mid: orange.A700,
             easy: green[500],
         };
     return {
