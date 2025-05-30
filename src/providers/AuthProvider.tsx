@@ -10,16 +10,17 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
   const [authed, setAuthed] = useState(false);
   const cookies = new Cookies(null, { path: "/" });
 
-  const login = async (student_id: number, password: string) => {
-    const res = await fetch(`${api}/auth?` + new URLSearchParams({
-      studentId: String(student_id),
-      password: password,
-    }).toString(), {
-      method: "GET",
+  const login = async (studentId: number, password: string) => {
+    const res = await fetch(`${api}/auth`, {
+      method: "POST",
       credentials: "include",
       headers: {
         "Content-Type": "application/json",
       },
+      body: JSON.stringify({
+        studentId: String(studentId),
+        password: password
+      }),
     });
     if (isUnauthorized(res.status))
       throw new UnauthorizedApiError(String(res.status));
