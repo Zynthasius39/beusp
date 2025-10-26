@@ -1,9 +1,27 @@
-import { Autocomplete, Checkbox, FormControlLabel, FormGroup, Skeleton, Stack, TextField, ToggleButton, ToggleButtonGroup, Tooltip } from "@mui/material";
-import { ChangeEvent, KeyboardEvent, MouseEvent, SyntheticEvent, useEffect, useState } from "react";
+import {
+  Autocomplete,
+  Checkbox,
+  FormControlLabel,
+  FormGroup,
+  Skeleton,
+  Stack,
+  TextField,
+  ToggleButton,
+  ToggleButtonGroup,
+  Tooltip,
+} from "@mui/material";
+import {
+  ChangeEvent,
+  KeyboardEvent,
+  MouseEvent,
+  SyntheticEvent,
+  useEffect,
+  useState,
+} from "react";
 import BotDialog from "../components/BotDialog";
 import { api, checkResponseStatus } from "../utils/Api";
 import GradesTable from "../components/GradesTable";
-import { GradesJson } from "../utils/Interfaces";
+import { GradesJson, GradeEntry } from "../utils/Interfaces";
 import { createFetchCached } from "../features/FetchCached";
 import { useAuth } from "../utils/Auth";
 import { createFetchWithAuth } from "../features/FetchWithAuth";
@@ -16,11 +34,12 @@ export default function Grades() {
   const [calcGrade, setCalcGrade] = useState(true);
   const [roundGrade, setRoundGrade] = useState(false);
   const [act3Enabled, setAct3Enabled] = useState(false);
+  const [semEnabled, setSemEnabled] = useState(true);
   const [ssAvaliable, setSsAvaliable] = useState(false);
   const [gradeTLoading, setGradeTLoading] = useState(true);
   const [gradesLoading, setGradesLoading] = useState(true);
   const [doIwAsm, setDoIwAsm] = useState(false);
-  const [iwAsm, setIwAsm] = useState('10');
+  const [iwAsm, setIwAsm] = useState("10");
   const [year, setYear] = useState<string | null>(null);
   const [gradesT, setGradesT] = useState<GradesJson | undefined>(undefined);
   const [options, setOptions] = useState<{ [year: string]: boolean }>({});
@@ -32,49 +51,61 @@ export default function Grades() {
     await fetchCached(`${api}/resource/grades`, {
       method: "GET",
       credentials: "include",
-    }).then(response => {
-      checkResponseStatus(response);
-      return response.json();
-    }).catch(e => {
-      console.error(e);
-    }).then(json => {
-      const options: { [year: string]: boolean } = {};
-      if (json.canRequestAll)
-        options["ALL"] = true;
-      json.entries.forEach((o: { year: string, semester: number }) => {
-        if (!options[o.year])
-          options[o.year] = o.semester === 2;
+    })
+      .then((response) => {
+        checkResponseStatus(response);
+        return response.json();
+      })
+      .catch((e) => {
+        console.error(e);
+      })
+      .then((json) => {
+        const options: { [year: string]: boolean } = {};
+        if (json.canRequestAll) options["ALL"] = true;
+        json.entries.forEach((o: { year: string; semester: number }) => {
+          if (!options[o.year]) options[o.year] = o.semester === 2;
+        });
+        const offset = options["ALL"] ? 2 : 1;
+        const keys = Object.keys(options);
+        setYear(keys[keys.length - offset]);
+        setSemester(options[keys[keys.length - offset]] ? "2" : "1");
+        setOptions(options);
+        setGradesLoading(false);
       });
-      const offset = options["ALL"] ? 2 : 1;
-      const keys = Object.keys(options);
-      setYear(keys[keys.length - offset]);
-      setSemester(options[keys[keys.length - offset]] ? "2" : "1");
-      setOptions(options);
-      setGradesLoading(false);
-    });
-  }
+  };
 
   const getGradesTable = async (year: string, semester: string) => {
-    await fetch(year === "ALL" ? `${api}/resource/grades/all` : `${api}/resource/grades/${year}/${semester}`, {
-      method: "GET",
-      credentials: "include",
-    }).then(response => {
-      checkResponseStatus(response);
-      return response.json()
-    }).catch(e => {
-      console.error(e);
-    }).then(json => {
-      setGradesT(json);
-      setGradeTLoading(false);
-    })
-  }
+    await fetch(
+      year === "ALL"
+        ? `${api}/resource/grades/all`
+        : `${api}/resource/grades/${year}/${semester}`,
+      {
+        method: "GET",
+        credentials: "include",
+      },
+    )
+      .then((response) => {
+        checkResponseStatus(response);
+        return response.json();
+      })
+      .catch((e) => {
+        console.error(e);
+      })
+      .then((json) => {
+        const testEntry = Object.values(json)[0] as GradeEntry;
+        setAct3Enabled(testEntry.act3 !== undefined);
+        setSemEnabled(testEntry.sem !== undefined);
+        setGradesT(json);
+        setGradeTLoading(false);
+      });
+  };
 
   const handleSemesterBox = (_: MouseEvent<HTMLElement>, v: string) => {
     if (v !== null) {
       setSemester(v);
       setGradeTLoading(true);
     }
-  }
+  };
 
   const handleYearBox = (_: SyntheticEvent, v: string) => {
     setYear(v);
@@ -84,67 +115,68 @@ export default function Grades() {
   const handleScaleCheck = (_: ChangeEvent<HTMLInputElement>, v: boolean) => {
     setRoundGrade(false);
     setOldScale(v);
-  }
+  };
 
   const handleRoundCheck = (_: ChangeEvent<HTMLInputElement>, v: boolean) => {
     setRoundGrade(v);
-  }
+  };
 
   const handleCalcCheck = (_: ChangeEvent<HTMLInputElement>, v: boolean) => {
     setCalcAnchorEl(null);
     setCalcGrade(v);
-  }
+  };
 
   const handleAct3Check = (_: ChangeEvent<HTMLInputElement>, v: boolean) => {
     setAct3Enabled(v);
-  }
+  };
+
+  const handleSemCheck = (_: ChangeEvent<HTMLInputElement>, v: boolean) => {
+    setSemEnabled(v);
+  };
 
   const handleDoIwAsm = (_: ChangeEvent<HTMLInputElement>, v: boolean) => {
     setDoIwAsm(v);
-  }
+  };
 
-  const handleIwAsm = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleIwAsm = (
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => {
     let input = e.target.value;
 
     if (!/^\d*$/.test(input)) return;
 
-    if (input.length > 1 && input.startsWith('0')) {
-      input = input.replace(/^0+/, '');
+    if (input.length > 1 && input.startsWith("0")) {
+      input = input.replace(/^0+/, "");
     }
 
-    if (Number(input) <= 10)
-      setIwAsm(input);
-  }
+    if (Number(input) <= 10) setIwAsm(input);
+  };
 
   const handleKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
-    let current = parseInt(iwAsm || '0', 10);
+    let current = parseInt(iwAsm || "0", 10);
 
-    if (e.key === 'ArrowUp') {
+    if (e.key === "ArrowUp") {
       current = Math.min(current + 1, 10);
       setIwAsm(String(current));
       e.preventDefault();
-    } else if (e.key === 'ArrowDown') {
+    } else if (e.key === "ArrowDown") {
       current = Math.max(current - 1, 0);
       setIwAsm(String(current));
       e.preventDefault();
     }
   };
 
-
   useEffect(() => {
-    if (gradesT === undefined)
-      getGrades();
-  }, [])
+    if (gradesT === undefined) getGrades();
+  }, []);
 
   useEffect(() => {
     if (year !== null && semester !== null) {
       if (year === "ALL") {
         setIsAll(true);
-      } else
-        setIsAll(false);
+      } else setIsAll(false);
       setSsAvaliable(options[year]);
-      if (semester === "2" && !options[year])
-        setSemester("1");
+      if (semester === "2" && !options[year]) setSemester("1");
       else {
         getGradesTable(year, semester);
       }
@@ -153,76 +185,127 @@ export default function Grades() {
 
   return (
     <Stack p={1} gap={2}>
-      <Stack gap={2} m={2} flexDirection="row" alignItems="center" flexWrap="wrap">
-        {
-          gradesLoading ?
-            <Skeleton variant="rounded" animation="wave" sx={{
+      <Stack
+        gap={2}
+        m={2}
+        flexDirection="row"
+        alignItems="center"
+        flexWrap="wrap"
+      >
+        {gradesLoading ? (
+          <Skeleton
+            variant="rounded"
+            animation="wave"
+            sx={{
               width: 96,
-              height: 52
-            }} />
-            :
-            <Autocomplete
-              disablePortal
-              options={Object.keys(options)}
-              sx={{ width: 96 }}
-              onChange={handleYearBox}
-              value={year || ""}
-              disableClearable
-              renderInput={(params) => <TextField {...params} label="Year" />}
-            />
-        }
-        {
-          gradesLoading ?
-            <Skeleton variant="rounded" animation="wave" sx={{
+              height: 52,
+            }}
+          />
+        ) : (
+          <Autocomplete
+            disablePortal
+            options={Object.keys(options)}
+            sx={{ width: 96 }}
+            onChange={handleYearBox}
+            value={year || ""}
+            disableClearable
+            renderInput={(params) => <TextField {...params} label="Year" />}
+          />
+        )}
+        {gradesLoading ? (
+          <Skeleton
+            variant="rounded"
+            animation="wave"
+            sx={{
               width: 64,
-              height: 52
-            }} />
-            :
-            (
-              !isAll &&
-              <ToggleButtonGroup
-                color="primary"
-                value={semester}
-                onChange={handleSemesterBox}
-                exclusive
-                aria-label="semester number"
+              height: 52,
+            }}
+          />
+        ) : (
+          !isAll && (
+            <ToggleButtonGroup
+              color="primary"
+              value={semester}
+              onChange={handleSemesterBox}
+              exclusive
+              aria-label="semester number"
+            >
+              <ToggleButton value="1" aria-label="first">
+                1
+              </ToggleButton>
+              <ToggleButton
+                value="2"
+                aria-label="second"
+                disabled={!ssAvaliable}
               >
-                <ToggleButton value="1" aria-label="first">
-                  1
-                </ToggleButton>
-                <ToggleButton value="2" aria-label="second" disabled={!ssAvaliable}>
-                  2
-                </ToggleButton>
-              </ToggleButtonGroup>
-            )
-        }
+                2
+              </ToggleButton>
+            </ToggleButtonGroup>
+          )
+        )}
         <BotDialog />
         <FormGroup>
           <Tooltip title="Use old grading scale">
-            <FormControlLabel control={<Checkbox checked={oldScale} onChange={handleScaleCheck} />} label="100-Point Scale" />
+            <FormControlLabel
+              control={
+                <Checkbox checked={oldScale} onChange={handleScaleCheck} />
+              }
+              label="100-Point Scale"
+            />
           </Tooltip>
         </FormGroup>
         <FormGroup>
           <Tooltip title="Round grades according to official grading scheme. (Only works with grades before new grading scale)">
-            <FormControlLabel control={<Checkbox checked={roundGrade} onChange={handleRoundCheck} disabled={oldScale} />} label="Round Grades" />
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={roundGrade}
+                  onChange={handleRoundCheck}
+                  disabled={oldScale}
+                />
+              }
+              label="Round Grades"
+            />
           </Tooltip>
         </FormGroup>
         <FormGroup>
           <Tooltip title="Automatically calculate entrance points">
-            <FormControlLabel control={<Checkbox checked={calcGrade} onChange={handleCalcCheck} />} label="Calculate Grades" />
+            <FormControlLabel
+              control={
+                <Checkbox checked={calcGrade} onChange={handleCalcCheck} />
+              }
+              label="Calculate Grades"
+            />
+          </Tooltip>
+        </FormGroup>
+        <FormGroup>
+          <Tooltip title="If practice didn't exist">
+            <FormControlLabel
+              control={
+                <Checkbox checked={semEnabled} onChange={handleSemCheck} />
+              }
+              label="Show Practice"
+            />
           </Tooltip>
         </FormGroup>
         <FormGroup>
           <Tooltip title="Show non-existing SDF3 grades">
-            <FormControlLabel control={<Checkbox checked={act3Enabled} onChange={handleAct3Check} />} label="Show SDF3" />
+            <FormControlLabel
+              control={
+                <Checkbox checked={act3Enabled} onChange={handleAct3Check} />
+              }
+              label="Show SDF3"
+            />
           </Tooltip>
         </FormGroup>
         <FormGroup sx={{ display: "flex", flexDirection: "row" }}>
           <Tooltip title="Show non-existing SDF3 grades">
-            <FormControlLabel control={<Checkbox checked={doIwAsm} onChange={handleDoIwAsm} />} label="Assume IW" />
+            <FormControlLabel
+              control={<Checkbox checked={doIwAsm} onChange={handleDoIwAsm} />}
+              label="Assume IW"
+            />
           </Tooltip>
-          {
-            doIwAsm &&
+          {doIwAsm && (
             <TextField
               id="input-iwasm"
               type="number"
@@ -232,7 +315,7 @@ export default function Grades() {
               onKeyDown={handleKeyDown}
               sx={{ width: 49 }}
             />
-          }
+          )}
         </FormGroup>
       </Stack>
       <GradesTable
@@ -244,8 +327,10 @@ export default function Grades() {
         calcGrade={calcGrade}
         roundGrade={roundGrade}
         act3Enabled={act3Enabled}
+        semEnabled={semEnabled}
         calcAnchorEl={calcAnchorEl}
         setCalcAnchorEl={setCalcAnchorEl}
       />
-    </Stack >);
+    </Stack>
+  );
 }
