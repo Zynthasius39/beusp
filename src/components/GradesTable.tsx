@@ -34,7 +34,6 @@ interface GradesTableProps {
   calcGrade: boolean;
   roundGrade: boolean;
   act3Enabled: boolean;
-  semEnabled: boolean;
   gradesT: GradesJson | undefined;
   calcAnchorEl: HTMLElement | null;
   setCalcAnchorEl: Dispatch<SetStateAction<HTMLElement | null>>;
@@ -90,7 +89,6 @@ export default function GradesTable({
   calcGrade,
   roundGrade,
   act3Enabled,
-  semEnabled,
   gradesT,
   calcAnchorEl,
   setCalcAnchorEl,
@@ -112,7 +110,7 @@ export default function GradesTable({
   }));
   courseArr.forEach((e) => {
     if (doIwAsm && e.iw === -1) e.iw = Number(iwAsm);
-    e.calcSum = calculateSum(e, roundGrade, act3Enabled, semEnabled);
+    e.calcSum = calculateSum(e, roundGrade, act3Enabled);
   });
   const sortedRows = courseArr.slice().sort(getComparator(order, orderBy));
 
@@ -125,8 +123,8 @@ export default function GradesTable({
 
   const handleCalcClick = (e: MouseEvent<HTMLElement>, course: GradeEntry) => {
     setCalcNeeded(
-      canPredictScholarship(course, act3Enabled, semEnabled)
-        ? calculateSum(course, roundGrade, act3Enabled, semEnabled)
+      canPredictScholarship(course, act3Enabled)
+        ? calculateSum(course, roundGrade, act3Enabled)
         : null,
     );
     setCalcAnchorEl(calcAnchorEl === e.currentTarget ? null : e.currentTarget);
@@ -167,7 +165,10 @@ export default function GradesTable({
               .map((h) => {
                 if (
                   !(h === "act3" && !act3Enabled) &&
-                  !(h === "sem" && !semEnabled)
+                  !(h === "sem" && sortedRows[0].sem === undefined) &&
+                  !(
+                    h === "attendance" && sortedRows[0].attendance === undefined
+                  )
                 )
                   return (
                     <TableCell
@@ -216,14 +217,16 @@ export default function GradesTable({
                     {getGradeValue(courseG.act3)}
                   </TableCell>
                 )}
-                {semEnabled && (
+                {courseG.sem !== undefined && (
                   <TableCell sx={tableCellStyle}>
                     {getGradeValue(courseG.sem)}
                   </TableCell>
                 )}
-                <TableCell sx={tableCellStyle}>
-                  {getGradeValue(courseG.attendance)}
-                </TableCell>
+                {courseG.attendance !== undefined && (
+                  <TableCell sx={tableCellStyle}>
+                    {getGradeValue(courseG.attendance)}
+                  </TableCell>
+                )}
                 <TableCell sx={tableCellStyle}>
                   {getGradeValue(courseG.iw)}
                 </TableCell>

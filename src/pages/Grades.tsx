@@ -34,7 +34,6 @@ export default function Grades() {
   const [calcGrade, setCalcGrade] = useState(true);
   const [roundGrade, setRoundGrade] = useState(false);
   const [act3Enabled, setAct3Enabled] = useState(false);
-  const [semEnabled, setSemEnabled] = useState(true);
   const [ssAvaliable, setSsAvaliable] = useState(false);
   const [gradeTLoading, setGradeTLoading] = useState(true);
   const [gradesLoading, setGradesLoading] = useState(true);
@@ -94,7 +93,6 @@ export default function Grades() {
       .then((json) => {
         const testEntry = Object.values(json)[0] as GradeEntry;
         setAct3Enabled(testEntry.act3 !== undefined);
-        setSemEnabled(testEntry.sem !== undefined);
         setGradesT(json);
         setGradeTLoading(false);
       });
@@ -128,10 +126,6 @@ export default function Grades() {
 
   const handleAct3Check = (_: ChangeEvent<HTMLInputElement>, v: boolean) => {
     setAct3Enabled(v);
-  };
-
-  const handleSemCheck = (_: ChangeEvent<HTMLInputElement>, v: boolean) => {
-    setSemEnabled(v);
   };
 
   const handleDoIwAsm = (_: ChangeEvent<HTMLInputElement>, v: boolean) => {
@@ -279,16 +273,6 @@ export default function Grades() {
           </Tooltip>
         </FormGroup>
         <FormGroup>
-          <Tooltip title="If practice didn't exist">
-            <FormControlLabel
-              control={
-                <Checkbox checked={semEnabled} onChange={handleSemCheck} />
-              }
-              label="Show Practice"
-            />
-          </Tooltip>
-        </FormGroup>
-        <FormGroup>
           <Tooltip title="Show non-existing SDF3 grades">
             <FormControlLabel
               control={
@@ -327,7 +311,6 @@ export default function Grades() {
         calcGrade={calcGrade}
         roundGrade={roundGrade}
         act3Enabled={act3Enabled}
-        semEnabled={semEnabled}
         calcAnchorEl={calcAnchorEl}
         setCalcAnchorEl={setCalcAnchorEl}
       />

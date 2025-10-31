@@ -100,7 +100,7 @@ export const gradeScale = (
           : courseG.sem
       ).toFixed(2),
     );
-  if (courseG.attendance !== -1)
+  if (courseG.attendance !== -1 && !semEnabled)
     courseG.attendance = parseFloat(
       (oldScale
         ? courseG.attendance * 10
@@ -134,39 +134,33 @@ export const calculateSum = (
   json: GradeEntry,
   round: boolean,
   act3Enabled: boolean,
-  semEnabled: boolean,
 ) => {
   let grade;
   if (round) {
     grade =
-      gradeRound(
-        semEnabled ? getValueNum(json.act1) * 1.5 : getValueNum(json.act1),
-      ) +
-      gradeRound(
-        semEnabled ? getValueNum(json.act2) * 1.5 : getValueNum(json.act2),
-      ) +
+      gradeRound(getValueNum(json.act1)) +
+      gradeRound(getValueNum(json.act2)) +
       (act3Enabled
         ? gradeRound(getValueNum(isNaN(json.act3) ? 0 : json.act3))
         : 0) +
-      (semEnabled
+      (json.sem !== undefined
         ? gradeRound(getValueNum(isNaN(json.sem) ? 0 : json.sem))
-        : 0) +
-      gradeRound(getValueNum(json.attendance)) +
+        : gradeRound(
+            getValueNum(isNaN(json.attendance) ? 0 : json.attendance),
+          )) +
       gradeRound(getValueNum(json.iw)) +
       gradeRound(getValueNum(json.final));
   } else {
     grade = parseFloat(
       (
-        gradeRound(
-          semEnabled ? getValueNum(json.act1) * 1.5 : getValueNum(json.act1),
-        ) +
-        gradeRound(
-          semEnabled ? getValueNum(json.act2) * 1.5 : getValueNum(json.act2),
-        ) +
+        gradeRound(getValueNum(json.act1)) +
+        gradeRound(getValueNum(json.act2)) +
         (act3Enabled ? getValueNum(isNaN(json.act3) ? 0 : json.act3) : 0) +
-        (semEnabled ? getValueNum(isNaN(json.sem) ? 0 : json.sem) : 0) +
-        gradeRound(getValueNum(isNaN(json.sem) ? 0 : json.sem)) +
-        getValueNum(json.attendance) +
+        (json.sem !== undefined
+          ? gradeRound(getValueNum(isNaN(json.sem) ? 0 : json.sem))
+          : gradeRound(
+              getValueNum(isNaN(json.attendance) ? 0 : json.attendance),
+            )) +
         getValueNum(json.iw) +
         getValueNum(json.final)
       ).toFixed(2),
@@ -179,13 +173,13 @@ export const calculateSum = (
 export const canPredictScholarship = (
   json: GradeEntry,
   act3Enabled: boolean,
-  semEnabled: boolean,
 ): boolean => {
   if (getGradeValue(json.act1) === "") return false;
   if (getGradeValue(json.act2) === "") return false;
   if (getGradeValue(json.act3) === "" && act3Enabled) return false;
-  if (getGradeValue(json.sem) === "" && semEnabled) return false;
-  if (getGradeValue(json.attendance) === "") return false;
+  if (getGradeValue(json.sem) === "" && json.sem !== undefined) return false;
+  if (getGradeValue(json.attendance) === "" && json.attendance !== undefined)
+    return false;
   if (getGradeValue(json.iw) === "") return false;
   return true;
 };
@@ -193,18 +187,18 @@ export const canPredictScholarship = (
 export const canPredictScholarshipNoIw = (
   json: GradeEntry,
   act3Enabled: boolean,
-  semEnabled: boolean,
 ): boolean => {
   if (getGradeValue(json.act1) === "") return false;
   if (getGradeValue(json.act2) === "") return false;
   if (getGradeValue(json.act3) === "" && act3Enabled) return false;
-  if (getGradeValue(json.sem) === "" && semEnabled) return false;
+  if (getGradeValue(json.sem) === "" && json.sem !== undefined) return false;
   if (getGradeValue(json.attendance) === "") return false;
   if (getGradeValue(json.iw) !== "") return false;
   return true;
 };
 
 export const gradeRound = (grade: number) => {
+  if (grade < 0) return grade;
   const fGrade = Math.floor(grade);
   if (grade - fGrade > 0.5) return Math.ceil(grade);
   else return fGrade;
@@ -228,10 +222,10 @@ export const formatTime = (seconds: number): string => {
 };
 
 export const getGradeValue = (value: number): string => {
-  if (typeof value === "undefined") return "";
-  if (value === -1) return "";
+  if (value === undefined) return "";
   if (value === -2) return "Q";
   if (value === -3) return "ERR";
+  if (value <= -1) return "";
   return value.toString();
 };
 
