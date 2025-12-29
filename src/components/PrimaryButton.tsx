@@ -11,5 +11,6 @@ export const PrimaryButton = styled(Button, {
     fontWeight: "bolder",
     ":disabled": {
         backgroundColor: theme.palette.primaryButton.dark,
-    }
+    },
+    variant: "outlined"
 }));
