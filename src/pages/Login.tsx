@@ -25,6 +25,7 @@ import { MaterialUISwitch } from "../components/MaterialUISwitch";
 import { PrimaryButton } from "../components/PrimaryButton";
 import { ServerFaultApiError, setApiMode, UnauthorizedApiError } from "../utils/Api";
 import { useTranslation } from "react-i18next";
+import { Snowflakes } from "../components/Snowflakes";
 
 export default function Login() {
   const { t } = useTranslation();
@@ -120,9 +121,10 @@ export default function Login() {
         color: theme.palette.primary.contrastText,
         backgroundRepeat: "no-repeat",
         backgroundSize: "cover",
-        backgroundColor: theme.palette.background.paper,
+        // backgroundColor: theme.palette.background.paper,
       }}
     >
+      <Snowflakes />
       <FormGroup>
         <Stack
           p="30px"
