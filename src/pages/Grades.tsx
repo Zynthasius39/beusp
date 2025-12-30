@@ -25,6 +25,7 @@ import { GradesJson, GradeEntry } from "../utils/Interfaces";
 import { createFetchCached } from "../features/FetchCached";
 import { useAuth } from "../utils/Auth";
 import { createFetchWithAuth } from "../features/FetchWithAuth";
+import { t } from "i18next";
 
 export default function Grades() {
   const { logout } = useAuth();
@@ -239,17 +240,17 @@ export default function Grades() {
         )}
         <BotDialog />
         <FormGroup>
-          <Tooltip title="Use old grading scale">
+          <Tooltip title={t("gradeOld")}>
             <FormControlLabel
               control={
                 <Checkbox checked={oldScale} onChange={handleScaleCheck} />
               }
-              label="100-Point Scale"
+              label={t("gradeOldLabel")}
             />
           </Tooltip>
         </FormGroup>
         <FormGroup>
-          <Tooltip title="Round grades according to official grading scheme. (Only works with grades before new grading scale)">
+          <Tooltip title={t("gradeRound")}>
             <FormControlLabel
               control={
                 <Checkbox
@@ -258,35 +259,35 @@ export default function Grades() {
                   disabled={oldScale}
                 />
               }
-              label="Round Grades"
+              label={t("gradeRoundLabel")}
             />
           </Tooltip>
         </FormGroup>
         <FormGroup>
-          <Tooltip title="Automatically calculate entrance points">
+          <Tooltip title={t("gradeCalc")}>
             <FormControlLabel
               control={
                 <Checkbox checked={calcGrade} onChange={handleCalcCheck} />
               }
-              label="Calculate Grades"
+              label={t("gradeCalcLabel")}
             />
           </Tooltip>
         </FormGroup>
         <FormGroup>
-          <Tooltip title="Show non-existing SDF3 grades">
+          <Tooltip title={t("gradeAct3")}>
             <FormControlLabel
               control={
                 <Checkbox checked={act3Enabled} onChange={handleAct3Check} />
               }
-              label="Show SDF3"
+              label={t("gradeAct3Label")}
             />
           </Tooltip>
         </FormGroup>
         <FormGroup sx={{ display: "flex", flexDirection: "row" }}>
-          <Tooltip title="Show non-existing SDF3 grades">
+          <Tooltip title={t("gradeAssumeIw")}>
             <FormControlLabel
               control={<Checkbox checked={doIwAsm} onChange={handleDoIwAsm} />}
-              label="Assume IW"
+              label={t("gradeAssumeIwLabel")}
             />
           </Tooltip>
           {doIwAsm && (

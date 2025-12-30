@@ -6,8 +6,6 @@ import Login from "./pages/Login";
 import AuthProvider from "./providers/AuthProvider";
 import ThemeUtilsProvider from "./providers/ThemeUtilsProvider";
 import Dashboard from "./pages/Dashboard";
-import { LocalizationProvider } from "@mui/x-date-pickers";
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import Grades from "./pages/Grades";
 import Departments from "./pages/Departments";
 import Settings from "./pages/Settings";
@@ -21,7 +19,6 @@ export default function Index() {
   return (
     <AuthProvider>
       <ThemeUtilsProvider>
-        <LocalizationProvider dateAdapter={AdapterDayjs}>
           <BrowserRouter>
             <Routes>
               <Route path="*" element={<Error errorCode={404} errorText="Not Found" />} />
@@ -54,7 +51,6 @@ export default function Index() {
               } />
             </Routes>
           </BrowserRouter>
-        </LocalizationProvider>
       </ThemeUtilsProvider >
     </AuthProvider >
   );

@@ -12,5 +12,4 @@ export const PrimaryButton = styled(Button, {
     ":disabled": {
         backgroundColor: theme.palette.primaryButton.dark,
     },
-    variant: "outlined"
 }));

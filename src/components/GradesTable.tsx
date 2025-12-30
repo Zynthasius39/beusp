@@ -25,6 +25,7 @@ import {
 import { useTheme } from "../utils/Theme";
 import { Calculate } from "@mui/icons-material";
 import GradesPopper from "./GradesPopper";
+import { useTranslation } from "react-i18next";
 
 interface GradesTableProps {
   doIwAsm: boolean;
@@ -38,20 +39,6 @@ interface GradesTableProps {
   calcAnchorEl: HTMLElement | null;
   setCalcAnchorEl: Dispatch<SetStateAction<HTMLElement | null>>;
 }
-
-const courseHeaders: Record<string, string> = {
-  courseCode: "Course Code",
-  courseName: "Course Name",
-  act1: "SDF1",
-  act2: "SDF2",
-  act3: "SDF3",
-  sem: "Practice",
-  attendance: "ATT",
-  iw: "IW",
-  final: "Final",
-  sum: "Sum",
-  mark: "Mark",
-};
 
 function descendingComparator<GradeEntry>(
   a: GradeEntry,
@@ -93,10 +80,25 @@ export default function GradesTable({
   calcAnchorEl,
   setCalcAnchorEl,
 }: GradesTableProps) {
+  const { t } = useTranslation();
   const { isDark } = useTheme();
   const [calcNeeded, setCalcNeeded] = useState<null | number>(null);
   const [order, setOrder] = useState<Order>("asc");
   const [orderBy, setOrderBy] = useState<keyof GradeEntry>("courseName");
+
+  const courseHeaders: Record<string, string> = {
+    courseCode: t("courseCode"),
+    courseName: t("courseName"),
+    act1: t("act1"),
+    act2: t("act2"),
+    act3: t("act3"),
+    sem: t("sem"),
+    att: t("att"),
+    iw: t("iw"),
+    final: t("final"),
+    sum: t("sum"),
+    mark: t("mark"),
+  };
 
   const handleSort = (property: keyof GradeEntry) => {
     const isAsc = orderBy === property && order === "asc";
@@ -156,7 +158,7 @@ export default function GradesTable({
               "act2",
               "act3",
               "sem",
-              "attendance",
+              "att",
               "iw",
               "final",
               "sum",
@@ -167,7 +169,7 @@ export default function GradesTable({
                   !(h === "act3" && !act3Enabled) &&
                   !(h === "sem" && sortedRows[0].sem === undefined) &&
                   !(
-                    h === "attendance" && sortedRows[0].attendance === undefined
+                    h === "att" && sortedRows[0].att === undefined
                   )
                 )
                   return (
@@ -176,8 +178,8 @@ export default function GradesTable({
                       sx={[
                         { width: 35 },
                         h !== "courseCode" &&
-                          h !== "courseName" &&
-                          tableCellStyle,
+                        h !== "courseName" &&
+                        tableCellStyle,
                       ]}
                     >
                       <TableSortLabel
@@ -222,9 +224,9 @@ export default function GradesTable({
                     {getGradeValue(courseG.sem)}
                   </TableCell>
                 )}
-                {courseG.attendance !== undefined && (
+                {courseG.att !== undefined && (
                   <TableCell sx={tableCellStyle}>
-                    {getGradeValue(courseG.attendance)}
+                    {getGradeValue(courseG.att)}
                   </TableCell>
                 )}
                 <TableCell sx={tableCellStyle}>

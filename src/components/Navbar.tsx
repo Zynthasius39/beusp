@@ -13,8 +13,10 @@ import { ChangeEvent, MouseEvent, useState } from "react";
 import { useTheme } from "../utils/Theme";
 import { useAuth } from "../utils/Auth";
 import { MaterialUISwitch } from "./MaterialUISwitch";
+import { useTranslation } from "react-i18next";
 
 const Navbar = (props: { page: string }) => {
+  const { t } = useTranslation();
   const { isDark, setDark } = useTheme();
   const { user, logout } = useAuth();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -85,7 +87,7 @@ const Navbar = (props: { page: string }) => {
           anchorEl={anchorEl}
           open={open}
           onClose={handleMenuClose}
-          MenuListProps={{
+          MenuListProps={{  // TODO: Deprecated
             "aria-labelledby": "basic-button",
           }}
         >
@@ -113,8 +115,8 @@ const Navbar = (props: { page: string }) => {
             <Typography>{user?.name}</Typography>
           </Stack>
           <Divider />
-          {/* <MenuItem onClick={handleProfileClick}>Profile</MenuItem> */}
-          <MenuItem onClick={logout}>Logout</MenuItem>
+          {/* <MenuItem onClick={handleProfileClick}>{t("profile")}</MenuItem> */}
+          <MenuItem onClick={logout}>{t("logout")}</MenuItem>
         </Menu>
     </Stack>
   );

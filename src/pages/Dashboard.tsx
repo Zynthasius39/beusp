@@ -1,4 +1,3 @@
-import { DateCalendar } from "@mui/x-date-pickers";
 import { ClassTwoTone, ImportContactsTwoTone, SchoolTwoTone, TollTwoTone } from "@mui/icons-material";
 import {
   Avatar,
@@ -18,8 +17,10 @@ import { cloneElement, useEffect, useState } from "react";
 import { api, checkResponseStatus, UnauthorizedApiError } from "../utils/Api";
 import { createFetchCached } from "../features/FetchCached";
 import { useAuth } from "../utils/Auth";
+import { useTranslation } from "react-i18next";
 
 const Dashboard = () => {
+  const { t } = useTranslation();
   const { logout } = useAuth();
   const { theme } = useTheme();
   const [dashLoading, setDashLoading] = useState(true);
@@ -31,10 +32,10 @@ const Dashboard = () => {
   const fetchCached = createFetchCached(logout);
 
   const infoCards = [
-    { name: "Enrolled Classes", value: classCount, icon: <ImportContactsTwoTone /> },
-    { name: "Completed Credits", value: totalCredits, icon: <TollTwoTone /> },
-    { name: "Education Debt", value: eduDebt, icon: <ClassTwoTone /> },
-    { name: "GPA", value: gpa, icon: <SchoolTwoTone /> },
+    { name: t("enrolledClasses"), value: classCount, icon: <ImportContactsTwoTone /> },
+    { name: t("completedCredits"), value: totalCredits, icon: <TollTwoTone /> },
+    { name: t("educationDebt"), value: eduDebt, icon: <ClassTwoTone /> },
+    { name: t("gpa"), value: gpa, icon: <SchoolTwoTone /> },
   ]
 
   const cardRootStyle = {
@@ -95,7 +96,8 @@ const Dashboard = () => {
     }).then(json => {
       setClassCount(Object.entries(json.semesters || {}).length);
       setTotalCredits(Number(json.totalEarnedCredits));
-      setGpa(Number((Number(json.totalGpa || 0) / 100 * 4).toFixed(2)));
+      // setGpa(Number((Number(json.totalGpa || 0) / 100 * 4).toFixed(2)));  // Traditional GPA
+      setGpa(Number(json.totalGpa));
       setDashLoading(false);
     })
   }
@@ -174,7 +176,6 @@ const Dashboard = () => {
             </Card>
         ))}
       </Stack>
-      <DateCalendar readOnly />
       <TableContainer>
         <Table>
           <TableBody>
@@ -201,7 +202,7 @@ const Dashboard = () => {
                     sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                   >
                     <TableCell component="th" scope="row">
-                      {key}
+                      {t(key as string)}
                     </TableCell>
                     <TableCell align="right">{value}</TableCell>
                   </TableRow>

@@ -14,7 +14,7 @@ export default defineConfig({
         manualChunks: {
           react: ["react", "react-dom", "react-router"],
           emotion: ["@emotion/react", "@emotion/styled"],
-          mui: ["@mui/material", "@mui/icons-material", "@mui/x-date-pickers"],
+          mui: ["@mui/material", "@mui/icons-material"],
         }
       }
     }

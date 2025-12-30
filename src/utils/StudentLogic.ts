@@ -100,13 +100,13 @@ export const gradeScale = (
           : courseG.sem
       ).toFixed(2),
     );
-  if (courseG.attendance !== -1 && !semEnabled)
-    courseG.attendance = parseFloat(
+  if (courseG.att !== -1 && !semEnabled)
+    courseG.att = parseFloat(
       (oldScale
-        ? courseG.attendance * 10
+        ? courseG.att * 10
         : round
-          ? gradeRound(course.attendance)
-          : courseG.attendance
+          ? gradeRound(course.att)
+          : courseG.att
       ).toFixed(2),
     );
   if (courseG.iw !== -1)
@@ -146,7 +146,7 @@ export const calculateSum = (
       (json.sem !== undefined
         ? gradeRound(getValueNum(isNaN(json.sem) ? 0 : json.sem))
         : gradeRound(
-            getValueNum(isNaN(json.attendance) ? 0 : json.attendance),
+            getValueNum(isNaN(json.att) ? 0 : json.att),
           )) +
       gradeRound(getValueNum(json.iw)) +
       gradeRound(getValueNum(json.final));
@@ -159,7 +159,7 @@ export const calculateSum = (
         (json.sem !== undefined
           ? gradeRound(getValueNum(isNaN(json.sem) ? 0 : json.sem))
           : gradeRound(
-              getValueNum(isNaN(json.attendance) ? 0 : json.attendance),
+              getValueNum(isNaN(json.att) ? 0 : json.att),
             )) +
         getValueNum(json.iw) +
         getValueNum(json.final)
@@ -178,7 +178,7 @@ export const canPredictScholarship = (
   if (getGradeValue(json.act2) === "") return false;
   if (getGradeValue(json.act3) === "" && act3Enabled) return false;
   if (getGradeValue(json.sem) === "" && json.sem !== undefined) return false;
-  if (getGradeValue(json.attendance) === "" && json.attendance !== undefined)
+  if (getGradeValue(json.att) === "" && json.att !== undefined)
     return false;
   if (getGradeValue(json.iw) === "") return false;
   return true;
@@ -192,7 +192,7 @@ export const canPredictScholarshipNoIw = (
   if (getGradeValue(json.act2) === "") return false;
   if (getGradeValue(json.act3) === "" && act3Enabled) return false;
   if (getGradeValue(json.sem) === "" && json.sem !== undefined) return false;
-  if (getGradeValue(json.attendance) === "") return false;
+  if (getGradeValue(json.att) === "") return false;
   if (getGradeValue(json.iw) !== "") return false;
   return true;
 };

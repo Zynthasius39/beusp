@@ -13,6 +13,7 @@ import { spMenu } from "../Config";
 import { LogoutTwoTone } from "@mui/icons-material";
 import { useAuth } from "../utils/Auth";
 import VersionTag from "./VersionTag";
+import { useTranslation } from "react-i18next";
 
 const listButtonStyle = {
   p: 2,
@@ -21,6 +22,7 @@ const listButtonStyle = {
 }
 
 export default function DrawerList() {
+  const { t } = useTranslation();
   const { logout } = useAuth();
   const { theme } = useTheme();
   const path = useLocation().pathname;
@@ -42,7 +44,7 @@ export default function DrawerList() {
         gap={1}
       >
         <img
-          alt="Baku Engineering University"
+          alt={t("uniName")}
           width={48}
           src="/static/beu_dark.svg"
           style={{
@@ -54,7 +56,7 @@ export default function DrawerList() {
           }}
         />
         <Typography p={1} fontSize={16}>
-          Baku Engineering University
+          {t("uniName")}
         </Typography>
       </Stack>
       <Divider />
@@ -70,7 +72,7 @@ export default function DrawerList() {
           flexGrow: 1,
           overflowY: "auto",
         }}>
-          {spMenu.map(({ name, icon, href }, inx) => (
+          {spMenu(t).map(({ name, icon, href }, inx) => (
             <NavLink
               to={href}
               key={inx}
@@ -109,7 +111,7 @@ export default function DrawerList() {
           <ListItemIcon>
             <LogoutTwoTone color="primary" />
           </ListItemIcon>
-          <Typography fontSize={14}>LogOut</Typography>
+          <Typography fontSize={14}>{t("logout")}</Typography>
         </ListItemButton>
       </List>
     </Stack>

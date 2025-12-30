@@ -24,8 +24,10 @@ import { AlertSeverity, ApiMode } from "../utils/Interfaces";
 import { MaterialUISwitch } from "../components/MaterialUISwitch";
 import { PrimaryButton } from "../components/PrimaryButton";
 import { ServerFaultApiError, setApiMode, UnauthorizedApiError } from "../utils/Api";
+import { useTranslation } from "react-i18next";
 
 export default function Login() {
+  const { t } = useTranslation();
   const { theme, isDark, setDark } = useTheme();
   const { user, authed, login, logout } = useAuth();
   const [alignment, setAlignment] = useState<ApiMode>("live");
@@ -82,13 +84,13 @@ export default function Login() {
       // navigate("/");
       navigate("/grades");
     } catch (e) {
-      console.error("Error occured while authorizing:", e);
+      console.error(t("errorAuth"), e);
       if (e instanceof UnauthorizedApiError)
-        showAlert("Invalid credentials", "error");
+        showAlert(t("errorCreds"), "error");
       else if (e instanceof ServerFaultApiError)
-        showAlert("Error occured on our end", "error");
+        showAlert(t("errorSrv"), "error");
       else
-        showAlert("Unexcepted error occured", "error");
+        showAlert(t("errorUex"), "error");
     }
   };
 
@@ -98,8 +100,8 @@ export default function Login() {
     try {
       await logout();
     } catch (e) {
-      console.error("Error occured while authorizing:", e);
-      showAlert("Couldn't log out:" + String(e), "error");
+      console.error(t("errorAuth"), e);
+      showAlert(t("errorLogout") + String(e), "error");
     }
   }
 
@@ -146,7 +148,7 @@ export default function Login() {
                 style={{ backgroundColor: theme.palette.primary.main }}
               />
               <Typography variant="body1" id="logo-label">
-                Baku Engineering University
+                {t("uniName")}
               </Typography>
             </Stack>
             <MaterialUISwitch checked={isDark()} onChange={(_, checked) => {
@@ -158,7 +160,7 @@ export default function Login() {
             }} sx={{ mb: "10px" }} />
           </Stack>
           <Typography variant="h4" id="login-label" pt="5px" pb="5px">
-            Login
+            {t("loginTitle")}
           </Typography>
           {authed ?
             <Stack alignItems="center" gap="10px">
@@ -180,9 +182,9 @@ export default function Login() {
                   <Typography variant="h5" pb="30px">{user?.name}</Typography>
                   <Box>
                     <NavLink to="/">
-                      <PrimaryButton disabled={loading} sx={{ width: "120px", mr: "10px" }}>Dashboard</PrimaryButton>
+                      <PrimaryButton disabled={loading} sx={{ width: "120px", mr: "10px" }}>{t("dashboard")}</PrimaryButton>
                     </NavLink>
-                    <Button variant="outlined" onClick={handleLogout} sx={{ width: "120px" }}>Logout</Button>
+                    <Button variant="outlined" onClick={handleLogout} sx={{ width: "120px" }}>{t("logout")}</Button>
                   </Box>
                 </>
               }
@@ -191,12 +193,12 @@ export default function Login() {
             <>
               <div>
                 <Typography variant="body2" id="login-label" pb="5px">
-                  Student ID
+                  {t("studentId")}
                 </Typography>
                 <TextField
                   id="input-id"
                   type="number"
-                  placeholder={alignment === "demo" ? "Come in, my friend!" : "220106000"}
+                  placeholder={alignment === "demo" ? t("loginPhDemo") : t("loginPh")}
                   fullWidth={true}
                   onKeyDown={handleKeyDown}
                   onChange={(e) => {
@@ -207,7 +209,7 @@ export default function Login() {
               </div>
               <div>
                 <Typography variant="body2" id="login-label" pb="5px">
-                  Password
+                  {t("password")}
                 </Typography>
                 <TextField
                   id="input-pass"
@@ -220,7 +222,7 @@ export default function Login() {
                   disabled={alignment === "demo"}
                 />
               </div>
-              {/* <FormControlLabel control={<Checkbox />} label="Remember Me" /> */}
+              {/* <FormControlLabel control={<Checkbox />} label=t("loginRemember") /> */}
               <Box sx={{ position: "relative" }}>
                 <PrimaryButton
                   disabled={loading}
@@ -230,7 +232,7 @@ export default function Login() {
                     fontSize: 16,
                     mt: 1,
                   }}
-                >Login</PrimaryButton>
+                >{t("loginButton")}</PrimaryButton>
                 {loading && (
                   <CircularProgress
                     size={24}
@@ -246,7 +248,7 @@ export default function Login() {
                 )}
               </Box>
               {/* <Link href="#" underline="none" textAlign="center" fontSize={14}>
-                Forgot your password?
+                {t("loginForgot")}
               </Link> */}
               <Divider sx={{ pt: "5px", pb: "5px" }} />
               <ToggleButtonGroup
@@ -257,8 +259,8 @@ export default function Login() {
                 exclusive
                 aria-label="account type"
               >
-                <ToggleButton value="live">Live</ToggleButton>
-                <ToggleButton value="demo">Demo</ToggleButton>
+                <ToggleButton value="live">{t("loginLive")}</ToggleButton>
+                <ToggleButton value="demo">{t("loginDemo")}</ToggleButton>
               </ToggleButtonGroup>
             </>
           }
@@ -270,7 +272,7 @@ export default function Login() {
       >
         {alert}
       </Snackbar>
-      <a id="github-ribbon" className="github-fork-ribbon right-bottom fixed" href="https://github.com/Zynthasius39/beusp" data-ribbon="View on GitHub" title="View on GitHub">View on GitHub</a>
+      <a id="github-ribbon" className="github-fork-ribbon right-bottom fixed" href="https://github.com/Zynthasius39/beusp" data-ribbon={t("ghRibbon")} title={t("ghRibbon")}>{t("ghRibbon")}</a>
     </Stack>
   );
 }

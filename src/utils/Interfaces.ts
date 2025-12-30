@@ -52,7 +52,7 @@ export interface GradeEntry {
   act2: number;
   act3: number;
   sem: number;
-  attendance: number;
+  att: number;
   iw: number;
   final: number;
   sum: number;

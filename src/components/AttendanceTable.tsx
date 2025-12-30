@@ -3,24 +3,13 @@ import { AttendanceCouples, AttendanceEntry, AttendanceJson, Order } from "../ut
 import { useState } from "react";
 import { thresholdColor } from "../utils/StudentLogic";
 import { AttendanceLinearProgress } from "./AttendanceLinearProgress";
+import { useTranslation } from "react-i18next";
 
 interface AttendanceTableProps {
     attdsT: AttendanceJson | undefined,
     attAsm: string,
     attLoading: boolean,
     doAttAsm: boolean,
-}
-
-const attHeaders: Record<string, string> = {
-    "courseCode": "Course Code",
-    "courseName": "Course Name",
-    "courseEducator": "Educator",
-    "credit": "Credits",
-    "atds": "Present count",
-    "hours": "Hours",
-    "limit": "Limit",
-    "absent": "Absent count",
-    "absentPercent": "%",
 }
 
 const attConfig = {
@@ -71,8 +60,21 @@ export function getComparator<Key extends keyof AttendanceEntry>(
 }
 
 export default function AttendanceTable({ attdsT, attLoading, attAsm, doAttAsm }: AttendanceTableProps) {
+    const { t } = useTranslation();
     const [order, setOrder] = useState<Order>('asc');
     const [orderBy, setOrderBy] = useState<keyof AttendanceEntry>('courseName');
+
+    const attHeaders: Record<string, string> = {
+        "courseCode": t("courseCode"),
+        "courseName": t("courseName"),
+        "courseEducator": t("courseEducator"),
+        "credit": t("credit"),
+        "atds": t("atds"),
+        "hours": t("hours"),
+        "limit": t("limit"),
+        "absent": t("absent"),
+        "absentPercent": t("absentPercent"),
+    }
 
     let count = 0;
     const handleSort = (property: keyof AttendanceEntry) => {

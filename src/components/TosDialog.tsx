@@ -1,8 +1,10 @@
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import { PrimaryButton } from "./PrimaryButton";
+import { useTranslation } from "react-i18next";
 
 export default function TosDialog() {
+    const { t } = useTranslation();
     const [open, setOpen] = useState(true);
     const [btn, setBtn] = useState(5);
 
@@ -52,13 +54,13 @@ export default function TosDialog() {
                     margin: 16
                 }}>
                     <Button onClick={() => window.location.href = "https://www.youtube.com/watch?v=dQw4w9WgXcQ"} variant="outlined">
-                        Get me out of here
+                        {t("tosGmoh")}
                     </Button>
                     <PrimaryButton onClick={handleContinueClick} loading={btn > 0} disabled={btn > 0} loadingPosition="end">
                         {
                             btn > 0 ?
                                 btn :
-                                "Continue"
+                                t("continue")
                         }
                     </PrimaryButton>
                 </DialogActions>

@@ -5,14 +5,16 @@ import { Outlet, useLocation } from "react-router-dom";
 import DrawerList from "../components/DrawerList";
 import { useTheme } from "../utils/Theme";
 import { spMenu } from "../Config";
+import { useTranslation } from "react-i18next";
 
 export default function App() {
+  const { t } = useTranslation();
   const { theme } = useTheme();
   const [page, setPage] = useState("Dashboard");
   const path = useLocation();
 
   const updatePage = () => {
-    setPage(spMenu.find(m => m.href === path.pathname)?.name || "");
+    setPage(spMenu(t).find(m => m.href === path.pathname)?.name || "");
   }
 
   useEffect(() => {
@@ -56,7 +58,7 @@ export default function App() {
           </Box>
         </Stack>
       </Stack>
-      <a id="github-ribbon" className="github-fork-ribbon right-bottom fixed" href="https://github.com/Zynthasius39/beusp" data-ribbon="View on GitHub" title="View on GitHub">View on GitHub</a>
+      <a id="github-ribbon" className="github-fork-ribbon right-bottom fixed" href="https://github.com/Zynthasius39/beusp" data-ribbon={t("ghRibbon")} title={t("ghRibbon")}>{t("ghRibbon")}</a>
     </Stack>
   );
 }

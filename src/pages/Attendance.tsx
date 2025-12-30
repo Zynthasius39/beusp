@@ -6,8 +6,10 @@ import { AttendanceJson } from "../utils/Interfaces";
 import { createFetchCached } from "../features/FetchCached";
 import { useAuth } from "../utils/Auth";
 import { createFetchWithAuth } from "../features/FetchWithAuth";
+import { useTranslation } from "react-i18next";
 
 export default function Attendance() {
+    const { t } = useTranslation();
     const { logout } = useAuth();
     const [year, setYear] = useState<string | null>(null);
     const [semester, setSemester] = useState("1");
@@ -175,8 +177,8 @@ export default function Attendance() {
                         )
                 }
                 <FormGroup sx={{ display: "flex", flexDirection: "row" }}>
-                    <Tooltip title="Predicts absent percent">
-                        <FormControlLabel control={<Checkbox checked={doAttAsm} onChange={handlePredictAtt} />} label="Predict Absents" />
+                    <Tooltip title={t("gradeCalcTitle")}>
+                        <FormControlLabel control={<Checkbox checked={doAttAsm} onChange={handlePredictAtt} />} label={t("gradeCalc")} />
                     </Tooltip>
                     {
                         doAttAsm &&
