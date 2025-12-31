@@ -137,7 +137,7 @@ export default function GradesTable({
       variant="rounded"
       animation="wave"
       sx={{
-        maxWidth: "calc(100dvw - 32px)",
+        maxWidth: "calc(100dvw - 2rem)",
         height: 512,
       }}
     />
@@ -145,7 +145,7 @@ export default function GradesTable({
     <TableContainer
       sx={{
         overflow: "auto",
-        maxWidth: "calc(100dvw - 32px)",
+        maxWidth: "calc(100dvw - 2rem)",
       }}
     >
       <Table>

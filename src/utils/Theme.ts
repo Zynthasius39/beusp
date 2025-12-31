@@ -1,4 +1,4 @@
-import { createTheme } from "@mui/material";
+import { createTheme, responsiveFontSizes } from "@mui/material";
 import { grey } from "@mui/material/colors";
 
 import { createContext, useContext } from "react";
@@ -14,6 +14,32 @@ declare module '@mui/material/styles' {
 }
 
 export const darkTheme = createTheme({
+  // typography: {
+  //   htmlFontSize: 20,
+  // },
+  components: {
+    MuiButton: {
+      defaultProps: {
+        size: 'small',
+      },
+      styleOverrides: {
+        root: {
+          variants: [
+            {
+              props: { size: 'mini' },
+              style: {
+                minHeight: '1.75rem',
+                padding: '0.25rem 0.5rem',
+                fontSize: '0.875rem',
+                lineHeight: '1.25',
+                textTransform: 'none',
+              },
+            },
+          ],
+        },
+      },
+    },
+  },
   palette: {
     mode: "dark",
     primary: {
@@ -34,15 +60,6 @@ export const darkTheme = createTheme({
       main: "#80deea",
       dark: grey[800],
     },
-  },
-  components: {
-    // PrimaryButton: {
-    //   styleOverrides: {
-    //     root: {
-    //       variant: "outlined",
-    //     },
-    //   },
-    // },
   },
 });
 

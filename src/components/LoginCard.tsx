@@ -118,19 +118,19 @@ export default function LoginCard({ setAlert }: { setAlert: (alert: JSX.Element 
     return (
         <FormGroup>
             <Stack
-                p="30px"
+                p="1.8rem"
                 justifyContent="space-between"
                 id="login-card"
-                gap="15px"
+                gap="0.8rem"
                 sx={{
                     backgroundColor: theme.palette.background.default,
-                    backdropFilter: "blur(20px)",
-                    boxShadow: "0 0 50px 0 rgba(0, 0, 0, 0.2)",
+                    backdropFilter: "blur(1rem)",
+                    boxShadow: "0 0 2.5rem 0 rgba(0, 0, 0, 0.2)",
                     borderRadius: 4,
-                    width: {
-                        xs: "calc(100dvw - 100px)",
-                        md: "400px",
-                    },
+                    // width: {
+                    //     xs: "calc(100dvw - 6.2rem)",
+                    md: "22rem",
+                    // },
                 }}
             >
                 <Stack flexDirection="row" justifyContent="space-between">
@@ -144,19 +144,23 @@ export default function LoginCard({ setAlert }: { setAlert: (alert: JSX.Element 
                             {t("uniName")}
                         </Typography>
                     </Stack>
-                    <MaterialUISwitch checked={isDark()} onChange={(_, checked) => {
-                        setDark(checked);
-                        if (checked)
-                            localStorage.setItem("theme", "dark");
-                        else
-                            localStorage.removeItem("theme");
-                    }} sx={{ mb: "10px" }} />
+                    <MaterialUISwitch
+                        checked={isDark()}
+                        onChange={(_, checked) => {
+                            setDark(checked);
+                            if (checked)
+                                localStorage.setItem("theme", "dark");
+                            else
+                                localStorage.removeItem("theme");
+                        }}
+                        sx={{ mb: "0.5rem" }}
+                    />
                 </Stack>
-                <Typography variant="h4" id="login-label" pt="5px" pb="5px">
+                <Typography variant="h4" id="login-label" pt="0.25rem" pb="0.25rem">
                     {t("loginTitle")}
                 </Typography>
                 {authed ?
-                    <Stack alignItems="center" gap="10px">
+                    <Stack alignItems="center" gap="0.5rem">
                         {loading ?
                             <CircularProgress
                                 size={24}
@@ -168,16 +172,16 @@ export default function LoginCard({ setAlert }: { setAlert: (alert: JSX.Element 
                             <>
                                 {
                                     user?.imageURL === "" ?
-                                        <Skeleton variant="circular" width="100px" height="100px" />
+                                        <Skeleton variant="circular" width="5rem" height="5rem" />
                                         :
-                                        <Avatar alt="studphoto" src={user?.imageURL} sx={{ width: "100px", height: "100px" }} />
+                                        <Avatar alt="studphoto" src={user?.imageURL} sx={{ width: "7.5rem", height: "7.5rem" }} />
                                 }
-                                <Typography variant="h5" pb="30px">{user?.name}</Typography>
+                                <Typography variant="h5" pb="1.5rem">{user?.name}</Typography>
                                 <Box>
                                     <NavLink to="/">
-                                        <PrimaryButton disabled={loading} sx={{ width: "120px", mr: "10px" }}>{t("dashboard")}</PrimaryButton>
+                                        <PrimaryButton disabled={loading} sx={{ width: "7rem", mr: "1rem" }}>{t("dashboard")}</PrimaryButton>
                                     </NavLink>
-                                    <Button variant="outlined" onClick={handleLogout} sx={{ width: "120px" }}>{t("logout")}</Button>
+                                    <Button variant="outlined" onClick={handleLogout} sx={{ width: "7rem" }}>{t("logout")}</Button>
                                 </Box>
                             </>
                         }
@@ -185,7 +189,7 @@ export default function LoginCard({ setAlert }: { setAlert: (alert: JSX.Element 
                     :
                     <>
                         <div>
-                            <Typography variant="body2" id="login-label" pb="5px">
+                            <Typography variant="body2" id="login-label" pb="0.35rem">
                                 {t("studentId")}
                             </Typography>
                             <TextField
@@ -201,7 +205,7 @@ export default function LoginCard({ setAlert }: { setAlert: (alert: JSX.Element 
                             />
                         </div>
                         <div>
-                            <Typography variant="body2" id="login-label" pb="5px">
+                            <Typography variant="body2" id="login-label" pb="0.35rem">
                                 {t("password")}
                             </Typography>
                             <TextField
@@ -218,32 +222,29 @@ export default function LoginCard({ setAlert }: { setAlert: (alert: JSX.Element 
                         {/* <FormControlLabel control={<Checkbox />} label=t("loginRemember") /> */}
                         <Box sx={{ position: "relative" }}>
                             <PrimaryButton
-                                disabled={loading}
+                                disabled={true}
                                 fullWidth
                                 onClick={handleLogin}
                                 sx={{
-                                    fontSize: 16,
-                                    mt: 1,
+                                    fontSize: "1rem",
+                                    mt: "0.2rem",
                                 }}
-                            >{t("loginButton")}</PrimaryButton>
-                            {loading && (
-                                <CircularProgress
-                                    size={24}
-                                    sx={{
-                                        color: theme.palette.primary.main,
-                                        position: 'absolute',
-                                        top: '50%',
-                                        left: '50%',
-                                        mt: '-12px',
-                                        ml: '-12px',
-                                    }}
-                                />
-                            )}
+                            >{t("loginButton")}
+                                {true && (
+                                    <CircularProgress
+                                        size="0.8rem"
+                                        sx={{
+                                            color: theme.palette.primary.main,
+                                            position: 'absolute',
+                                            right: '1rem',
+                                        }}
+                                    />
+                                )}</PrimaryButton>
                         </Box>
                         {/* <Link href="#" underline="none" textAlign="center" fontSize={14}>
                 {t("loginForgot")}
               </Link> */}
-                        <Divider sx={{ pt: "5px", pb: "5px" }} />
+                        <Divider sx={{ pt: "0.25rem", pb: "0.25rem" }} />
                         <ToggleButtonGroup
                             fullWidth
                             color="primary"
