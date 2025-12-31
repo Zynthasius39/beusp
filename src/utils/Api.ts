@@ -1,7 +1,7 @@
 import { ApiMode } from "./Interfaces";
 
-const live_url = `http://localhost:8080/api`;
-const offline_url = `http://localhost:8081/api`;
+const live_url = `https://beu.alakx.com/api`;
+const offline_url = `https://beu.alakx.com/api2`;
 export let api = localStorage.getItem("offline_mode") === "1" ? offline_url : live_url;
 
 export const setApiMode = (mode: ApiMode) => {
@@ -33,6 +33,13 @@ export class UnauthorizedApiError extends Error {
   constructor(message: string) {
     super(message);
     this.name = 'UnauthorizedApiError';
+  }
+}
+
+export class BotRestrictedApiError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'BotRestrictedApiError';
   }
 }
 

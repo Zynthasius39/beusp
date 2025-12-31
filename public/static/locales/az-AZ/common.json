@@ -29,6 +29,7 @@
     "errorSrv": "Bizim tərəfdə xəta baş verdi",
     "errorUex": "Gözlənilməz xəta baş verdi",
     "errorLogout": "Çıxış edilə bilmədi:",
+    "errorApiBotRestricted": "Abunə olmaq funksiyası məhdudlaşdırılıb.",
     "invalidEmail": "E-Poçt ünvanı düzgün deyil",
     "invalidUrl": "URL düzgün deyil",
     "loginPhDemo": "Buyur, gəl içəri!",

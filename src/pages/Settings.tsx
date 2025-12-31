@@ -7,8 +7,10 @@ import { createFetchCached } from "../features/FetchCached";
 import { createFetchWithAuth } from "../features/FetchWithAuth";
 import { useAuth } from "../utils/Auth";
 import { PrimaryButton } from "../components/PrimaryButton";
+import { useTranslation } from "react-i18next";
 
 export default function Settings() {
+    const { t } = useTranslation();
     const { logout } = useAuth();
     const [uiOpen, setUiOpen] = useState(false);
     const [secOpen, setSecOpen] = useState(false);
@@ -50,7 +52,7 @@ export default function Settings() {
             getSettings();
         }).catch(e => {
             console.error(e);
-            showAlert("An error occurred", "error");
+            showAlert(t("error"), "error");
         })
     }
 
@@ -65,7 +67,7 @@ export default function Settings() {
             setTmsLang(json.lang);
         }).catch(e => {
             console.error(e);
-            showAlert("An error occurred", "error");
+            showAlert(t("error"), "error");
         })
     }
 

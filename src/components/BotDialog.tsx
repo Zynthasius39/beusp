@@ -35,6 +35,7 @@ import {
 import { useAuth } from "../utils/Auth";
 import {
   api,
+  BotRestrictedApiError,
   checkResponseStatus,
   NotFoundApiError,
   UnauthorizedApiError,
@@ -82,6 +83,17 @@ export default function BotDialog() {
   const fetchCached = createFetchCached(logout);
   const fetch = createFetchWithAuth(logout);
 
+  const handleException = (e: Error) => {
+    if (e instanceof NotFoundApiError)
+      showAlert(t("botOffline"), "error");
+    else if (e instanceof BotRestrictedApiError)
+      showAlert(t("errorApiBotRestricted"), "error");
+    else if (e instanceof UnauthorizedApiError)
+      logout();
+    else
+      showAlert(t("error"), "error");
+  }
+
   const handleClose = () => {
     clearInterval(timer.current);
     setIsOpen(false);
@@ -106,14 +118,7 @@ export default function BotDialog() {
         checkResponseStatus(response);
         getBotSubs();
       })
-      .catch((e) => {
-        if (e instanceof UnauthorizedApiError) {
-          logout();
-        } else {
-          console.error(e);
-          showAlert(t("error"), "error");
-        }
-      });
+      .catch(handleException);
   };
 
   const handleEmailClick = () => {
@@ -142,15 +147,7 @@ export default function BotDialog() {
           if (json.emailSent) setUseEmail(false);
           setVerifyEmail(true);
         })
-        .catch((e) => {
-          clearInterval(timer.current);
-          if (e instanceof UnauthorizedApiError) {
-            logout();
-          } else {
-            console.error(e);
-            showAlert(t("error"), "error");
-          }
-        });
+        .catch(handleException);
     } else {
       setErrField({ error: true, helperText: t("invalidEmail") });
     }
@@ -197,14 +194,7 @@ export default function BotDialog() {
           showAlert(t("subbedDiscord"), "success");
           handleClose();
         })
-        .catch((e) => {
-          if (e instanceof UnauthorizedApiError) {
-            logout();
-          } else {
-            console.error(e);
-            showAlert(t("error"), "error");
-          }
-        });
+        .catch(handleException);
   };
 
   const handleTelegramClick = () => {
@@ -250,17 +240,7 @@ export default function BotDialog() {
         setBotInfo(json);
         setBotEnabled(true);
       })
-      .catch((e) => {
-        if (e instanceof NotFoundApiError) {
-          console.error(e);
-          showAlert(t("botOffline"), "error");
-        } else if (e instanceof UnauthorizedApiError) {
-          logout();
-        } else {
-          console.error(e);
-          showAlert(t("error"), "error");
-        }
-      });
+      .catch(handleException);
   };
 
   const getBotSubs = () => {
@@ -291,14 +271,7 @@ export default function BotDialog() {
           return json;
         });
       })
-      .catch((e) => {
-        if (e instanceof UnauthorizedApiError) {
-          logout();
-        } else {
-          console.error(e);
-          showAlert(t("error"), "error");
-        }
-      });
+      .catch(handleException);
   };
 
   const getTelegramCode = () => {
@@ -319,14 +292,7 @@ export default function BotDialog() {
       .then((json) => {
         setTelegramCode(json?.telegramCode);
       })
-      .catch((e) => {
-        if (e instanceof UnauthorizedApiError) {
-          logout();
-        } else {
-          console.error(e);
-          showAlert(t("error"), "error");
-        }
-      });
+      .catch(handleException);
   };
 
   useEffect(() => {

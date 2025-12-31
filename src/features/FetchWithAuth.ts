@@ -1,4 +1,4 @@
-import { UnauthorizedApiError } from "../utils/Api";
+import { BotRestrictedApiError, isUnauthorized, UnauthorizedApiError } from "../utils/Api";
 
 export function createFetchWithAuth(logout: () => void) {
     return async function fetchWithAuth(input: RequestInfo, init?: RequestInit) {
@@ -7,9 +7,11 @@ export function createFetchWithAuth(logout: () => void) {
         headers: init?.headers || {},
       });
   
-      if ([400, 401].includes(res.status)) {
+      if (isUnauthorized(res.status)) {
+        if (res.status === 401 && (await res.json())["help"] === "errorApiBotRestricted")
+          throw new BotRestrictedApiError("errorApiBotRestricted");
         logout();
-        throw new UnauthorizedApiError("Session expired!");
+        throw new UnauthorizedApiError("errorApiUnauthorized");
       }
   
       return res;

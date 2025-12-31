@@ -29,6 +29,7 @@
     "errorSrv": "Error occured on our end",
     "errorUex": "Unexcepted error occured",
     "errorLogout": "Couldn't log out:",
+    "errorApiBotRestricted": "Subscribing is disabled.",
     "invalidEmail": "Invalid E-mail address",
     "invalidUrl": "Invalid URL",
     "loginPhDemo": "Come in, my friend!",
