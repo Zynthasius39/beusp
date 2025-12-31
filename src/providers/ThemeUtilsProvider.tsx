@@ -3,7 +3,7 @@ import { darkTheme, lightTheme, ThemeContext } from "../utils/Theme";
 import { ThemeProvider } from "@mui/material";
 
 export default function ThemeUtilsProvider({ children }: { children: ReactNode }) {
-    const [theme, setTheme] = useState(lightTheme);
+    const [theme, setTheme] = useState(darkTheme);  // Default theme is set here
 
     const isDark = useCallback(() => {
         return theme === darkTheme;
@@ -20,8 +20,8 @@ export default function ThemeUtilsProvider({ children }: { children: ReactNode }
     }, []);
 
     useEffect(() => {
-        if (localStorage.getItem("theme") === "dark") {
-            setDark(true);
+        if (localStorage.getItem("theme") === "light") {  // Invert if changing default theme
+            setDark(false);
         }
     });
 

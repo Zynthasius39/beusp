@@ -1,9 +1,11 @@
-import { ReactNode, useEffect, useState } from "react";
+import { ReactNode, useState } from "react";
 import { AuthContext } from "../utils/Auth";
 import { api, checkResponseStatus, isServerFault, isUnauthorized, ServerFaultApiError, UnauthorizedApiError } from "../utils/Api";
 import Cookies from "universal-cookie";
 import { User } from "../utils/Interfaces";
 import { createFetchCached } from "../features/FetchCached";
+
+let locked = false;
 
 export default function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
@@ -29,11 +31,14 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
     else {
       caches.delete("v1");
       setAuthed(true);
+      locked = false;
     }
   };
 
   const logout = async () => {
-    fetch(`${api}/logout`, {
+    if (locked) return;
+    locked = true;
+    await fetch(`${api}/logout`, {
       method: "GET",
       credentials: "include",
       headers: {
@@ -46,10 +51,13 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
     localStorage.removeItem("studphoto");
     caches.delete("v1");
     setUser(null);
+    locked = false;
     setAuthed(false);
   };
 
   const verify = async () => {
+    if (locked) return;
+    locked = true;
     const res = await fetch(`${api}/verify`, {
       method: "GET",
       credentials: "include",
@@ -60,13 +68,15 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
     if (isUnauthorized(res.status)) {
       return false;
     }
-    setAuthed(true);
-    return true;
+    setAuthed(res.ok);
+    locked = false;
+    return res.ok;
   };
 
   const fetchCached = createFetchCached(logout);
 
   const getStudPhoto = async () => {
+    if (!authed) return;
     return await fetchCached(`${api}/resource/studphoto`, {
       method: "GET",
       credentials: "include",
@@ -84,6 +94,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   const getUser = async () => {
+    if (!authed) return;
     await fetchCached(`${api}/resource/home`, {
       method: "GET",
       credentials: "include",
@@ -103,16 +114,5 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
     });
   }
 
-  const verifySession = async () => {
-    const verified = await verify();
-    if (!verified)
-      logout();
-    return verified;
-  };
-
-  useEffect(() => {
-    getUser();
-  }, [authed])
-
-  return <AuthContext.Provider value={{ user, authed, login, logout, verify, verifySession }}>{children}</AuthContext.Provider>;
+  return <AuthContext.Provider value={{ user, authed, login, logout, verify, getUser }}>{children}</AuthContext.Provider>;
 }

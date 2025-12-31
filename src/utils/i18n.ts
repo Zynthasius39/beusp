@@ -8,7 +8,7 @@ i18n
   .use(LanguageDetector)
   .use(initReactI18next)
   .init({
-    fallbackLng: "en",
+    fallbackLng: "en-US",
     ns: ["common", "auth"],
     defaultNS: "common",
     backend: {
@@ -16,6 +16,6 @@ i18n
     },
   });
 
-i18n.changeLanguage("az");  // TODO: Language Button
+i18n.changeLanguage("az-AZ");  // TODO: Language Button
 
 export default i18n;

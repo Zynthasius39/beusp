@@ -11,21 +11,22 @@ import {
   SettingsTwoTone,
   // SummarizeTwoTone,
 } from "@mui/icons-material";
-import { SpMenuEntry } from "./utils/Interfaces";
+import { iconColor, SpMenuEntry } from "./utils/Interfaces";
 import { TFunction } from "i18next";
 
-const createSpMenuEntry = (name: string, icon: JSX.Element, href: string): SpMenuEntry => ({ name, icon, href });
+const createSpMenuEntry = (name: string, icon: (c: iconColor) => JSX.Element, href: string): SpMenuEntry => ({ name, icon, href });
 
 export const spMenu = (t: TFunction) => {
   return [
-  createSpMenuEntry(t("dashboard"), <DashboardTwoTone color="primary" />, "/"),
-  createSpMenuEntry(t("announces"), <AnnouncementTwoTone color="primary" />, "/announces"),
-  createSpMenuEntry(t("attendance"), <Edit color="primary" />, "/attendance"),
-  // createSpMenuEntry(t("departments"), <FolderTwoTone color="primary" />, "/departments"),
-  // createSpMenuEntry(t("course", <CalendarMonthTwoTone color="primary" />, ""),
-  createSpMenuEntry(t("grades"), <GradeTwoTone color="primary" />, "/grades"),
-  // createSpMenuEntry(t("transcript"), <SummarizeTwoTone color="primary" />, ""),
-  // createSpMenuEntry(t("gate"), <DoorSlidingTwoTone color="primary" />, ""),
-  // createSpMenuEntry(t("documents"), <ArticleTwoTone color="primary" />, ""),
-  createSpMenuEntry(t("settings"), <SettingsTwoTone color="primary" />, "/settings"),
-]};
+    createSpMenuEntry(t("dashboard"), (c: iconColor) => <DashboardTwoTone color={c} />, "/"),
+    createSpMenuEntry(t("announces"), (c: iconColor) => <AnnouncementTwoTone color={c} />, "/announces"),
+    createSpMenuEntry(t("attendance"), (c: iconColor) => <Edit color={c} />, "/attendance"),
+    // createSpMenuEntry(t("departments"), (c: iconColor) => <FolderTwoTone color={c} />, "/departments"),
+    // createSpMenuEntry(t("course", (c: iconColor) => <CalendarMonthTwoTone color={c} />, ""),
+    createSpMenuEntry(t("grades"), (c: iconColor) => <GradeTwoTone color={c} />, "/grades"),
+    // createSpMenuEntry(t("transcript"), (c: iconColor) => <SummarizeTwoTone color={c} />, ""),
+    // createSpMenuEntry(t("gate"), (c: iconColor) => <DoorSlidingTwoTone color={c} />, ""),
+    // createSpMenuEntry(t("documents"), (c: iconColor) => <ArticleTwoTone color={c} />, ""),
+    createSpMenuEntry(t("settings"), (c: iconColor) => <SettingsTwoTone color={c} />, "/settings"),
+  ]
+};

@@ -1,21 +1,20 @@
-import { ReactNode, useEffect, useState } from "react";
+import { ReactNode, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../utils/Auth";
 import { CircularProgress, Stack } from "@mui/material";
+import { Snowflakes } from "../components/Snowflakes";
 
 export function RequireAuth({ children }: { children: ReactNode }) {
-  const [, setTick] = useState(0);
-  const { authed, verifySession, logout } = useAuth();
+  const { authed, verify, getUser } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!authed)
-      verifySession().then(v => {
-        if (v)
-          setTick(t => t + 1);
-        else {
+    if (authed)
+      getUser();
+    else
+      verify().then(v => {
+        if (v === false) {
           navigate("/login");
-          logout();
         }
       });
   }, [authed])
@@ -25,12 +24,12 @@ export function RequireAuth({ children }: { children: ReactNode }) {
   ) : (
     <Stack
       sx={{
-        backgroundColor: 'background.default',
         justifyContent: "center",
         alignItems: "center",
         height: "100%",
       }}
     >
+      <Snowflakes />
       <CircularProgress size={128} />
     </Stack>
   );

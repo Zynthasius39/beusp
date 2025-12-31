@@ -90,7 +90,7 @@ export default function DrawerList() {
                 ]}
               >
                 <ListItemIcon>
-                  {icon}
+                  {icon(path === href ? "action" : "primary")}
                 </ListItemIcon>
                 <Typography>{name}</Typography>
               </ListItemButton>

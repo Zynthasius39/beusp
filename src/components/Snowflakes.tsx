@@ -1,7 +1,7 @@
 import "../style/Snowflakes.scss"
 
 export const Snowflakes = () => {
-    return Array(5).fill(
-        <div className="snowflake" />
+    return Array.from({ length: 50 }).map((_, inx) =>
+        <div className="snowflake" key={inx} />
     )
 }

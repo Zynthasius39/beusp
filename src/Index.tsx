@@ -21,7 +21,7 @@ export default function Index() {
       <ThemeUtilsProvider>
           <BrowserRouter>
             <Routes>
-              <Route path="*" element={<Error errorCode={404} errorText="Not Found" />} />
+              <Route path="*" element={<Error errorCode={404} />} />
               <Route
                 path="/"
                 element={

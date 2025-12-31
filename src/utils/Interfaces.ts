@@ -16,6 +16,8 @@ export type AttendanceCouples = Record<
 >;
 export type ApiMode = "live" | "demo";
 
+export type iconColor = "primary" | "action";
+
 export interface AttendanceJson {
   [key: string]: AttendanceEntry;
 }
@@ -30,8 +32,8 @@ export interface AuthContextType {
   authed: boolean;
   login: (student_id: number, password: string) => Promise<void>;
   logout: () => Promise<void>;
-  verify: () => Promise<boolean>;
-  verifySession: () => Promise<boolean>;
+  verify: () => Promise<void | boolean>;
+  getUser: () => Promise<void>;
 }
 
 export interface ThemeContextType {
@@ -121,6 +123,6 @@ export interface SettingsJson {
 
 export interface SpMenuEntry {
   name: string;
-  icon: JSX.Element;
+  icon: (c: iconColor) => JSX.Element;
   href: string;
 }

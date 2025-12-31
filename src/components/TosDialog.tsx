@@ -35,17 +35,11 @@ export default function TosDialog() {
                     },
                 }}>
                 <DialogTitle variant="h4">
-                    Terms of Service
+                    {t("tosTitle")}
                 </DialogTitle>
                 <DialogContent>
                     <Typography>
-                        Your credentials gets saved in plain text after you login when using <b>LIVE</b> server!
-                        Credentials will be used by bot to login into your account.
-                        It's highly recommended to host your own instance for your own privacy.
-                    </Typography>
-                    <Typography>
-                        You can also use <b>DEMO</b> mode to preview the page.
-                        This is a demo frontend for beusproxy project, not all of the features are present.
+                        {t("tosText")}
                     </Typography>
                 </DialogContent>
                 <DialogActions style={{
