@@ -21,7 +21,7 @@ import {
 import BotDialog from "../components/BotDialog";
 import { api, checkResponseStatus } from "../utils/Api";
 import GradesTable from "../components/GradesTable";
-import { GradesJson, GradeEntry } from "../utils/Interfaces";
+import { GradeEntry, GradesFilters } from "../utils/Interfaces";
 import { createFetchCached } from "../features/FetchCached";
 import { useAuth } from "../utils/Auth";
 import { createFetchWithAuth } from "../features/FetchWithAuth";
@@ -29,23 +29,35 @@ import { t } from "i18next";
 
 export default function Grades() {
   const { logout } = useAuth();
-  const [isAll, setIsAll] = useState(false);
-  const [semester, setSemester] = useState("1");
-  const [oldScale, setOldScale] = useState(false);
-  const [calcGrade, setCalcGrade] = useState(true);
-  const [roundGrade, setRoundGrade] = useState(false);
-  const [act3Enabled, setAct3Enabled] = useState(false);
-  const [ssAvaliable, setSsAvaliable] = useState(false);
-  const [gradeTLoading, setGradeTLoading] = useState(true);
-  const [gradesLoading, setGradesLoading] = useState(true);
-  const [doIwAsm, setDoIwAsm] = useState(false);
-  const [iwAsm, setIwAsm] = useState("10");
-  const [year, setYear] = useState<string | null>(null);
-  const [gradesT, setGradesT] = useState<GradesJson | undefined>(undefined);
-  const [options, setOptions] = useState<{ [year: string]: boolean }>({});
+  const [f, setF] = useState<GradesFilters>({
+    isAll: false,
+    semester: "1",
+    oldScale: false,
+    calcGrade: true,
+    roundGrade: false,
+    act3Enabled: false,
+    ssAvaliable: false,
+    gradesTLoading: true,
+    gradesLoading: true,
+    doIwAsm: false,
+    iwAsm: "10",
+    year: null,
+    gradesT: undefined,
+    options: {}
+  })
   const [calcAnchorEl, setCalcAnchorEl] = useState<null | HTMLElement>(null);
   const fetchCached = createFetchCached(logout);
   const fetch = createFetchWithAuth(logout);
+
+  const updateF = <K extends keyof GradesFilters>(
+    key: K,
+    value: GradesFilters[K]
+  ) => {
+    setF(prev => ({
+      ...prev,
+      [key]: value,
+    }));
+  };
 
   const getGrades = async () => {
     await fetchCached(`${api}/resource/grades`, {
@@ -67,10 +79,10 @@ export default function Grades() {
         });
         const offset = options["ALL"] ? 2 : 1;
         const keys = Object.keys(options);
-        setYear(keys[keys.length - offset]);
-        setSemester(options[keys[keys.length - offset]] ? "2" : "1");
-        setOptions(options);
-        setGradesLoading(false);
+        updateF("year", keys[keys.length - offset]);
+        updateF("semester", options[keys[keys.length - offset]] ? "2" : "1");
+        updateF("options", options);
+        updateF("gradesLoading", false);
       });
   };
 
@@ -93,44 +105,44 @@ export default function Grades() {
       })
       .then((json) => {
         const testEntry = Object.values(json)[0] as GradeEntry;
-        setAct3Enabled(testEntry.act3 !== undefined);
-        setGradesT(json);
-        setGradeTLoading(false);
+        updateF("act3Enabled", testEntry.act3 !== undefined);
+        updateF("gradesT", json);
+        updateF("gradesTLoading", false);
       });
   };
 
-  const handleSemesterBox = (_: MouseEvent<HTMLElement>, v: string) => {
+  const handleSemesterBox = (_: MouseEvent<HTMLElement>, v: "1" | "2") => {
     if (v !== null) {
-      setSemester(v);
-      setGradeTLoading(true);
+      updateF("semester", v);
+      updateF("gradesTLoading", true);
     }
   };
 
   const handleYearBox = (_: SyntheticEvent, v: string) => {
-    setYear(v);
-    setGradeTLoading(true);
+    updateF("year", v);
+    updateF("gradesTLoading", true);
   };
 
   const handleScaleCheck = (_: ChangeEvent<HTMLInputElement>, v: boolean) => {
-    setRoundGrade(false);
-    setOldScale(v);
+    updateF("roundGrade", false);
+    updateF("oldScale", v);
   };
 
   const handleRoundCheck = (_: ChangeEvent<HTMLInputElement>, v: boolean) => {
-    setRoundGrade(v);
+    updateF("roundGrade", v);
   };
 
   const handleCalcCheck = (_: ChangeEvent<HTMLInputElement>, v: boolean) => {
     setCalcAnchorEl(null);
-    setCalcGrade(v);
+    updateF("calcGrade", v);
   };
 
   const handleAct3Check = (_: ChangeEvent<HTMLInputElement>, v: boolean) => {
-    setAct3Enabled(v);
+    updateF("act3Enabled", v);
   };
 
   const handleDoIwAsm = (_: ChangeEvent<HTMLInputElement>, v: boolean) => {
-    setDoIwAsm(v);
+    updateF("doIwAsm", v);
   };
 
   const handleIwAsm = (
@@ -144,39 +156,39 @@ export default function Grades() {
       input = input.replace(/^0+/, "");
     }
 
-    if (Number(input) <= 10) setIwAsm(input);
+    if (Number(input) <= 10) updateF("iwAsm", input);
   };
 
   const handleKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
-    let current = parseInt(iwAsm || "0", 10);
+    let current = parseInt(f.iwAsm || "0", 10);
 
     if (e.key === "ArrowUp") {
       current = Math.min(current + 1, 10);
-      setIwAsm(String(current));
+      updateF("iwAsm", String(current));
       e.preventDefault();
     } else if (e.key === "ArrowDown") {
       current = Math.max(current - 1, 0);
-      setIwAsm(String(current));
+      updateF("iwAsm", String(current));
       e.preventDefault();
     }
   };
 
   useEffect(() => {
-    if (gradesT === undefined) getGrades();
+    if (f["gradesT"] === undefined) getGrades();
   }, []);
 
   useEffect(() => {
-    if (year !== null && semester !== null) {
-      if (year === "ALL") {
-        setIsAll(true);
-      } else setIsAll(false);
-      setSsAvaliable(options[year]);
-      if (semester === "2" && !options[year]) setSemester("1");
+    if (f.year !== null && f.semester !== null) {
+      if (f.year === "ALL") {
+        updateF("isAll", true);
+      } else updateF("isAll", false);
+      updateF("ssAvaliable", f.options[f.year]);
+      if (f.semester === "2" && !f.options[f.year]) updateF("semester", "1");
       else {
-        getGradesTable(year, semester);
+        getGradesTable(f.year, f.semester);
       }
     }
-  }, [year, semester]);
+  }, [f.year, f.semester]);
 
   return (
     <Stack p="0.05rem" gap="0.1rem">
@@ -188,7 +200,7 @@ export default function Grades() {
         alignItems="center"
         flexWrap="wrap"
       >
-        {gradesLoading ? (
+        {f.gradesLoading ? (
           <Skeleton
             variant="rounded"
             animation="wave"
@@ -200,15 +212,15 @@ export default function Grades() {
         ) : (
           <Autocomplete
             disablePortal
-            options={Object.keys(options)}
+            options={Object.keys(f.options)}
             sx={{ width: "6rem" }}
             onChange={handleYearBox}
-            value={year || ""}
+            value={f.year || ""}
             disableClearable
             renderInput={(params) => <TextField {...params} label="Year" />}
           />
         )}
-        {gradesLoading ? (
+        {f.gradesLoading ? (
           <Skeleton
             variant="rounded"
             animation="wave"
@@ -218,10 +230,10 @@ export default function Grades() {
             }}
           />
         ) : (
-          !isAll && (
+          !f.isAll && (
             <ToggleButtonGroup
               color="primary"
-              value={semester}
+              value={f.semester}
               onChange={handleSemesterBox}
               exclusive
               aria-label="semester number"
@@ -235,7 +247,7 @@ export default function Grades() {
               <ToggleButton
                 value="2"
                 aria-label="second"
-                disabled={!ssAvaliable}
+                disabled={!f.ssAvaliable}
               >
                 2
               </ToggleButton>
@@ -247,7 +259,7 @@ export default function Grades() {
           <Tooltip title={t("gradeOld")}>
             <FormControlLabel
               control={
-                <Checkbox checked={oldScale} onChange={handleScaleCheck} />
+                <Checkbox checked={f.oldScale} onChange={handleScaleCheck} />
               }
               label={t("gradeOldLabel")}
             />
@@ -258,9 +270,9 @@ export default function Grades() {
             <FormControlLabel
               control={
                 <Checkbox
-                  checked={roundGrade}
+                  checked={f.roundGrade}
                   onChange={handleRoundCheck}
-                  disabled={oldScale}
+                  disabled={f.oldScale}
                 />
               }
               label={t("gradeRoundLabel")}
@@ -271,7 +283,7 @@ export default function Grades() {
           <Tooltip title={t("gradeCalc")}>
             <FormControlLabel
               control={
-                <Checkbox checked={calcGrade} onChange={handleCalcCheck} />
+                <Checkbox checked={f.calcGrade} onChange={handleCalcCheck} />
               }
               label={t("gradeCalcLabel")}
             />
@@ -281,7 +293,7 @@ export default function Grades() {
           <Tooltip title={t("gradeAct3")}>
             <FormControlLabel
               control={
-                <Checkbox checked={act3Enabled} onChange={handleAct3Check} />
+                <Checkbox checked={f.act3Enabled} onChange={handleAct3Check} />
               }
               label={t("gradeAct3Label")}
             />
@@ -290,16 +302,16 @@ export default function Grades() {
         <FormGroup sx={{ display: "flex", flexDirection: "row" }}>
           <Tooltip title={t("gradeAssumeIw")}>
             <FormControlLabel
-              control={<Checkbox checked={doIwAsm} onChange={handleDoIwAsm} />}
+              control={<Checkbox checked={f.doIwAsm} onChange={handleDoIwAsm} />}
               label={t("gradeAssumeIwLabel")}
             />
           </Tooltip>
-          {doIwAsm && (
+          {f.doIwAsm && (
             <TextField
               id="input-iwasm"
               type="number"
               placeholder="10"
-              value={iwAsm}
+              value={f.iwAsm}
               onChange={handleIwAsm}
               onKeyDown={handleKeyDown}
               sx={{ width: "3rem" }}
@@ -308,14 +320,7 @@ export default function Grades() {
         </FormGroup>
       </Stack>
       <GradesTable
-        doIwAsm={doIwAsm}
-        iwAsm={iwAsm}
-        gradesT={gradesT}
-        gradeTLoading={gradeTLoading}
-        oldScale={oldScale}
-        calcGrade={calcGrade}
-        roundGrade={roundGrade}
-        act3Enabled={act3Enabled}
+        f={f}
         calcAnchorEl={calcAnchorEl}
         setCalcAnchorEl={setCalcAnchorEl}
       />

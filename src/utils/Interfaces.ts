@@ -14,6 +14,24 @@ export type AttendanceCouples = Record<
   string,
   (AttendanceEntry & { courseCode: string })[]
 >;
+
+export type GradesFilters = {
+  isAll: boolean,
+  semester: "1" | "2",
+  oldScale: boolean,
+  calcGrade: boolean,
+  roundGrade: boolean,
+  act3Enabled: boolean,
+  ssAvaliable: boolean,
+  gradesTLoading: boolean,
+  gradesLoading: boolean,
+  doIwAsm: boolean,
+  iwAsm: string,
+  year: string | null,
+  gradesT: GradesJson | undefined,
+  options: {[year: string]: boolean},
+}
+
 export type ApiMode = "live" | "demo";
 
 export type iconColor = "primary" | "action";

@@ -13,7 +13,7 @@ import {
   TableSortLabel,
 } from "@mui/material";
 import { Dispatch, MouseEvent, SetStateAction, useState } from "react";
-import { GradeEntry, GradesJson, Order } from "../utils/Interfaces";
+import { GradeEntry, GradesFilters, Order } from "../utils/Interfaces";
 import {
   calculateSum,
   canPredictScholarship,
@@ -26,19 +26,6 @@ import { useTheme } from "../utils/Theme";
 import { Calculate } from "@mui/icons-material";
 import GradesPopper from "./GradesPopper";
 import { useTranslation } from "react-i18next";
-
-interface GradesTableProps {
-  doIwAsm: boolean;
-  iwAsm: string;
-  gradeTLoading: boolean;
-  oldScale: boolean;
-  calcGrade: boolean;
-  roundGrade: boolean;
-  act3Enabled: boolean;
-  gradesT: GradesJson | undefined;
-  calcAnchorEl: HTMLElement | null;
-  setCalcAnchorEl: Dispatch<SetStateAction<HTMLElement | null>>;
-}
 
 function descendingComparator<GradeEntry>(
   a: GradeEntry,
@@ -69,17 +56,14 @@ function getComparator<Key extends keyof GradeEntry>(
 }
 
 export default function GradesTable({
-  doIwAsm,
-  iwAsm,
-  gradeTLoading,
-  oldScale,
-  calcGrade,
-  roundGrade,
-  act3Enabled,
-  gradesT,
+  f,
   calcAnchorEl,
-  setCalcAnchorEl,
-}: GradesTableProps) {
+  setCalcAnchorEl
+}: {
+  f: GradesFilters,
+  calcAnchorEl: HTMLElement | null,
+  setCalcAnchorEl: Dispatch<SetStateAction<HTMLElement | null>>
+}) {
   const { t } = useTranslation();
   const { isDark } = useTheme();
   const [calcNeeded, setCalcNeeded] = useState<null | number>(null);
@@ -106,13 +90,13 @@ export default function GradesTable({
     setOrderBy(property);
   };
 
-  const courseArr = Object.entries(gradesT ?? {}).map(([k, v]) => ({
+  const courseArr = Object.entries(f.gradesT ?? {}).map(([k, v]) => ({
     ...v,
     courseCode: k,
   }));
   courseArr.forEach((e) => {
-    if (doIwAsm && e.iw === -1) e.iw = Number(iwAsm);
-    e.calcSum = calculateSum(e, roundGrade, act3Enabled);
+    if (f.doIwAsm && e.iw === -1) e.iw = Number(f.iwAsm);
+    e.calcSum = calculateSum(e, f.roundGrade, f.act3Enabled);
   });
   const sortedRows = courseArr.slice().sort(getComparator(order, orderBy));
 
@@ -125,14 +109,14 @@ export default function GradesTable({
 
   const handleCalcClick = (e: MouseEvent<HTMLElement>, course: GradeEntry) => {
     setCalcNeeded(
-      canPredictScholarship(course, act3Enabled)
-        ? calculateSum(course, roundGrade, act3Enabled)
+      canPredictScholarship(course, f.act3Enabled)
+        ? calculateSum(course, f.roundGrade, f.act3Enabled)
         : null,
     );
     setCalcAnchorEl(calcAnchorEl === e.currentTarget ? null : e.currentTarget);
   };
 
-  return gradeTLoading ? (
+  return f.gradesTLoading ? (
     <Skeleton
       variant="rounded"
       animation="wave"
@@ -166,7 +150,7 @@ export default function GradesTable({
             ]
               .map((h) => {
                 if (
-                  !(h === "act3" && !act3Enabled) &&
+                  !(h === "act3" && !f.act3Enabled) &&
                   !(h === "sem" && sortedRows[0].sem === undefined) &&
                   !(
                     h === "att" && sortedRows[0].att === undefined
@@ -197,7 +181,7 @@ export default function GradesTable({
         </TableHead>
         <TableBody>
           {sortedRows.map((course, inx) => {
-            const courseG = gradeScale(course, oldScale, roundGrade);
+            const courseG = gradeScale(course, f.oldScale, f.roundGrade);
             return (
               <TableRow
                 key={inx}
@@ -214,7 +198,7 @@ export default function GradesTable({
                 <TableCell sx={tableCellStyle}>
                   {getGradeValue(courseG.act2)}
                 </TableCell>
-                {act3Enabled && (
+                {f.act3Enabled && (
                   <TableCell sx={tableCellStyle}>
                     {getGradeValue(courseG.act3)}
                   </TableCell>
@@ -238,7 +222,7 @@ export default function GradesTable({
                 <TableCell sx={tableCellStyle}>
                   {courseG.sum !== -1
                     ? courseG.sum
-                    : calcGrade && getGradeValue(courseG.calcSum)}
+                    : f.calcGrade && getGradeValue(courseG.calcSum)}
                 </TableCell>
                 <TableCell>
                   <Stack sx={{ alignItems: "center" }}>
@@ -259,7 +243,7 @@ export default function GradesTable({
                         }}
                       >
                         {gradeToMark(courseG.sum)}
-                        {calcGrade && courseG.sum === -1 && (
+                        {f.calcGrade && courseG.sum === -1 && (
                           <IconButton
                             onClick={(e) => handleCalcClick(e, course)}
                           >
