@@ -13,7 +13,7 @@ declare module '@mui/material/styles' {
   }
 }
 
-export const darkTheme = createTheme({
+const darkTheme0 = createTheme({
   // typography: {
   //   htmlFontSize: 20,
   // },
@@ -63,7 +63,11 @@ export const darkTheme = createTheme({
   },
 });
 
-export const lightTheme = createTheme({
+// export const darkTheme = darkTheme0;
+export const darkTheme = responsiveFontSizes(darkTheme0);
+export const lightTheme = darkTheme0;
+
+const lightTheme0 = createTheme({
   palette: {
     mode: "light",
     primary: {

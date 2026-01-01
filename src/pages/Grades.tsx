@@ -179,10 +179,11 @@ export default function Grades() {
   }, [year, semester]);
 
   return (
-    <Stack p={1} gap={2}>
+    <Stack p="0.05rem" gap="0.1rem">
       <Stack
-        gap={2}
-        m={2}
+        rowGap="0.5rem"
+        columnGap="1rem"
+        m="1rem"
         flexDirection="row"
         alignItems="center"
         flexWrap="wrap"
@@ -192,15 +193,15 @@ export default function Grades() {
             variant="rounded"
             animation="wave"
             sx={{
-              width: 96,
-              height: 52,
+              width: "6rem",
+              height: "3.25rem",
             }}
           />
         ) : (
           <Autocomplete
             disablePortal
             options={Object.keys(options)}
-            sx={{ width: 96 }}
+            sx={{ width: "6rem" }}
             onChange={handleYearBox}
             value={year || ""}
             disableClearable
@@ -212,8 +213,8 @@ export default function Grades() {
             variant="rounded"
             animation="wave"
             sx={{
-              width: 64,
-              height: 52,
+              width: "4rem",
+              height: "3.25rem",
             }}
           />
         ) : (
@@ -224,6 +225,9 @@ export default function Grades() {
               onChange={handleSemesterBox}
               exclusive
               aria-label="semester number"
+              sx={{
+                m: "0.2rem"
+              }}
             >
               <ToggleButton value="1" aria-label="first">
                 1
@@ -298,7 +302,7 @@ export default function Grades() {
               value={iwAsm}
               onChange={handleIwAsm}
               onKeyDown={handleKeyDown}
-              sx={{ width: 49 }}
+              sx={{ width: "3rem" }}
             />
           )}
         </FormGroup>

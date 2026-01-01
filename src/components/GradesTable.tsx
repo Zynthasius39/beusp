@@ -117,10 +117,10 @@ export default function GradesTable({
   const sortedRows = courseArr.slice().sort(getComparator(order, orderBy));
 
   const tableCellStyle = {
-    width: 35,
-    fontSize: 18,
+    width: "2rem",
+    fontSize: "1.2rem",
     fontWeight: "bold",
-    textAlign: "center",
+    // textAlign: "center",
   };
 
   const handleCalcClick = (e: MouseEvent<HTMLElement>, course: GradeEntry) => {
@@ -138,7 +138,7 @@ export default function GradesTable({
       animation="wave"
       sx={{
         maxWidth: "calc(100dvw - 2rem)",
-        height: 512,
+        height: "32rem",
       }}
     />
   ) : (
@@ -176,7 +176,7 @@ export default function GradesTable({
                     <TableCell
                       key={h}
                       sx={[
-                        { width: 35 },
+                        { width: "2rem" },
                         h !== "courseCode" &&
                         h !== "courseName" &&
                         tableCellStyle,
@@ -206,8 +206,8 @@ export default function GradesTable({
                     inx % 2 === 0 ? "background.paper" : "inherit",
                 }}
               >
-                <TableCell height={36}>{course.courseCode}</TableCell>
-                <TableCell width={512}>{course.courseName}</TableCell>
+                <TableCell height="2.25rem">{course.courseCode}</TableCell>
+                <TableCell width="32rem">{course.courseName}</TableCell>
                 <TableCell sx={tableCellStyle}>
                   {getGradeValue(courseG.act1)}
                 </TableCell>
@@ -244,11 +244,15 @@ export default function GradesTable({
                   <Stack sx={{ alignItems: "center" }}>
                     <Paper
                       elevation={5}
-                      sx={{ borderRadius: "50%", width: 40 }}
+                      sx={{
+                        borderRadius: "50%",
+                        // width: "2.5rem"
+                      }}
                     >
                       <Avatar
                         sx={{
-                          fontSize: 20,
+                          // width: "2.5rem",
+                          fontSize: "1.6rem",
                           fontWeight: "bold",
                           color: colorOfMark(courseG.sum, !isDark()),
                           backgroundColor: colorOfMark(courseG.sum, isDark()),

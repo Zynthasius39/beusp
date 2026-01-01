@@ -334,6 +334,9 @@ export default function BotDialog() {
                   false
                 }
                 onChange={handleBotSwitch}
+                sx={{
+                  ml: "0.4rem"
+                }}
               />
             }
             disabled={!botEnabled}

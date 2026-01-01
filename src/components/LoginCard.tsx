@@ -222,7 +222,7 @@ export default function LoginCard({ setAlert }: { setAlert: (alert: JSX.Element 
                         {/* <FormControlLabel control={<Checkbox />} label=t("loginRemember") /> */}
                         <Box sx={{ position: "relative" }}>
                             <PrimaryButton
-                                disabled={true}
+                                disabled={loading}
                                 fullWidth
                                 onClick={handleLogin}
                                 sx={{
@@ -230,7 +230,7 @@ export default function LoginCard({ setAlert }: { setAlert: (alert: JSX.Element 
                                     mt: "0.2rem",
                                 }}
                             >{t("loginButton")}
-                                {true && (
+                                {loading && (
                                     <CircularProgress
                                         size="0.8rem"
                                         sx={{
