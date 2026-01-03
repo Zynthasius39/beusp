@@ -497,7 +497,7 @@ export default function BotDialog() {
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose}>{t("cancel")}</Button>
-          <PrimaryButton onClick={handleDiscordSub}>{t("subscribe")}</PrimaryButton>
+          <PrimaryButton onClick={handleDiscordSub}>{t("sub")}</PrimaryButton>
         </DialogActions>
       </Dialog>
 
@@ -520,18 +520,18 @@ export default function BotDialog() {
                 value={Math.round(verifyTimeout)}
                 sx={{
                   width: {
-                    xs: "128px",
-                    sm: "256px",
+                    xs: "14rem",
+                    sm: "24rem",
                   },
                   height: {
-                    xs: "32px",
-                    sm: "64px",
+                    xs: "6rem",
+                    sm: "10rem",
                   },
                   p: {
                     xs: 2,
                     sm: 4,
                   },
-                  borderRadius: 6,
+                  borderRadius: "1.4rem",
                 }}
               />
               <Typography
@@ -545,16 +545,16 @@ export default function BotDialog() {
                   alignItems: "center",
                   justifyContent: "center",
                   fontSize: {
-                    xs: 32,
-                    sm: 64,
+                    xs: "2.8rem",
+                    sm: "4.6rem",
                   },
                   fontWeight: "bolder",
                   fontFamily: "monospace",
                   letterSpacing: {
-                    xs: 4,
-                    sm: 8,
+                    xs: "0.5rem",
+                    sm: "1rem",
                   },
-                  borderRadius: 4,
+                  borderRadius: "1.4rem",
                 }}
               >
                 {telegramCode}

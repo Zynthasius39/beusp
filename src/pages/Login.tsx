@@ -4,7 +4,6 @@ import {
 } from "@mui/material";
 import "../style/Login.css";
 import { useState } from "react";
-import TosDialog from "../components/TosDialog";
 import { Snowflakes } from "../components/Snowflakes";
 import LoginCard from "../components/LoginCard";
 import GithubButton from "../components/GithubButton";
@@ -28,7 +27,7 @@ export default function Login() {
     >
       <Snowflakes />
       <LoginCard setAlert={setAlert} />
-      <TosDialog />
+      {/* <TosDialog /> */}
       <Snackbar
         open={alert != undefined}
       >
