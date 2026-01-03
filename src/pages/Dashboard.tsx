@@ -18,23 +18,48 @@ import { createFetchCached } from "../features/FetchCached";
 import { useAuth } from "../utils/Auth";
 import { useTranslation } from "react-i18next";
 
+type DashboardProps = {
+  dashLoading: boolean,
+  classCount: number,
+  totalCredits: number,
+  gpa: number,
+  eduDebt: string,
+  homeTable: object | undefined,
+}
+
+const translateKeys = [
+  "status"
+]
+
 const Dashboard = () => {
   const { t } = useTranslation();
   const { logout } = useAuth();
   const { theme } = useTheme();
-  const [dashLoading, setDashLoading] = useState(true);
-  const [classCount, setClassCount] = useState(0);
-  const [totalCredits, setTotalCredits] = useState(0);
-  const [gpa, setGpa] = useState(0);
-  const [eduDebt, setEduDebt] = useState("0 AZN");
-  const [homeTable, setHomeTable] = useState<object | undefined>(undefined);
+  const [p, setP] = useState<DashboardProps>({
+    dashLoading: true,
+    classCount: 0,
+    totalCredits: 0,
+    gpa: 0,
+    eduDebt: "0 AZN",
+    homeTable: undefined,
+  });
   const fetchCached = createFetchCached(logout);
 
+  const updateP = <K extends keyof DashboardProps>(
+    key: K,
+    value: DashboardProps[K]
+  ) => {
+    setP(prev => ({
+      ...prev,
+      [key]: value,
+    }));
+  };
+
   const infoCards = [
-    { name: t("enrolledClasses"), value: classCount, icon: <ImportContactsTwoTone /> },
-    { name: t("completedCredits"), value: totalCredits, icon: <TollTwoTone /> },
-    { name: t("educationDebt"), value: eduDebt, icon: <ClassTwoTone /> },
-    { name: t("gpa"), value: gpa, icon: <SchoolTwoTone /> },
+    { name: t("enrolledClasses"), value: p.classCount, icon: <ImportContactsTwoTone /> },
+    { name: t("completedCredits"), value: p.totalCredits, icon: <TollTwoTone /> },
+    { name: t("educationDebt"), value: p.eduDebt, icon: <ClassTwoTone /> },
+    { name: t("gpa"), value: p.gpa, icon: <SchoolTwoTone /> },
   ]
 
   const cardRootStyle = {
@@ -85,11 +110,11 @@ const Dashboard = () => {
         console.error(e);
       }
     }).then(json => {
-      setClassCount(Object.entries(json.semesters || {}).length);
-      setTotalCredits(Number(json.totalEarnedCredits));
-      // setGpa(Number((Number(json.totalGpa || 0) / 100 * 4).toFixed(2)));
-      setGpa(Number(json.totalGpa));  // Traditional GPA
-      setDashLoading(false);
+      updateP("classCount", Object.entries(json.semesters || {}).length);
+      updateP("totalCredits", Number(json.totalEarnedCredits));
+      // updateP("gpa", Number((Number(json.totalGpa || 0) / 100 * 4).toFixed(2)));
+      updateP("gpa", Number(json.totalGpa));  // Traditional GPA
+      updateP("dashLoading", false);
     })
   }
 
@@ -104,14 +129,14 @@ const Dashboard = () => {
       console.error(e);
       logout();
     }).then(json => {
-      setEduDebt(`${json.studentInfo.eduDebt.amount} AZN`);
+      updateP("eduDebt", `${json.studentInfo.eduDebt.amount} AZN`);
       Object.entries(json.studentInfo)
         .filter(([_, value]) => (
           typeof value === "string" ||
           typeof value === "number" ||
           typeof value === "boolean"
         ))
-      setHomeTable(json.studentInfo);
+      updateP("homeTable", json.studentInfo);
     })
   }
 
@@ -134,8 +159,10 @@ const Dashboard = () => {
         p: "1rem",
       }}>
         {infoCards.map((infoCard, inx) => (
-          dashLoading ?
-            <Skeleton key={inx} variant="rounded" sx={cardRootStyle} />
+          p.dashLoading ?
+            <Skeleton key={inx} variant="rounded" sx={[cardRootStyle, {
+              height: "11rem"
+            }]} />
             :
             <Card key={inx} sx={cardRootStyle}>
               <Stack sx={infoCardStyle}>
@@ -171,7 +198,7 @@ const Dashboard = () => {
         <Table>
           <TableBody>
             {
-              Object.entries(homeTable || {})
+              Object.entries(p.homeTable || {})
                 .filter(([_, value]) => (
                   typeof value === "string" ||
                   typeof value === "number" ||
@@ -180,9 +207,9 @@ const Dashboard = () => {
                 .map(([key, value]) => {
                   var val;
                   if (typeof value === "boolean")
-                    val = value ? "Yes" : "No";
+                    val = value ? t("yes") : t("no");
                   else if (value as String === "")
-                    val = "None";
+                    val = t("none");
                   else
                     val = value as String;
                   return [key, val];
@@ -195,7 +222,7 @@ const Dashboard = () => {
                     <TableCell component="th" scope="row">
                       {t(key as string)}
                     </TableCell>
-                    <TableCell align="right">{value}</TableCell>
+                    <TableCell align="right">{translateKeys.includes(key as string) ? t(value as string) : value}</TableCell>
                   </TableRow>
                 ))}
           </TableBody>

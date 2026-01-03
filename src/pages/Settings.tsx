@@ -75,7 +75,6 @@ export default function Settings() {
 
     const handleUiLangSelect = (e: SelectChangeEvent) => {
         updateO("uiLang", e.target.value as UiLang);
-        localStorage.setItem("lang", e.target.value);
         changeUiLang(e.target.value as UiLang);
     }
 
@@ -99,6 +98,7 @@ export default function Settings() {
     }
 
     const getSettings = () => {
+        updateO("uiLang", localStorage.getItem("i18nextLng") as UiLang);
         fetchCached(`${api}/resource/home`, {
             method: "GET",
             credentials: "include",

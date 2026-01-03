@@ -35,6 +35,7 @@ export default function App() {
             display: { xs: "none", md: "block" },
             borderRight: "1px solid " + theme.palette.divider,
             flexShrink: 0,
+            width: "24rem",
           }}
         >
           <DrawerList />

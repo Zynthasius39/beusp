@@ -43,7 +43,6 @@ export default function DrawerList() {
         m="0.5rem"
         direction="row"
         alignItems="center"
-        justifyContent="center"
         gap={1}
       >
         <img

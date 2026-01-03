@@ -37,7 +37,7 @@ const Drawer = () => {
       >
         <Box
           height="100%"
-          width="20rem"
+          width="22rem"
           role="application"
           onClick={toggleDrawer(false)}
         >
