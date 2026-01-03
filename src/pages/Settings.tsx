@@ -1,5 +1,5 @@
 import { AutoFixHigh, Edit, ExpandLess, ExpandMore, Security, Storage } from "@mui/icons-material";
-import { Alert, Avatar, Box, Button, Collapse, Dialog, DialogActions, DialogContent, DialogContentText, List, ListItem, ListItemButton, ListItemIcon, ListItemText, MenuItem, Select, SelectChangeEvent, Snackbar, Stack, Typography } from "@mui/material";
+import { Alert, Avatar, Box, Button, Collapse, Dialog, DialogActions, DialogContent, DialogContentText, Divider, IconButton, List, ListItem, ListItemButton, ListItemIcon, ListItemText, MenuItem, Select, SelectChangeEvent, Snackbar, Stack, Typography } from "@mui/material";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { api, checkResponseStatus } from "../utils/Api";
 import { AlertSeverity } from "../utils/Interfaces";
@@ -8,19 +8,55 @@ import { createFetchWithAuth } from "../features/FetchWithAuth";
 import { useAuth } from "../utils/Auth";
 import { PrimaryButton } from "../components/PrimaryButton";
 import { useTranslation } from "react-i18next";
+import { changeUiLang, UiLang } from "../utils/i18n";
+
+type TmsLang = "en" | "az";
+const tmsLangKeys = ["en", "az"] as const satisfies readonly TmsLang[];
+const uiLangKeys = ["en-US", "az-AZ"] as const satisfies readonly UiLang[];
+
+type SettingOptions = {
+    tabOpen: "ui" | "sec" | "ser" | null
+    pwdOpen: boolean,
+    tmsLang: TmsLang,
+    uiLang: UiLang,
+}
 
 export default function Settings() {
     const { t } = useTranslation();
     const { logout } = useAuth();
-    const [uiOpen, setUiOpen] = useState(false);
-    const [secOpen, setSecOpen] = useState(false);
-    const [serOpen, setSerOpen] = useState(false);
-    const [pwdOpen, setPwdOpen] = useState(false);
-    const [tmsLang, setTmsLang] = useState<"en" | "az">("en");
+    const [o, setO] = useState<SettingOptions>({
+        tabOpen: null,
+        pwdOpen: false,
+        tmsLang: "en",
+        uiLang: "az-AZ",
+    })
     const [alert, setAlert] = useState<JSX.Element | undefined>(undefined);
     const alertTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
     const fetchCached = createFetchCached(logout);
     const fetch = createFetchWithAuth(logout);
+
+    const updateO = <K extends keyof SettingOptions>(
+        key: K,
+        value: SettingOptions[K]
+    ) => {
+        setO(prev => ({
+            ...prev,
+            [key]: value,
+        }));
+    };
+
+    const avatarStyle = {
+        backgroundColor: "primary.dark",
+        float: "left",
+        mr: "1rem",
+        width: "3.2rem",
+        height: "3.2rem",
+    }
+
+    const iconStyle = {
+        color: "primary.main",
+        fontSize: "2rem",
+    }
 
     const showAlert = useCallback((msg: string, severity: AlertSeverity) => {
         if (alert != undefined) {
@@ -37,7 +73,13 @@ export default function Settings() {
         }, 4000);
     }, [alert]);
 
-    const handleTmsLangSelect = (e: SelectChangeEvent) => {
+    const handleUiLangSelect = (e: SelectChangeEvent) => {
+        updateO("uiLang", e.target.value as UiLang);
+        localStorage.setItem("lang", e.target.value);
+        changeUiLang(e.target.value as UiLang);
+    }
+
+    const handleServerLangSelect = (e: SelectChangeEvent) => {
         fetch(`${api}/settings`, {
             method: "POST",
             credentials: "include",
@@ -64,7 +106,7 @@ export default function Settings() {
             checkResponseStatus(response);
             return response.json()
         }).then(json => {
-            setTmsLang(json.lang);
+            updateO("tmsLang", json.lang);
         }).catch(e => {
             console.error(e);
             showAlert(t("error"), "error");
@@ -77,86 +119,94 @@ export default function Settings() {
 
     return (
         <>
-            <Stack flexDirection="row" flexWrap="wrap">
-                <Box m={4} flexGrow={1}>
+            <Stack sx={{
+                p: "0.4rem",
+            }}>
+                <Box m="1rem">
                     <Typography variant="h5">
-                        Some settings may not work.
+                        {t("settingsWarning")}
                     </Typography>
                 </Box>
-                <List sx={{
-                    flexGrow: 2,
-                }}>
-                    <ListItemButton onClick={() => setUiOpen(!uiOpen)}>
+                <List>
+                    <ListItemButton onClick={() => updateO("tabOpen", o.tabOpen === "ui" ? null : "ui")}>
                         <ListItemIcon>
-                            <Avatar>
-                                <AutoFixHigh />
+                            <Avatar sx={avatarStyle}>
+                                <AutoFixHigh sx={iconStyle} />
                             </Avatar>
                         </ListItemIcon>
-                        <ListItemText primary="UI & Language" />
-                        {uiOpen ? <ExpandLess /> : <ExpandMore />}
+                        <ListItemText primary={t("settingsUi")} />
+                        {o.tabOpen === "ui" ? <ExpandLess /> : <ExpandMore />}
                     </ListItemButton>
-                    <Collapse in={uiOpen} timeout="auto" unmountOnExit>
+                    <Collapse in={o.tabOpen === "ui"} timeout="auto" unmountOnExit>
                         <List component="div" disablePadding>
-                            <ListItem sx={{ pl: 4 }} secondaryAction={
-                                <PrimaryButton disabled>
-                                    <Edit />
-                                </PrimaryButton>
-                            }>
-                                <ListItemText primary="Interface language" />
-                            </ListItem>
-                        </List>
-                    </Collapse>
-                    <ListItemButton onClick={() => setSecOpen(!secOpen)}>
-                        <ListItemIcon>
-                            <Avatar>
-                                <Security />
-                            </Avatar>
-                        </ListItemIcon>
-                        <ListItemText primary="Security & Privacy" />
-                        {secOpen ? <ExpandLess /> : <ExpandMore />}
-                    </ListItemButton>
-                    <Collapse in={secOpen} timeout="auto" unmountOnExit>
-                        <List component="div" disablePadding>
-                            <ListItem sx={{ pl: 4 }} secondaryAction={
-                                <PrimaryButton disabled onClick={() => setPwdOpen(true)}>
-                                    <Edit />
-                                </PrimaryButton>
-                            }>
-                                <ListItemText primary="Password" />
-                            </ListItem>
-                        </List>
-                    </Collapse>
-                    <ListItemButton onClick={() => setSerOpen(!serOpen)}>
-                        <ListItemIcon>
-                            <Avatar>
-                                <Storage />
-                            </Avatar>
-                        </ListItemIcon>
-                        <ListItemText primary="Server settings" />
-                        {serOpen ? <ExpandLess /> : <ExpandMore />}
-                    </ListItemButton>
-                    <Collapse in={serOpen} timeout="auto" unmountOnExit>
-                        <List component="div" disablePadding>
-                            <ListItem sx={{ pl: 4 }} secondaryAction={
+                            <Divider sx={{ mb: "1rem" }} />
+                            <ListItem secondaryAction={
                                 <Select
-                                    value={tmsLang}
-                                    label="Age"
-                                    onChange={handleTmsLangSelect}
+                                    value={o.uiLang}
+                                    onChange={handleUiLangSelect}
                                 >
-                                    <MenuItem value={"az"}>Azerbaijani</MenuItem>
-                                    <MenuItem value={"en"}>English</MenuItem>
+                                    {uiLangKeys.map(l =>
+                                        <MenuItem value={l}>{t(l)}</MenuItem>
+                                    )}
                                 </Select>
                             }>
-                                <ListItemText primary="TMS Language" />
+                                <ListItemText primary={t("settingsUiLang")} />
+                            </ListItem>
+                        </List>
+                    </Collapse>
+                    <ListItemButton onClick={() => updateO("tabOpen", o.tabOpen === "sec" ? null : "sec")}>
+                        <ListItemIcon>
+                            <Avatar sx={avatarStyle}>
+                                <Security sx={iconStyle} />
+                            </Avatar>
+                        </ListItemIcon>
+                        <ListItemText primary={t("settingsSec")} />
+                        {o.tabOpen === "sec" ? <ExpandLess /> : <ExpandMore />}
+                    </ListItemButton>
+                    <Collapse in={o.tabOpen === "sec"} timeout="auto" unmountOnExit>
+                        <List component="div" disablePadding>
+                            <Divider sx={{ mb: "1rem" }} />
+                            <ListItem secondaryAction={
+                                <IconButton disabled onClick={_ => updateO("pwdOpen", true)}>
+                                    <Edit />
+                                </IconButton>
+                            }>
+                                <ListItemText primary={t("settingsSecPass")} />
+                            </ListItem>
+                        </List>
+                    </Collapse>
+                    <ListItemButton onClick={() => updateO("tabOpen", o.tabOpen === "ser" ? null : "ser")}>
+                        <ListItemIcon>
+                            <Avatar sx={avatarStyle}>
+                                <Storage sx={iconStyle} />
+                            </Avatar>
+                        </ListItemIcon>
+                        <ListItemText primary={t("settingsServer")} />
+                        {o.tabOpen === "ser" ? <ExpandLess /> : <ExpandMore />}
+                    </ListItemButton>
+                    <Collapse in={o.tabOpen === "ser"} timeout="auto" unmountOnExit>
+                        <List component="div" disablePadding>
+                            <Divider sx={{ mb: "1rem" }} />
+                            <ListItem secondaryAction={
+                                <Select
+                                    value={o.tmsLang}
+                                    onChange={handleServerLangSelect}
+                                >
+                                    {tmsLangKeys.map((l, inx) =>
+                                        <MenuItem value={l}>{t(uiLangKeys[inx])}</MenuItem>
+                                    )}
+                                </Select>
+                            }>
+                                <ListItemText primary={t("settingsServerLang")} />
                             </ListItem>
                         </List>
                     </Collapse>
                 </List>
             </Stack>
-            <Dialog open={pwdOpen}>
+            <Dialog open={o.pwdOpen}>
                 <DialogContent>
                     <DialogContentText>
-                        Be careful! You can get locked out of your account.
+                        {t("settingsSecPasText")}
                     </DialogContentText>
                     <DialogActions>
                         <Button>Cancel</Button>

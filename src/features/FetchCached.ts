@@ -5,6 +5,8 @@ export function createFetchCached(logout: () => void) {
 
     return async function fetchCached(url: string, init = {}, refreshCache = true) {
         const request = new Request(url, init);
+        if (window.location.protocol !== 'https:')
+            return fetch(request);
         return caches.match(request).then((response) => {
             if (response !== undefined && response.status === 200 && refreshCache) {
                 return response;

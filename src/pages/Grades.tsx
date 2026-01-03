@@ -1,18 +1,12 @@
 import {
   Autocomplete,
-  Checkbox,
-  FormControlLabel,
-  FormGroup,
   Skeleton,
   Stack,
   TextField,
   ToggleButton,
   ToggleButtonGroup,
-  Tooltip,
 } from "@mui/material";
 import {
-  ChangeEvent,
-  KeyboardEvent,
   MouseEvent,
   SyntheticEvent,
   useEffect,
@@ -20,14 +14,15 @@ import {
 } from "react";
 import BotDialog from "../components/BotDialog";
 import { api, checkResponseStatus } from "../utils/Api";
-import GradesTable from "../components/GradesTable";
-import { GradeEntry, GradesFilters } from "../utils/Interfaces";
+import GradesTable, { GradeEntry } from "../components/GradesTable";
 import { createFetchCached } from "../features/FetchCached";
 import { useAuth } from "../utils/Auth";
 import { createFetchWithAuth } from "../features/FetchWithAuth";
-import { t } from "i18next";
+import { GradesFilter, GradesFilters } from "../components/GradesFilter";
+import { useTranslation } from "react-i18next";
 
 export default function Grades() {
+  const { t } = useTranslation();
   const { logout } = useAuth();
   const [f, setF] = useState<GradesFilters>({
     isAll: false,
@@ -123,55 +118,6 @@ export default function Grades() {
     updateF("gradesTLoading", true);
   };
 
-  const handleScaleCheck = (_: ChangeEvent<HTMLInputElement>, v: boolean) => {
-    updateF("roundGrade", false);
-    updateF("oldScale", v);
-  };
-
-  const handleRoundCheck = (_: ChangeEvent<HTMLInputElement>, v: boolean) => {
-    updateF("roundGrade", v);
-  };
-
-  const handleCalcCheck = (_: ChangeEvent<HTMLInputElement>, v: boolean) => {
-    setCalcAnchorEl(null);
-    updateF("calcGrade", v);
-  };
-
-  const handleAct3Check = (_: ChangeEvent<HTMLInputElement>, v: boolean) => {
-    updateF("act3Enabled", v);
-  };
-
-  const handleDoIwAsm = (_: ChangeEvent<HTMLInputElement>, v: boolean) => {
-    updateF("doIwAsm", v);
-  };
-
-  const handleIwAsm = (
-    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-  ) => {
-    let input = e.target.value;
-
-    if (!/^\d*$/.test(input)) return;
-
-    if (input.length > 1 && input.startsWith("0")) {
-      input = input.replace(/^0+/, "");
-    }
-
-    if (Number(input) <= 10) updateF("iwAsm", input);
-  };
-
-  const handleKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
-    let current = parseInt(f.iwAsm || "0", 10);
-
-    if (e.key === "ArrowUp") {
-      current = Math.min(current + 1, 10);
-      updateF("iwAsm", String(current));
-      e.preventDefault();
-    } else if (e.key === "ArrowDown") {
-      current = Math.max(current - 1, 0);
-      updateF("iwAsm", String(current));
-      e.preventDefault();
-    }
-  };
 
   useEffect(() => {
     if (f["gradesT"] === undefined) getGrades();
@@ -193,131 +139,82 @@ export default function Grades() {
   return (
     <Stack p="0.05rem" gap="0.1rem">
       <Stack
-        rowGap="0.5rem"
-        columnGap="1rem"
-        m="1rem"
-        flexDirection="row"
-        alignItems="center"
-        flexWrap="wrap"
+        sx={{
+          p: "0.4rem",
+          m: "1rem",
+          flexDirection: "row",
+          flexWrap: "wrap",
+          alignItems: "center",
+          justifyContent: "space-between",
+          "& .MuiStack-root": {
+            gap: "1rem",
+            flexDirection: "row"
+          }
+        }}
       >
-        {f.gradesLoading ? (
-          <Skeleton
-            variant="rounded"
-            animation="wave"
-            sx={{
-              width: "6rem",
-              height: "3.25rem",
-            }}
-          />
-        ) : (
-          <Autocomplete
-            disablePortal
-            options={Object.keys(f.options)}
-            sx={{ width: "6rem" }}
-            onChange={handleYearBox}
-            value={f.year || ""}
-            disableClearable
-            renderInput={(params) => <TextField {...params} label="Year" />}
-          />
-        )}
-        {f.gradesLoading ? (
-          <Skeleton
-            variant="rounded"
-            animation="wave"
-            sx={{
-              width: "4rem",
-              height: "3.25rem",
-            }}
-          />
-        ) : (
-          !f.isAll && (
-            <ToggleButtonGroup
-              color="primary"
-              value={f.semester}
-              onChange={handleSemesterBox}
-              exclusive
-              aria-label="semester number"
+        <Stack>
+          {f.gradesLoading ? (
+            <Skeleton
+              variant="rounded"
+              animation="wave"
               sx={{
-                m: "0.2rem"
+                width: "6rem",
+                height: "3.25rem",
               }}
-            >
-              <ToggleButton value="1" aria-label="first">
-                1
-              </ToggleButton>
-              <ToggleButton
-                value="2"
-                aria-label="second"
-                disabled={!f.ssAvaliable}
-              >
-                2
-              </ToggleButton>
-            </ToggleButtonGroup>
-          )
-        )}
-        <BotDialog />
-        <FormGroup>
-          <Tooltip title={t("gradeOld")}>
-            <FormControlLabel
-              control={
-                <Checkbox checked={f.oldScale} onChange={handleScaleCheck} />
-              }
-              label={t("gradeOldLabel")}
             />
-          </Tooltip>
-        </FormGroup>
-        <FormGroup>
-          <Tooltip title={t("gradeRound")}>
-            <FormControlLabel
-              control={
-                <Checkbox
-                  checked={f.roundGrade}
-                  onChange={handleRoundCheck}
-                  disabled={f.oldScale}
-                />
-              }
-              label={t("gradeRoundLabel")}
-            />
-          </Tooltip>
-        </FormGroup>
-        <FormGroup>
-          <Tooltip title={t("gradeCalc")}>
-            <FormControlLabel
-              control={
-                <Checkbox checked={f.calcGrade} onChange={handleCalcCheck} />
-              }
-              label={t("gradeCalcLabel")}
-            />
-          </Tooltip>
-        </FormGroup>
-        <FormGroup>
-          <Tooltip title={t("gradeAct3")}>
-            <FormControlLabel
-              control={
-                <Checkbox checked={f.act3Enabled} onChange={handleAct3Check} />
-              }
-              label={t("gradeAct3Label")}
-            />
-          </Tooltip>
-        </FormGroup>
-        <FormGroup sx={{ display: "flex", flexDirection: "row" }}>
-          <Tooltip title={t("gradeAssumeIw")}>
-            <FormControlLabel
-              control={<Checkbox checked={f.doIwAsm} onChange={handleDoIwAsm} />}
-              label={t("gradeAssumeIwLabel")}
-            />
-          </Tooltip>
-          {f.doIwAsm && (
-            <TextField
-              id="input-iwasm"
-              type="number"
-              placeholder="10"
-              value={f.iwAsm}
-              onChange={handleIwAsm}
-              onKeyDown={handleKeyDown}
-              sx={{ width: "3rem" }}
+          ) : (
+            <Autocomplete
+              disablePortal
+              options={Object.keys(f.options)}
+              sx={{ width: "6.4rem" }}
+              onChange={handleYearBox}
+              value={f.year || ""}
+              disableClearable
+              renderInput={(params) => <TextField {...params} label={t("courseYear")} />}
             />
           )}
-        </FormGroup>
+          {f.gradesLoading ? (
+            <Skeleton
+              variant="rounded"
+              animation="wave"
+              sx={{
+                width: "4rem",
+                height: "3.25rem",
+              }}
+            />
+          ) : (
+            !f.isAll && (
+              <ToggleButtonGroup
+                color="primary"
+                value={f.semester}
+                onChange={handleSemesterBox}
+                exclusive
+                aria-label="semester number"
+                sx={{
+                  m: "0.2rem",
+                  "& .MuiToggleButton-root": {
+                    paddingInline: "1.2rem",
+                  }
+                }}
+              >
+                <ToggleButton value="1" aria-label="first">
+                  1
+                </ToggleButton>
+                <ToggleButton
+                  value="2"
+                  aria-label="second"
+                  disabled={!f.ssAvaliable}
+                >
+                  2
+                </ToggleButton>
+              </ToggleButtonGroup>
+            )
+          )}
+        </Stack>
+        <Stack direction="row">
+          <BotDialog />
+          <GradesFilter f={f} updateF={updateF} setCalcAnchorEl={setCalcAnchorEl} />
+        </Stack>
       </Stack>
       <GradesTable
         f={f}

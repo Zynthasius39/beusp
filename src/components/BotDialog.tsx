@@ -7,7 +7,6 @@ import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import {
   ChangeEvent,
-  SyntheticEvent,
   useCallback,
   useEffect,
   useRef,
@@ -16,8 +15,6 @@ import {
 import {
   Alert,
   Box,
-  FormControlLabel,
-  FormGroup,
   IconButton,
   LinearProgress,
   Link,
@@ -28,8 +25,6 @@ import {
   ListItemText,
   Snackbar,
   Stack,
-  Switch,
-  Tooltip,
   Typography,
 } from "@mui/material";
 import { useAuth } from "../utils/Auth";
@@ -40,7 +35,7 @@ import {
   NotFoundApiError,
   UnauthorizedApiError,
 } from "../utils/Api";
-import { Close, Email, Send, Telegram } from "@mui/icons-material";
+import { Close, DoNotDisturb, Email, NotificationsActive, NotificationsOff, Send, Telegram } from "@mui/icons-material";
 import {
   formatTime,
   isValidDcWebhook,
@@ -204,10 +199,6 @@ export default function BotDialog() {
     setUseTelegram(true);
   };
 
-  const handleBotSwitch = (_: SyntheticEvent, __: boolean) => {
-    setIsOpen(true);
-  };
-
   const showAlert = useCallback(
     (msg: string, severity: AlertSeverity) => {
       if (alert != undefined) {
@@ -320,33 +311,35 @@ export default function BotDialog() {
     };
   }, [verifyTimeout]);
 
+  const subbed =
+    subs?.email ||
+    subs?.discordWebhookUrl ||
+    subs?.telegramUserId ||
+    false
+
   return (
     <>
-      <FormGroup>
-        <Tooltip title={t("botTooltip")}>
-          <FormControlLabel
-            control={
-              <Switch
-                checked={
-                  subs?.email ||
-                  subs?.discordWebhookUrl ||
-                  subs?.telegramUserId ||
-                  false
-                }
-                onChange={handleBotSwitch}
-                sx={{
-                  ml: "0.4rem"
-                }}
-              />
-            }
-            disabled={!botEnabled}
-            label={t("botLabel")}
-          />
-        </Tooltip>
-      </FormGroup>
+      <Button
+        endIcon={
+          botEnabled ?
+            subbed ?
+              <NotificationsActive /> :
+              <NotificationsOff /> :
+            <DoNotDisturb />
+        }
+        onClick={_ => setIsOpen(!isOpen)}
+        color={
+          subbed ?
+            "primary" :
+            "inherit"
+        }
+        disabled={!botEnabled}
+      >
+        {t("bot")}
+      </Button >
 
       {/* Main Dialog */}
-      <Dialog open={isOpen} onClose={handleClose}>
+      <Dialog open={isOpen} onClose={handleClose} >
         <DialogTitle>{t("botSubTitle")}</DialogTitle>
         <DialogContent>
           <DialogContentText>
@@ -392,8 +385,8 @@ export default function BotDialog() {
                     xmlns="http://www.w3.org/2000/svg"
                     x="0px"
                     y="0px"
-                    width="25"
-                    height="25"
+                    width="1.5rem"
+                    height="1.5rem"
                     viewBox="0 0 50 50"
                     fill={
                       isDark()
@@ -432,10 +425,10 @@ export default function BotDialog() {
         <DialogActions>
           <Button onClick={handleClose}>{t("close")}</Button>
         </DialogActions>
-      </Dialog>
+      </Dialog >
 
       {/* Email Subscription Dialog */}
-      <Dialog open={useEmail} onClose={handleClose}>
+      < Dialog open={useEmail} onClose={handleClose} >
         <DialogTitle>{t("botSubEmailTitle")}</DialogTitle>
         <DialogContent>
           <DialogContentText>
@@ -459,7 +452,7 @@ export default function BotDialog() {
           <Button onClick={handleClose}>{t("cancel")}</Button>
           <PrimaryButton onClick={handleEmailSub}>{t("sub")}</PrimaryButton>
         </DialogActions>
-      </Dialog>
+      </Dialog >
       <Dialog open={verifyEmail} onClose={handleClose}>
         <DialogTitle>{t("botSubEmailVerifyTitle")}</DialogTitle>
         <DialogContent>

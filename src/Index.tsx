@@ -14,12 +14,30 @@ import VersionTag from "./components/VersionTag";
 import './style/Index.css'
 import './style/gh-fork-ribbon.min.css'
 import { RequireAuth } from "./providers/RequireAuth";
+import { CssBaseline, GlobalStyles } from "@mui/material";
+import { I18nextProvider } from "react-i18next";
+import i18n from "./utils/i18n";
 
 export default function Index() {
   return (
     <AuthProvider>
       <ThemeUtilsProvider>
+        <I18nextProvider i18n={i18n}>
           <BrowserRouter>
+            <CssBaseline />
+            <GlobalStyles
+              styles={(theme) => ({
+                html: {
+                  fontSize: '12px', // xs
+                  [theme.breakpoints.up('sm')]: {
+                    fontSize: '14px',
+                  },
+                  [theme.breakpoints.up('md')]: {
+                    fontSize: '16px',
+                  },
+                },
+              })}
+            />
             <Routes>
               <Route path="*" element={<Error errorCode={404} />} />
               <Route
@@ -51,6 +69,7 @@ export default function Index() {
               } />
             </Routes>
           </BrowserRouter>
+        </I18nextProvider>
       </ThemeUtilsProvider >
     </AuthProvider >
   );

@@ -1,9 +1,31 @@
 import { Skeleton, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TableSortLabel } from "@mui/material"
-import { AttendanceCouples, AttendanceEntry, AttendanceJson, Order } from "../utils/Interfaces"
+import { Order } from "../utils/Interfaces"
 import { useState } from "react";
 import { thresholdColor } from "../utils/StudentLogic";
 import { AttendanceLinearProgress } from "./AttendanceLinearProgress";
 import { useTranslation } from "react-i18next";
+
+type AttendanceEntry = {
+    absent: number;
+    absentPercent: number;
+    atds: number;
+    courseEducator: string;
+    courseCode: string;
+    courseName: string;
+    credit: string;
+    hours: number;
+    limit: number;
+}
+
+
+type AttendanceCouples = Record<
+    string,
+    (AttendanceEntry & { courseCode: string })[]
+>;
+
+export type AttendanceJson = {
+    [key: string]: AttendanceEntry;
+}
 
 interface AttendanceTableProps {
     attdsT: AttendanceJson | undefined,
@@ -19,10 +41,11 @@ const attConfig = {
 }
 
 const tableCellStyle = {
-    width: 35,
-    fontSize: 18,
+    width: "2rem",
+    fontSize: "1rem",
     fontWeight: "bold",
-    textAlign: "center",
+    p: "1rem",
+    textAlign: "end",
 }
 
 export function descendingComparator(a: AttendanceEntry[], b: AttendanceEntry[], orderBy: keyof AttendanceEntry) {
@@ -98,9 +121,12 @@ export default function AttendanceTable({ attdsT, attLoading, attAsm, doAttAsm }
     const sortedAttdsGrouped = Object.values(attdsGrouped ?? {}).slice().sort(getComparator(order, orderBy));
 
     return attLoading ?
-        <Skeleton variant="rounded" animation="wave" sx={{
-            height: 512
-        }} />
+        <Skeleton
+            variant="rounded"
+            animation="wave"
+            sx={{
+                height: "32rem",
+            }} />
         :
         <TableContainer sx={{
             overflow: "auto",
@@ -110,14 +136,20 @@ export default function AttendanceTable({ attdsT, attLoading, attAsm, doAttAsm }
                 <TableHead>
                     <TableRow>
                         {
-                            ["courseCode", "courseName", "courseEducator", "credit", "hours", "limit", "atds", "absent", "absentPercent"].map(h => {
+                            ["courseCode", "courseName", "courseEducator", "credit", "hours", "limit", "atds", "absent", "absentPercent"].map((h, inx) => {
                                 return (
                                     <TableCell
                                         key={h}
                                         sx={[
-                                            { width: 35, },
+                                            { width: "2rem", p: 0 },
                                             !["courseCode", "courseName", "courseEducator"].includes(h) && tableCellStyle,
-                                            h === "absentPercent" && { fontSize: 36 }
+                                            !["courseCode", "courseName", "courseEducator"].includes(h) &&
+                                            { flexDirection: "row-reverse" },
+                                            h === "absentPercent" && { fontSize: "2rem" },
+                                            inx === 0 &&
+                                            { pl: "2rem", minWidth: "8.6rem" },
+                                            inx === 1 &&
+                                            { minWidth: "16rem" },
                                         ]}
                                     >
                                         <TableSortLabel
@@ -145,9 +177,9 @@ export default function AttendanceTable({ attdsT, attLoading, attAsm, doAttAsm }
                             const calcAbsentPercent = preAbsentPercent >= 25 ? 25 : preAbsentPercent;
                             return attds.map((att, inx) =>
                                 <TableRow key={count} sx={{ backgroundColor: count++ % 2 === 0 ? 'background.paper' : 'inherit' }}>
-                                    <TableCell height={36}>{att.courseCode}</TableCell>
-                                    <TableCell width={512}>{att.courseName}</TableCell>
-                                    <TableCell width={512}>{att.courseEducator}</TableCell>
+                                    <TableCell sx={{ pl: "2rem" }}>{att.courseCode}</TableCell>
+                                    <TableCell sx={{ p: 0, paddingBlock: "0.8rem", pr: "0.8rem" }}>{att.courseName}</TableCell>
+                                    <TableCell sx={{ p: 0, paddingBlock: "0.8rem", pr: "0.8rem" }}>{att.courseEducator}</TableCell>
                                     <TableCell sx={tableCellStyle}>{att.credit}</TableCell>
                                     <TableCell sx={tableCellStyle}>{att.hours}</TableCell>
                                     <TableCell sx={tableCellStyle}>{att.limit}</TableCell>
@@ -157,7 +189,6 @@ export default function AttendanceTable({ attdsT, attLoading, attAsm, doAttAsm }
                                         {
                                             inx === 0 &&
                                             <AttendanceLinearProgress
-                                                sx={{ height: 12, borderRadius: 4 }}
                                                 variant="buffer"
                                                 percentNext={calcAbsentPercent}
                                                 percent={att.absentPercent}

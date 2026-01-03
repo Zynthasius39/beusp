@@ -13,7 +13,7 @@ import {
   TableSortLabel,
 } from "@mui/material";
 import { Dispatch, MouseEvent, SetStateAction, useState } from "react";
-import { GradeEntry, GradesFilters, Order } from "../utils/Interfaces";
+import { Order } from "../utils/Interfaces";
 import {
   calculateSum,
   canPredictScholarship,
@@ -26,6 +26,25 @@ import { useTheme } from "../utils/Theme";
 import { Calculate } from "@mui/icons-material";
 import GradesPopper from "./GradesPopper";
 import { useTranslation } from "react-i18next";
+
+export type GradeEntry = {
+  courseCode: string;
+  courseName: string;
+  act1: number;
+  act2: number;
+  act3: number;
+  sem: number;
+  att: number;
+  iw: number;
+  final: number;
+  sum: number;
+  calcSum: number;
+  mark: string;
+}
+
+export type GradesJson = {
+  [key: string]: GradeEntry;
+}
 
 function descendingComparator<GradeEntry>(
   a: GradeEntry,
@@ -102,9 +121,10 @@ export default function GradesTable({
 
   const tableCellStyle = {
     width: "2rem",
-    fontSize: "1.2rem",
+    fontSize: "1rem",
     fontWeight: "bold",
-    // textAlign: "center",
+    p: "1rem",
+    textAlign: "end",
   };
 
   const handleCalcClick = (e: MouseEvent<HTMLElement>, course: GradeEntry) => {
@@ -121,7 +141,7 @@ export default function GradesTable({
       variant="rounded"
       animation="wave"
       sx={{
-        maxWidth: "calc(100dvw - 2rem)",
+        // maxWidth: "calc(100dvw - 2rem)",
         height: "32rem",
       }}
     />
@@ -129,7 +149,7 @@ export default function GradesTable({
     <TableContainer
       sx={{
         overflow: "auto",
-        maxWidth: "calc(100dvw - 2rem)",
+        // maxWidth: "calc(100dvw - 2rem)",
       }}
     >
       <Table>
@@ -148,7 +168,7 @@ export default function GradesTable({
               "sum",
               "mark",
             ]
-              .map((h) => {
+              .map((h, inx) => {
                 if (
                   !(h === "act3" && !f.act3Enabled) &&
                   !(h === "sem" && sortedRows[0].sem === undefined) &&
@@ -160,16 +180,24 @@ export default function GradesTable({
                     <TableCell
                       key={h}
                       sx={[
-                        { width: "2rem" },
-                        h !== "courseCode" &&
-                        h !== "courseName" &&
+                        { width: "2rem", p: 0 },
+                        !["courseCode", "courseName"].includes(h) &&
                         tableCellStyle,
+                        !["courseCode", "courseName", "mark"].includes(h) &&
+                        { flexDirection: "row-reverse" },
+                        h === "mark" &&
+                        { textAlign: "center" },
+                        inx === 0 &&
+                        { pl: "2rem", minWidth: "8.6rem" },
+                        inx === 1 &&
+                        { minWidth: "16rem" },
                       ]}
                     >
                       <TableSortLabel
                         active={orderBy === h}
                         direction={orderBy === h ? order : "asc"}
-                        onClick={() => handleSort(h as keyof GradeEntry)}
+                        onClick={() => h === "mark" ? handleSort("sum" as keyof GradeEntry) : handleSort(h as keyof GradeEntry)}
+                        hideSortIcon={h === "mark"}
                       >
                         {courseHeaders[h] ?? h}
                       </TableSortLabel>
@@ -190,8 +218,8 @@ export default function GradesTable({
                     inx % 2 === 0 ? "background.paper" : "inherit",
                 }}
               >
-                <TableCell height="2.25rem">{course.courseCode}</TableCell>
-                <TableCell width="32rem">{course.courseName}</TableCell>
+                <TableCell sx={{ pl: "2rem" }}>{course.courseCode}</TableCell>
+                <TableCell>{course.courseName}</TableCell>
                 <TableCell sx={tableCellStyle}>
                   {getGradeValue(courseG.act1)}
                 </TableCell>
@@ -224,7 +252,7 @@ export default function GradesTable({
                     ? courseG.sum
                     : f.calcGrade && getGradeValue(courseG.calcSum)}
                 </TableCell>
-                <TableCell>
+                <TableCell sx={tableCellStyle}>
                   <Stack sx={{ alignItems: "center" }}>
                     <Paper
                       elevation={5}
@@ -236,6 +264,7 @@ export default function GradesTable({
                       <Avatar
                         sx={{
                           // width: "2.5rem",
+                          // height: "2.5rem",
                           fontSize: "1.6rem",
                           fontWeight: "bold",
                           color: colorOfMark(courseG.sum, !isDark()),

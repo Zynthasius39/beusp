@@ -12,7 +12,6 @@ import {
   Typography,
 } from "@mui/material";
 import { useTheme } from "../utils/Theme";
-import "../style/Dashboard.css";
 import { cloneElement, useEffect, useState } from "react";
 import { api, checkResponseStatus, UnauthorizedApiError } from "../utils/Api";
 import { createFetchCached } from "../features/FetchCached";
@@ -39,22 +38,15 @@ const Dashboard = () => {
   ]
 
   const cardRootStyle = {
-    p: "15px",
+    p: "1rem",
     display: "flex",
     alignItems: "center",
-    fontSize: {
-      xs: "16px",
-      sm: "17px",
-    },
+    fontSize: "1rem",
     width: {
       xs: "100%",
-      sm: "150px",
+      sm: "8rem",
     },
-    height: {
-      xs: "60px",
-      sm: "150px",
-    },
-    gap: "20px",
+    gap: "0.2rem",
     flexDirection: {
       xs: "row",
       sm: "column",
@@ -63,7 +55,6 @@ const Dashboard = () => {
       xs: "space-between",
       sm: "center",
     },
-    backgroundColor: theme.palette.background.paper,
   }
 
   const infoCardStyle = {
@@ -77,7 +68,7 @@ const Dashboard = () => {
       xs: "flex-start",
       sm: "center",
     },
-    gap: "10px",
+    gap: "1rem",
   }
 
   const getTranscript = async () => {
@@ -96,8 +87,8 @@ const Dashboard = () => {
     }).then(json => {
       setClassCount(Object.entries(json.semesters || {}).length);
       setTotalCredits(Number(json.totalEarnedCredits));
-      // setGpa(Number((Number(json.totalGpa || 0) / 100 * 4).toFixed(2)));  // Traditional GPA
-      setGpa(Number(json.totalGpa));
+      // setGpa(Number((Number(json.totalGpa || 0) / 100 * 4).toFixed(2)));
+      setGpa(Number(json.totalGpa));  // Traditional GPA
       setDashLoading(false);
     })
   }
@@ -139,8 +130,8 @@ const Dashboard = () => {
         justifyContent: "center",
         flexDirection: "row",
         flexWrap: "wrap",
-        gap: "10px",
-        p: "10px",
+        gap: "0.8rem",
+        p: "1rem",
       }}>
         {infoCards.map((infoCard, inx) => (
           dashLoading ?
@@ -148,24 +139,24 @@ const Dashboard = () => {
             :
             <Card key={inx} sx={cardRootStyle}>
               <Stack sx={infoCardStyle}>
-                <Avatar className="card-logo" sx={{
+                <Avatar sx={{
                   backgroundColor: theme.palette.primary.dark,
                   float: "left",
                   width: {
-                    xs: "32px",
-                    sm: "64px",
+                    xs: "3.2rem",
+                    sm: "4.6rem",
                   },
                   height: {
-                    xs: "32px",
-                    sm: "64px",
+                    xs: "3.2rem",
+                    sm: "4.6rem",
                   }
                 }}>
                   {cloneElement(infoCard.icon, {
                     sx: {
-                      color: theme.palette.primary.main,
+                      color: "primary.main",
                       fontSize: {
-                        xs: "18px",
-                        sm: "36px",
+                        xs: "2rem",
+                        sm: "2.8rem",
                       }
                     }
                   })}

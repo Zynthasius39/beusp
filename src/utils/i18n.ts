@@ -1,7 +1,9 @@
-import i18n from "i18next";
+import i18n, { changeLanguage } from "i18next";
 import { initReactI18next } from "react-i18next";
 import Backend from "i18next-http-backend";
 import LanguageDetector from 'i18next-browser-languagedetector';
+
+export type UiLang = "en-US" | "az-AZ";
 
 i18n
   .use(Backend)
@@ -16,6 +18,8 @@ i18n
     },
   });
 
-i18n.changeLanguage("az-AZ");  // TODO: Language Button
+i18n.changeLanguage("az-AZ");  // Modify Settings.tsx state too.
+
+export const changeUiLang = (lang: UiLang) => i18n.changeLanguage(lang);
 
 export default i18n;

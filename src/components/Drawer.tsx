@@ -18,7 +18,7 @@ const Drawer = () => {
         edge="start"
         color="inherit"
         sx={{
-          mr: 2,
+          mr: "0.5rem",
           display: {
             sm: "block",
             md: "none",
@@ -32,12 +32,12 @@ const Drawer = () => {
         onClose={toggleDrawer(false)}
         onOpen={toggleDrawer(true)}
         sx={{
-          display: { xs: "block", md: "none" },
+          display: { sm: "block", md: "none" },
         }}
       >
         <Box
-          height={"100%"}
-          width={300}
+          height="100%"
+          width="20rem"
           role="application"
           onClick={toggleDrawer(false)}
         >

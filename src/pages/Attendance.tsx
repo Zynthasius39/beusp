@@ -1,28 +1,49 @@
 import { Autocomplete, Checkbox, FormControlLabel, FormGroup, Skeleton, Stack, TextField, ToggleButton, ToggleButtonGroup, Tooltip } from "@mui/material";
 import { ChangeEvent, KeyboardEvent, MouseEvent, SyntheticEvent, useEffect, useState } from "react";
 import { api, checkResponseStatus } from "../utils/Api";
-import AttendanceTable from "../components/AttendanceTable";
-import { AttendanceJson } from "../utils/Interfaces";
+import AttendanceTable, { AttendanceJson } from "../components/AttendanceTable";
 import { createFetchCached } from "../features/FetchCached";
 import { useAuth } from "../utils/Auth";
 import { createFetchWithAuth } from "../features/FetchWithAuth";
 import { useTranslation } from "react-i18next";
 
+type AttendanceFilters = {
+    year: string | null,
+    semester: "1" | "2",
+    options: { [year: string]: boolean },
+    attAsm: string,
+    attLoading: boolean,
+    doAttAsm: boolean,
+    attdsT: AttendanceJson | undefined,
+}
+
 export default function Attendance() {
     const { t } = useTranslation();
     const { logout } = useAuth();
-    const [year, setYear] = useState<string | null>(null);
-    const [semester, setSemester] = useState("1");
-    const [options, setOptions] = useState<{ [year: string]: boolean }>({});
-    const [attAsm, setAttAsm] = useState('');
-    const [attLoading, setAttLoading] = useState(true);
-    const [doAttAsm, setDoAttAsm] = useState(false);
-    const [attdsT, setAttdsT] = useState<AttendanceJson | undefined>(undefined);
+    const [f, setF] = useState<AttendanceFilters>({
+        year: null,
+        semester: "1",
+        options: {},
+        attAsm: "",
+        attLoading: true,
+        doAttAsm: false,
+        attdsT: undefined,
+    })
     const fetchCached = createFetchCached(logout);
     const fetch = createFetchWithAuth(logout);
 
-    const ssAvaliable = year ? options[year] : false;
+    const ssAvaliable = f.year ? f.options[f.year] : false;
     const maxAtt = 30;
+
+    const updateF = <K extends keyof AttendanceFilters>(
+        key: K,
+        value: AttendanceFilters[K]
+    ) => {
+        setF(prev => ({
+            ...prev,
+            [key]: value,
+        }));
+    };
 
     const getAttendances = async () => {
         await fetchCached(`${api}/resource/grades`, {
@@ -41,10 +62,10 @@ export default function Attendance() {
                     options[o.year] = o.semester === 2;
             });
             const keys = Object.keys(options);
-            setYear(keys[keys.length - 1]);
-            setSemester(options[keys[keys.length - 1]] ? "2" : "1");
-            setOptions(options);
-            setAttLoading(false);
+            updateF("year", keys[keys.length - 1]);
+            updateF("semester", options[keys[keys.length - 1]] ? "2" : "1");
+            updateF("options", options);
+            updateF("attLoading", false);
         });
 
     }
@@ -60,26 +81,26 @@ export default function Attendance() {
             console.error(e);
             logout();
         }).then(json => {
-            setAttdsT(json);
-            setAttLoading(false);
+            updateF("attdsT", json);
+            updateF("attLoading", false);
         })
 
     };
 
-    const handleSemesterBox = (_: MouseEvent<HTMLElement>, v: string) => {
+    const handleSemesterBox = (_: MouseEvent<HTMLElement>, v: "1" | "2") => {
         if (v !== null) {
-            setSemester(v);
-            setAttLoading(true);
+            updateF("semester", v);
+            updateF("attLoading", true);
         }
     }
 
     const handleYearBox = (_: SyntheticEvent, v: string) => {
-        setYear(v);
-        setAttLoading(true);
+        updateF("year", v);
+        updateF("attLoading", true);
     };
 
     const handlePredictAtt = (_: ChangeEvent<HTMLInputElement>, v: boolean) => {
-        setDoAttAsm(v);
+        updateF("doAttAsm", v);
     }
 
     const handleAttAsm = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -92,102 +113,123 @@ export default function Attendance() {
         }
 
         if (Number(input) <= maxAtt)
-            setAttAsm(input);
+            updateF("attAsm", input);
     }
 
     const handleKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
-        let current = parseInt(attAsm || '0', 10);
+        let current = parseInt(f.attAsm || '0', 10);
 
         if (e.key === 'ArrowUp') {
             current = Math.min(current + 1, 30);
-            setAttAsm(String(current));
+            updateF("attAsm", String(current));
             e.preventDefault();
         } else if (e.key === 'ArrowDown') {
             current = Math.max(current - 1, 0);
-            setAttAsm(String(current));
+            updateF("attAsm", String(current));
             e.preventDefault();
         }
     };
 
     useEffect(() => {
-        if (attdsT === undefined)
+        if (f.attdsT === undefined)
             getAttendances();
     }, [])
 
     useEffect(() => {
-        if (year !== null && semester !== null) {
-            if (semester === "2" && !options[year])
-                setSemester("1");
+        if (f.year !== null && f.semester !== null) {
+            if (f.semester === "2" && !f.options[f.year])
+                updateF("semester", "1");
             else {
-                getAttendanceTable(year, semester);
+                getAttendanceTable(f.year, f.semester);
             }
         }
-    }, [year, semester]);
+    }, [f.year, f.semester]);
 
     return (
-        <Stack p={1} gap={2}>
-            <Stack gap={2} m={2} flexDirection="row" alignItems="center" flexWrap="wrap">
-                {
-                    attLoading ?
-                        <Skeleton
-                            variant="rounded"
-                            animation="wave"
-                            sx={{
-                                width: 96,
-                                height: 52
-                            }}
-                        />
-                        :
-                        <Autocomplete
-                            disablePortal
-                            options={Object.keys(options)}
-                            sx={{ width: 96 }}
-                            onChange={handleYearBox}
-                            value={year || ""}
-                            disableClearable
-                            renderInput={(params) => <TextField {...params} label="Year" />}
-                        />
-                }
-                {
-                    attLoading ?
-                        <Skeleton
-                            variant="rounded"
-                            animation="wave"
-                            sx={{
-                                width: 64,
-                                height: 52
-                            }}
-                        />
-                        :
-                        (
-                            <ToggleButtonGroup
-                                color="primary"
-                                value={semester}
-                                onChange={handleSemesterBox}
-                                exclusive
-                                aria-label="semester number"
-                            >
-                                <ToggleButton value="1" aria-label="first">
-                                    1
-                                </ToggleButton>
-                                <ToggleButton value="2" aria-label="second" disabled={!ssAvaliable}>
-                                    2
-                                </ToggleButton>
-                            </ToggleButtonGroup>
-                        )
-                }
+        <Stack p="0.05rem" gap="0.1rem">
+            <Stack
+                sx={{
+                    p: "0.4rem",
+                    m: "1rem",
+                    flexDirection: "row",
+                    flexWrap: "wrap",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    "& .MuiStack-root": {
+                        gap: "1rem",
+                        flexDirection: "row"
+                    }
+                }}
+            >
+                <Stack>
+                    {
+                        f.attLoading ?
+                            <Skeleton
+                                variant="rounded"
+                                animation="wave"
+                                sx={{
+                                    width: "6rem",
+                                    height: "3.25rem",
+                                }}
+                            />
+                            :
+                            <Autocomplete
+                                disablePortal
+                                options={Object.keys(f.options)}
+                                sx={{ width: "6.4rem" }}
+                                onChange={handleYearBox}
+                                value={f.year || ""}
+                                disableClearable
+                                renderInput={(params) => <TextField {...params} label={t("courseYear")} />}
+                            />
+                    }
+                    {
+                        f.attLoading ?
+                            <Skeleton
+                                variant="rounded"
+                                animation="wave"
+                                sx={{
+                                    width: "4rem",
+                                    height: "3.25rem",
+                                }}
+                            />
+                            :
+                            (
+                                <ToggleButtonGroup
+                                    color="primary"
+                                    value={f.semester}
+                                    onChange={handleSemesterBox}
+                                    exclusive
+                                    aria-label="semester number"
+                                    sx={{
+                                        m: "0.2rem",
+                                        "& .MuiToggleButton-root": {
+                                            paddingInline: "1.2rem",
+                                        }
+                                    }}
+                                >
+                                    <ToggleButton value="1" aria-label="first">
+                                        1
+                                    </ToggleButton>
+                                    <ToggleButton value="2" aria-label="second" disabled={!ssAvaliable}>
+                                        2
+                                    </ToggleButton>
+                                </ToggleButtonGroup>
+                            )
+                    }
+                </Stack>
                 <FormGroup sx={{ display: "flex", flexDirection: "row" }}>
                     <Tooltip title={t("gradeCalcTitle")}>
-                        <FormControlLabel control={<Checkbox checked={doAttAsm} onChange={handlePredictAtt} />} label={t("gradeCalc")} />
+                        <FormControlLabel control={<Checkbox checked={f.doAttAsm} onChange={handlePredictAtt} />} label={t("gradeCalc")} />
                     </Tooltip>
                     {
-                        doAttAsm &&
+                        f.doAttAsm &&
                         <TextField
                             id="input-iwasm"
                             type="text"
                             inputMode="numeric"
                             placeholder="1"
-                            value={attAsm}
+                            value={f.attAsm}
                             onChange={handleAttAsm}
                             onKeyDown={handleKeyDown}
                             sx={{ width: 49 }}
@@ -196,10 +238,10 @@ export default function Attendance() {
                 </FormGroup>
             </Stack>
             <AttendanceTable
-                attdsT={attdsT}
-                attLoading={attLoading}
-                attAsm={attAsm}
-                doAttAsm={doAttAsm}
+                attdsT={f.attdsT}
+                attLoading={f.attLoading}
+                attAsm={f.attAsm}
+                doAttAsm={f.doAttAsm}
             />
         </Stack >
     )

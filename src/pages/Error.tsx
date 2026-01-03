@@ -44,10 +44,6 @@ const Error = ({ errorCode }: ErrorProps) => {
           backdropFilter: "blur(20px)",
           boxShadow: "0 0 50px 0 rgba(0, 0, 0, 0.2)",
           borderRadius: 4,
-          width: {
-            xs: "calc(100dvw - 100px)",
-            md: "inherit",
-          }
         }}
       >
         <Box
@@ -55,11 +51,11 @@ const Error = ({ errorCode }: ErrorProps) => {
           sx={{
             width: {
               xs: "45vw",
-              md: 256,
+              sm: "16rem",
             },
             height: {
               xs: "45vw",
-              md: 256,
+              sm: "16rem",
             },
             borderRadius: 4,
           }}
@@ -67,13 +63,13 @@ const Error = ({ errorCode }: ErrorProps) => {
           alt="not-found-cat"
         />
         <ErrorTypography
-          variant="h3"
+          variant="h2"
         >
           {errorCode}
         </ErrorTypography>
         {errorText &&
           <ErrorTypography
-            variant="h4"
+            variant="h3"
           >
             {t(errorText)}
           </ErrorTypography>

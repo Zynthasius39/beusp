@@ -8,7 +8,7 @@ import { spMenu } from "../Config";
 import { useTranslation } from "react-i18next";
 
 export default function App() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { theme } = useTheme();
   const [page, setPage] = useState("Dashboard");
   const path = useLocation();
@@ -19,7 +19,7 @@ export default function App() {
 
   useEffect(() => {
     updatePage();
-  }, [path]);
+  }, [path, i18n.language]);
 
   return (
     <Stack
@@ -48,8 +48,8 @@ export default function App() {
           <Navbar page={page} />
           <Box
             sx={{
-              p: 1,
-              pb: 20,
+              pt: "0.2rem",
+              pb: "16rem",
               flexGrow: 1,
               overflow: "auto",
             }}

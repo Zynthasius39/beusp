@@ -127,10 +127,7 @@ export default function LoginCard({ setAlert }: { setAlert: (alert: JSX.Element 
                     backdropFilter: "blur(1rem)",
                     boxShadow: "0 0 2.5rem 0 rgba(0, 0, 0, 0.2)",
                     borderRadius: 4,
-                    // width: {
-                    //     xs: "calc(100dvw - 6.2rem)",
-                    md: "22rem",
-                    // },
+                    width: "28rem",
                 }}
             >
                 <Stack flexDirection="row" justifyContent="space-between">

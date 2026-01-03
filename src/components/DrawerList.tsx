@@ -16,8 +16,11 @@ import VersionTag from "./VersionTag";
 import { useTranslation } from "react-i18next";
 
 const listButtonStyle = {
-  p: 2,
-  pl: 4,
+  paddingBlock: {
+    xs: "1.5rem",
+    md: "1rem",
+  },
+  pl: "2.25rem",
   flexGrow: 0,
 }
 
@@ -36,8 +39,8 @@ export default function DrawerList() {
       }}
     >
       <Stack
-        p={2}
-        m={1}
+        p="1rem"
+        m="0.5rem"
         direction="row"
         alignItems="center"
         justifyContent="center"
@@ -45,7 +48,7 @@ export default function DrawerList() {
       >
         <img
           alt={t("uniName")}
-          width={48}
+          width="48rem"
           src="/static/beu_dark.svg"
           style={{
             backgroundColor:
@@ -55,7 +58,7 @@ export default function DrawerList() {
             fill: "#ff0000",
           }}
         />
-        <Typography p={1} fontSize={16}>
+        <Typography p="0.5rem" fontSize="1.2rem">
           {t("uniName")}
         </Typography>
       </Stack>
@@ -65,7 +68,7 @@ export default function DrawerList() {
           flexGrow: 1,
           display: "flex",
           flexDirection: "column",
-          pb: 0,
+          paddingBlock: 0,
         }}
       >
         <Box sx={{
@@ -85,22 +88,22 @@ export default function DrawerList() {
                 sx={[
                   listButtonStyle,
                   {
-                    bgcolor: path === href ? theme.palette.primary.dark : "inherit",
+                    bgcolor: path === href ? "primary.dark" : "inherit",
                   },
                 ]}
               >
-                <ListItemIcon>
+                <ListItemIcon sx={{ minWidth: "4rem" }}>
                   {icon(path === href ? "action" : "primary")}
                 </ListItemIcon>
-                <Typography>{name}</Typography>
+                <Typography sx={{ fontSize: "1.1rem" }}>{name}</Typography>
               </ListItemButton>
             </NavLink>
           ))}
         </Box>
         <VersionTag sx={{
           position: "inherit",
-          color: theme.palette.text.disabled,
-          fontSize: 16
+          color: "text.disabled",
+          fontSize: "1.1rem"
         }}
         />
         <ListItemButton
@@ -108,10 +111,10 @@ export default function DrawerList() {
           onClick={logout}
           sx={listButtonStyle}
         >
-          <ListItemIcon>
+          <ListItemIcon sx={{ minWidth: "4rem" }}>
             <LogoutTwoTone color="primary" />
           </ListItemIcon>
-          <Typography fontSize={14}>{t("logout")}</Typography>
+          <Typography fontSize="1.1rem">{t("logout")}</Typography>
         </ListItemButton>
       </List>
     </Stack>

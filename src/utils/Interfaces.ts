@@ -10,35 +10,10 @@ export type ColorSeverity =
   | "success"
   | "warning";
 export type AlertSeverity = "success" | "error" | "warning" | "info";
-export type AttendanceCouples = Record<
-  string,
-  (AttendanceEntry & { courseCode: string })[]
->;
-
-export type GradesFilters = {
-  isAll: boolean,
-  semester: "1" | "2",
-  oldScale: boolean,
-  calcGrade: boolean,
-  roundGrade: boolean,
-  act3Enabled: boolean,
-  ssAvaliable: boolean,
-  gradesTLoading: boolean,
-  gradesLoading: boolean,
-  doIwAsm: boolean,
-  iwAsm: string,
-  year: string | null,
-  gradesT: GradesJson | undefined,
-  options: {[year: string]: boolean},
-}
 
 export type ApiMode = "live" | "demo";
 
 export type iconColor = "primary" | "action";
-
-export interface AttendanceJson {
-  [key: string]: AttendanceEntry;
-}
 
 export interface User {
   name: string;
@@ -59,37 +34,6 @@ export interface ThemeContextType {
   isDark: () => boolean;
   toggleTheme: () => void;
   setDark: (dark: boolean) => void;
-}
-
-export interface GradesJson {
-  [key: string]: GradeEntry;
-}
-
-export interface GradeEntry {
-  courseCode: string;
-  courseName: string;
-  act1: number;
-  act2: number;
-  act3: number;
-  sem: number;
-  att: number;
-  iw: number;
-  final: number;
-  sum: number;
-  calcSum: number;
-  mark: string;
-}
-
-export interface AttendanceEntry {
-  absent: number;
-  absentPercent: number;
-  atds: number;
-  courseEducator: string;
-  courseCode: string;
-  courseName: string;
-  credit: string;
-  hours: number;
-  limit: number;
 }
 
 export interface HomeStudentInfoJson {

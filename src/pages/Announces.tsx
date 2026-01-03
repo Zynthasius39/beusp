@@ -36,20 +36,20 @@ export default function Announces() {
   }, []);
 
   return (
-    <Stack p={1} gap={2}>
+    <Stack p="0.7rem" gap="0.7rem">
       {announcesT.map(({ body, name }, inx) => (
         <Card key={inx}>
           <Stack
             sx={{
-              p: 2,
-              fontSize: 14,
-              gap: 2,
+              p: "1.2rem",
+              fontSize: "1rem",
+              gap: "0.8rem",
             }}
           >
             <Stack
               flexDirection="row"
               alignItems="center"
-              gap={2}
+              gap="1rem"
             >
               <Avatar
                 sx={{

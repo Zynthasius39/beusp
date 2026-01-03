@@ -29,7 +29,8 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
     else if (isServerFault(res.status))
       throw new ServerFaultApiError(String(res.status));
     else {
-      caches.delete("v1");
+      if (window.location.protocol === 'https:')
+        caches.delete("v1");
       setAuthed(true);
       locked = false;
     }
@@ -49,7 +50,8 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
     cookies.remove("SessionID");
     cookies.remove("ImgID");
     localStorage.removeItem("studphoto");
-    caches.delete("v1");
+    if (window.location.protocol === 'https:')
+      caches.delete("v1");
     setUser(null);
     locked = false;
     setAuthed(false);
