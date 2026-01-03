@@ -1,6 +1,7 @@
 import { green, orange, red, yellow } from "@mui/material/colors";
-import { ColorSeverity, GradeEntry } from "./Interfaces";
+import { ColorSeverity } from "./Interfaces";
 import { darkTheme, lightTheme } from "./Theme";
+import { GradeEntry } from "../components/GradesTable";
 
 export const convertBlobToBase64 = (blob: Blob) => {
   return new Promise((resolve, reject) => {

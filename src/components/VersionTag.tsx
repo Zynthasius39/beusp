@@ -1,19 +1,28 @@
 import { Typography, TypographyProps } from '@mui/material'
+import { useTranslation } from 'react-i18next'
 
-export default function VersionTag(props: TypographyProps) {
+interface VersionTagProps extends TypographyProps {
+    descMode?: "minimal" | "full";
+}
+
+export default function VersionTag({ descMode, ...props }: VersionTagProps) {
+    const { t } = useTranslation();
+
     return (
         <Typography
             {...props}
             sx={{
                 fontFamily: "monospace",
-                pl: 4,
-                color: 'primary.main',
-                fontSize: 25,
+                fontSize: "1.4rem",
                 PointerEvent: "none",
                 ...props.sx
             }}
         >
-            v{__APP_VERSION__}
+            {
+                descMode === "full"
+                    ? `${t("githubSrc")} - v${__APP_VERSION__}`
+                    : __APP_VERSION__
+            }
         </Typography>
     )
 }

@@ -10,9 +10,7 @@ import Grades from "./pages/Grades";
 import Departments from "./pages/Departments";
 import Settings from "./pages/Settings";
 import Attendance from "./pages/Attendance";
-import VersionTag from "./components/VersionTag";
 import './style/Index.css'
-import './style/gh-fork-ribbon.min.css'
 import { RequireAuth } from "./providers/RequireAuth";
 import { CssBaseline, GlobalStyles } from "@mui/material";
 import { I18nextProvider } from "react-i18next";
@@ -56,16 +54,7 @@ export default function Index() {
                 <Route path="/settings" element={<Settings />} />
               </Route>
               <Route path="/login" element={
-                <>
                   <Login />
-                  <VersionTag
-                    sx={{
-                      position: "fixed",
-                      p: 4,
-                      bottom: 0,
-                      left: 0,
-                    }} />,
-                </>
               } />
             </Routes>
           </BrowserRouter>

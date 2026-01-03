@@ -26,6 +26,7 @@ import { useTheme } from "../utils/Theme";
 import { Calculate } from "@mui/icons-material";
 import GradesPopper from "./GradesPopper";
 import { useTranslation } from "react-i18next";
+import { GradesFilters } from "./GradesFilter";
 
 export type GradeEntry = {
   courseCode: string;

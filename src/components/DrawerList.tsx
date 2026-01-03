@@ -10,7 +10,7 @@ import {
 import { NavLink, useLocation } from "react-router-dom";
 import { useTheme } from "../utils/Theme";
 import { spMenu } from "../Config";
-import { LogoutTwoTone } from "@mui/icons-material";
+import { GitHub, LogoutTwoTone } from "@mui/icons-material";
 import { useAuth } from "../utils/Auth";
 import VersionTag from "./VersionTag";
 import { useTranslation } from "react-i18next";
@@ -100,12 +100,24 @@ export default function DrawerList() {
             </NavLink>
           ))}
         </Box>
-        <VersionTag sx={{
-          position: "inherit",
-          color: "text.disabled",
-          fontSize: "1.1rem"
-        }}
-        />
+        <VersionTag
+          sx={{
+            color: "text.disabled",
+            fontSize: "1.1rem",
+            pl: "2rem",
+          }} />
+        <ListItemButton
+          key="github"
+          sx={listButtonStyle}
+          target="_blank"
+          rel="noopener noreferrer"
+          href="https://github.com/Zynthasius39/beusp"
+        >
+          <ListItemIcon sx={{ minWidth: "4rem" }}>
+            <GitHub color="primary" />
+          </ListItemIcon>
+          <Typography fontSize="1.1rem">{t("githubSrc")}</Typography>
+        </ListItemButton>
         <ListItemButton
           key="logout"
           onClick={logout}

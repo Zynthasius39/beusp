@@ -58,7 +58,6 @@ export default function App() {
           </Box>
         </Stack>
       </Stack>
-      <a id="github-ribbon" className="github-fork-ribbon right-bottom fixed" href="https://github.com/Zynthasius39/beusp" data-ribbon={t("ghRibbon")} title={t("ghRibbon")}>{t("ghRibbon")}</a>
     </Stack>
   );
 }

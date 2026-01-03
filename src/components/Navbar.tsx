@@ -14,7 +14,6 @@ import { useTheme } from "../utils/Theme";
 import { useAuth } from "../utils/Auth";
 import { MaterialUISwitch } from "./MaterialUISwitch";
 import { useTranslation } from "react-i18next";
-import { ResponsiveButton } from "./ResponsiveButton";
 
 const Navbar = (props: { page: string }) => {
   const { t } = useTranslation();

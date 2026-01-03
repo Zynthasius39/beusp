@@ -5,12 +5,12 @@ import {
 import "../style/Login.css";
 import { useState } from "react";
 import TosDialog from "../components/TosDialog";
-import { useTranslation } from "react-i18next";
 import { Snowflakes } from "../components/Snowflakes";
 import LoginCard from "../components/LoginCard";
+import GithubButton from "../components/GithubButton";
+import VersionTag from "../components/VersionTag";
 
 export default function Login() {
-  const { t } = useTranslation();
   const [alert, setAlert] = useState<JSX.Element | undefined>(undefined);
 
   return (
@@ -34,7 +34,17 @@ export default function Login() {
       >
         {alert}
       </Snackbar>
-      <a id="github-ribbon" className="github-fork-ribbon right-bottom fixed" href="https://github.com/Zynthasius39/beusp" data-ribbon={t("ghRibbon")} title={t("ghRibbon")}>{t("ghRibbon")}</a>
+      <Stack sx={{
+        flexDirection: "row",
+        alignItems: "center",
+        position: "absolute",
+        bottom: 0,
+        left: 0,
+        p: "1rem",
+      }}>
+        <GithubButton />
+        <VersionTag />
+      </Stack>
     </Stack>
   );
 }
