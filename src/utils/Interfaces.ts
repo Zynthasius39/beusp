@@ -88,3 +88,54 @@ export interface SpMenuEntry {
   icon: (c: iconColor) => JSX.Element;
   href: string;
 }
+
+export interface Transcript {
+  aGradePercentage: string;
+  entryDate: string;
+  faculty: string;
+  fullName: string;
+  goldDiplomaEligible: boolean;
+  graduateDate: string;
+  level: "Bachelor" | "Master" | "PhD";
+  semesters: SemestersByYear;
+  speciality: Speciality;
+  studentId: number;
+  totalEarnedCredits: number;
+  totalEarnedEcts: number;
+  totalGpa: number;
+}
+
+export interface Speciality {
+  lang: string;
+  program: number;
+}
+
+export interface SemestersByYear {
+  [year: string]: {
+    [semester: string]: Semester;
+  };
+}
+
+export interface Semester {
+  courses: Courses;
+  gpa: number;
+  sac: number;
+  spa: number;
+  tacc: number;
+  tatc: number;
+  totalCredits: number;
+  totalHours: number;
+}
+
+export interface Courses {
+  [courseCode: string]: Course;
+}
+
+export interface Course {
+  courseName: string;
+  courses: number;
+  grade: number;
+  gradeLetter: string;
+  hours: number;
+  repeat: boolean;
+}
