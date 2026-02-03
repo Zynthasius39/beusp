@@ -222,6 +222,14 @@ export const formatTime = (seconds: number): string => {
   return `${mins}:${paddedSecs}`;
 };
 
+export const getAttValue = (value: number): string => {
+  if (value === undefined) return "";
+  if (value === -2) return "Q";
+  if (value === -3) return "ERR";
+  if (value <= -1) return "";
+  return value.toString();
+};
+
 export const getGradeValue = (value: number): string => {
   if (value === undefined) return "";
   if (value === -2) return "Q";

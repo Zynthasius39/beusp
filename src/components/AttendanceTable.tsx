@@ -1,7 +1,7 @@
 import { Skeleton, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TableSortLabel } from "@mui/material"
 import { Order } from "../utils/Interfaces"
 import { useState } from "react";
-import { thresholdColor } from "../utils/StudentLogic";
+import { getAttValue, thresholdColor } from "../utils/StudentLogic";
 import { AttendanceLinearProgress } from "./AttendanceLinearProgress";
 import { useTranslation } from "react-i18next";
 
@@ -170,10 +170,10 @@ export default function AttendanceTable({ attdsT, attLoading, attAsm, doAttAsm }
                         sortedAttdsGrouped?.map(attds => {
                             const init = { hours: 0, absent: 0 };
                             attds.forEach(att => {
-                                init.hours += att.hours;
-                                init.absent += att.absent;
+                                init.hours += att.hours === -1 ? 0 : att.hours;
+                                init.absent += att.absent === -1 ? 0 : att.absent;
                             });
-                            const preAbsentPercent = Math.ceil(init.absent / init.hours * 100);
+                            const preAbsentPercent = Math.ceil(init.hours === 0 ? 0 : init.absent / init.hours * 100);
                             const calcAbsentPercent = preAbsentPercent >= 25 ? 25 : preAbsentPercent;
                             return attds.map((att, inx) =>
                                 <TableRow key={count} sx={{ backgroundColor: count++ % 2 === 0 ? 'background.paper' : 'inherit' }}>
@@ -181,10 +181,10 @@ export default function AttendanceTable({ attdsT, attLoading, attAsm, doAttAsm }
                                     <TableCell sx={{ p: 0, paddingBlock: "0.8rem", pr: "0.8rem" }}>{att.courseName}</TableCell>
                                     <TableCell sx={{ p: 0, paddingBlock: "0.8rem", pr: "0.8rem" }}>{att.courseEducator}</TableCell>
                                     <TableCell sx={tableCellStyle}>{att.credit}</TableCell>
-                                    <TableCell sx={tableCellStyle}>{att.hours}</TableCell>
+                                    <TableCell sx={tableCellStyle}>{getAttValue(att.hours)}</TableCell>
                                     <TableCell sx={tableCellStyle}>{att.limit}</TableCell>
                                     <TableCell sx={tableCellStyle}>{att.atds}</TableCell>
-                                    <TableCell sx={[tableCellStyle, doAttAsm && inx === 0 && { color: thresholdColor(calcAbsentPercent, attConfig.warning, attConfig.critical) + '.main' }]}>{att.absent}</TableCell>
+                                    <TableCell sx={[tableCellStyle, doAttAsm && inx === 0 && { color: thresholdColor(calcAbsentPercent, attConfig.warning, attConfig.critical) + '.main' }]}>{getAttValue(att.absent)}</TableCell>
                                     <TableCell sx={[tableCellStyle, { minWidth: 170 }]}>
                                         {
                                             inx === 0 &&

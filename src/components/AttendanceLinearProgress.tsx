@@ -14,6 +14,7 @@ export const AttendanceLinearProgress = (
   }) => {
   const { percent, percentNext, base, warning, critical, doAttAsm, ...propsRest } = props;
   const color = thresholdColor(percentNext, warning, critical);
+
   return <Box sx={{ display: 'flex', alignItems: 'center' }}>
     <Box sx={{ width: '100%', mr: 1 }}>
       <LinearProgress
