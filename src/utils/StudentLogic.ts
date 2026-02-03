@@ -83,7 +83,7 @@ export const gradeScale = (
           : course.act2
       ).toFixed(2),
     );
-  if (courseG.act3 !== -1 && act3_enabled)
+  if (courseG.act3 !== undefined && courseG.act3 !== -1 && act3_enabled)
     courseG.act3 = parseFloat(
       (oldScale
         ? courseG.act3 * 10
@@ -92,7 +92,7 @@ export const gradeScale = (
           : courseG.act3
       ).toFixed(2),
     );
-  if (courseG.sem !== -1 && semEnabled)
+  if (courseG.sem !== undefined && courseG.sem !== -1 && semEnabled)
     courseG.sem = parseFloat(
       (oldScale
         ? courseG.sem * 10
@@ -101,7 +101,7 @@ export const gradeScale = (
           : courseG.sem
       ).toFixed(2),
     );
-  if (courseG.att !== -1 && !semEnabled)
+  if (courseG.att !== undefined && course.att !== undefined && courseG.att !== -1 && !semEnabled)
     courseG.att = parseFloat(
       (oldScale
         ? courseG.att * 10
@@ -142,12 +142,12 @@ export const calculateSum = (
       gradeRound(getValueNum(json.act1)) +
       gradeRound(getValueNum(json.act2)) +
       (act3Enabled
-        ? gradeRound(getValueNum(isNaN(json.act3) ? 0 : json.act3))
+        ? gradeRound(getValueNum(json.act3 || 0))
         : 0) +
       (json.sem !== undefined
-        ? gradeRound(getValueNum(isNaN(json.sem) ? 0 : json.sem))
+        ? gradeRound(getValueNum(json.sem || 0))
         : gradeRound(
-            getValueNum(isNaN(json.att) ? 0 : json.att),
+            getValueNum(json.att || 0),
           )) +
       gradeRound(getValueNum(json.iw)) +
       gradeRound(getValueNum(json.final));
@@ -156,11 +156,11 @@ export const calculateSum = (
       (
         gradeRound(getValueNum(json.act1)) +
         gradeRound(getValueNum(json.act2)) +
-        (act3Enabled ? getValueNum(isNaN(json.act3) ? 0 : json.act3) : 0) +
+        (act3Enabled ? getValueNum(json.act3 || 0) : 0) +
         (json.sem !== undefined
-          ? gradeRound(getValueNum(isNaN(json.sem) ? 0 : json.sem))
+          ? gradeRound(getValueNum(json.sem || 0))
           : gradeRound(
-              getValueNum(isNaN(json.att) ? 0 : json.att),
+              getValueNum(json.att || 0),
             )) +
         getValueNum(json.iw) +
         getValueNum(json.final)
@@ -177,9 +177,9 @@ export const canPredictScholarship = (
 ): boolean => {
   if (getGradeValue(json.act1) === "") return false;
   if (getGradeValue(json.act2) === "") return false;
-  if (getGradeValue(json.act3) === "" && act3Enabled) return false;
-  if (getGradeValue(json.sem) === "" && json.sem !== undefined) return false;
-  if (getGradeValue(json.att) === "" && json.att !== undefined)
+  if (getGradeValue(json.act3 || -1) === "" && act3Enabled) return false;
+  if (getGradeValue(json.sem || -1) === "" && json.sem !== undefined) return false;
+  if (getGradeValue(json.att || -1) === "" && json.att !== undefined)
     return false;
   if (getGradeValue(json.iw) === "") return false;
   return true;
@@ -191,9 +191,9 @@ export const canPredictScholarshipNoIw = (
 ): boolean => {
   if (getGradeValue(json.act1) === "") return false;
   if (getGradeValue(json.act2) === "") return false;
-  if (getGradeValue(json.act3) === "" && act3Enabled) return false;
-  if (getGradeValue(json.sem) === "" && json.sem !== undefined) return false;
-  if (getGradeValue(json.att) === "") return false;
+  if (getGradeValue(json.act3 || -1) === "" && act3Enabled) return false;
+  if (getGradeValue(json.sem || -1) === "" && json.sem !== undefined) return false;
+  if (getGradeValue(json.att || -1) === "") return false;
   if (getGradeValue(json.iw) !== "") return false;
   return true;
 };

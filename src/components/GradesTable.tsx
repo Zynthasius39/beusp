@@ -33,9 +33,10 @@ export type GradeEntry = {
   courseName: string;
   act1: number;
   act2: number;
-  act3: number;
-  sem: number;
-  att: number;
+  act3: number | undefined;
+  att: number | undefined;
+  sem: number | undefined;
+  absents: number;
   iw: number;
   final: number;
   sum: number;
@@ -229,7 +230,7 @@ export default function GradesTable({
                 </TableCell>
                 {f.act3Enabled && (
                   <TableCell sx={tableCellStyle}>
-                    {getGradeValue(courseG.act3)}
+                    {getGradeValue(courseG.act3 || -1)}
                   </TableCell>
                 )}
                 {courseG.sem !== undefined && (
